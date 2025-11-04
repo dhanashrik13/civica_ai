@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Issue Details</h2>
+
+<p><strong>Category:</strong> {{ issue.category }}</p>
+<p><strong>Description:</strong> {{ issue.description }}</p>
+<p><strong>Location:</strong> {{ issue.location }}</p>
+<p><strong>Status:</strong> {{ issue.status }}</p>
+{% if issue.image %}
+<p><img src="{{ issue.image.url }}" width="300"></p>
+{% endif %}
+<p><strong>Reported by:</strong> {{ issue.citizen.username }}</p>
+<p><strong>Date:</strong> {{ issue.created_at|date:"Y-m-d H:i" }}</p>
+
+{% if user.is_staff %}
+<form method="POST" action="{% url 'issues:update_status' issue.pk %}">
+    {% csrf_token %}
+    <select name="status" class="form-select">
+        <option value="Pending" {% if issue.status == 'Pending' %}selected{% endif %}>Pending</option>
+        <option value="In Progress" {% if issue.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option value="Resolved" {% if issue.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+    </select>
+    <button type="submit" class="btn btn-success mt-2">Update Status</button>
+</form>
+{% endif %}
+<a href="{% url 'issues:issue_list' %}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

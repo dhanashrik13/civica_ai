@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Choose Your Dashboard</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .role-container {
+      display: flex;
+      gap: 40px;
+    }
+    .box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      width: 180px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .box:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome, {{ username }}!</h1>
+  <p>Select your role dashboard below 👇</p>
+  <div class="role-container">
+    <div class="box">
+      <a href="{% url 'dashboards:citizen_dashboard' %}">👤 Citizen Dashboard</a>
+    </div>
+    <div class="box">
+      <a href="{% url 'dashboards:officer_dashboard' %}">🧑‍✈️ Officer Dashboard</a>
+    </div>
+    <div class="box">
+      <a href="{% url 'dashboards:admin_dashboard' %}">🧑‍💼 Admin Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

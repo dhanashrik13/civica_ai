@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="col-md-6 mx-auto">
+    <div class="card shadow p-4 rounded-4">
+      <h3 class="text-center text-primary mb-4">Edit Profile</h3>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-control" value="{{ citizen.full_name }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" value="{{ citizen.email }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Phone</label>
+          <input type="text" name="phone" class="form-control" value="{{ citizen.phone }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Address</label>
+          <textarea name="address" class="form-control" rows="3">{{ citizen.address }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
