@@ -1,0 +1,104 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Search Results | CivicPulse{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="bi bi-search me-2 text-primary"></i> Global Search Results</h3>
+        <span class="badge bg-light text-dark p-2 border">Query: "{{ query }}"</span>
+    </div>
+    <hr>
+    
+    <div class="row">
+        <!-- ISSUES SECTION -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-exclamation-circle text-danger me-2"></i> Issues ({{ issues.count }})</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        {% for issue in issues %}
+                            <a href="{% url 'dashboards:admin_issue_detail' issue.id %}" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1 fw-bold">#CN-{{ issue.id }} {{ issue.title }}</h6>
+                                </div>
+                                <p class="mb-1 text-muted small">{{ issue.description|truncatewords:15 }}</p>
+                                <span class="badge rounded-pill 
+                                    {% if issue.status == 'resolved' %}bg-success-subtle text-success
+                                    {% elif issue.status == 'assigned' %}bg-primary-subtle text-primary
+                                    {% else %}bg-warning-subtle text-warning{% endif %}" style="font-size: 10px;">
+                                    {{ issue.get_status_display }}
+                                </span>
+                            </a>
+                        {% empty %}
+                            <div class="text-center py-4">
+                                <p class="text-muted small">No issues matched your query.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- USERS SECTION -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-people text-primary me-2"></i> Users ({{ users.count }})</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        {% for user_obj in users %}
+                            <div class="list-group-item border-0 px-0 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">
+                                        {{ user_obj.username|slice:":1"|upper }}
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ user_obj.username }}</h6>
+                                        <p class="mb-0 text-muted small">{{ user_obj.email }}</p>
+                                        <span class="text-uppercase" style="font-size: 10px; font-weight: 700; color: #7c3aed;">{{ user_obj.get_role_display|default:user_obj.role }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center py-4">
+                                <p class="text-muted small">No users matched your query.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMENTS SECTION -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold"><i class="bi bi-chat-dots text-success me-2"></i> Comments ({{ comments.count }})</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        {% for comment in comments %}
+                            <a href="{% url 'dashboards:admin_issue_detail' comment.issue.id %}" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <strong class="small">{{ comment.user.username }}</strong>
+                                    <span class="text-muted" style="font-size: 10px;">on Issue #{{ comment.issue.id }}</span>
+                                </div>
+                                <p class="mb-1 text-secondary small">{{ comment.text|truncatewords:20 }}</p>
+                                <small class="text-muted" style="font-size: 10px;">{{ comment.created_at|timesince }} ago</small>
+                            </a>
+                        {% empty %}
+                            <div class="text-center py-4">
+                                <p class="text-muted small">No comments matched your query.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

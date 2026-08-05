@@ -1,36 +1,41 @@
-{% extends "base.html" %}
+{% extends "citizen/base.html" %}
 {% load static %}
-{% block title %}Edit Profile{% endblock %}
+{% block title %}Edit Profile | Civic Portal{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="col-md-6 mx-auto">
-    <div class="card shadow p-4 rounded-4">
-      <h3 class="text-center text-primary mb-4">Edit Profile</h3>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="table-card p-4">
+      <h3 class="fw-bold text-primary mb-4">Edit Your Profile</h3>
 
       <form method="POST">
         {% csrf_token %}
         <div class="mb-3">
-          <label class="form-label">Full Name</label>
-          <input type="text" name="full_name" class="form-control" value="{{ citizen.full_name }}" required>
+          <label class="form-label fw-semibold">Full Name</label>
+          <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" value="{{ citizen.email }}" required>
+          <label class="form-label fw-semibold">Email Address</label>
+          <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Phone</label>
-          <input type="text" name="phone" class="form-control" value="{{ citizen.phone }}">
+          <label class="form-label fw-semibold">Phone Number</label>
+          <input type="text" name="phone_no" class="form-control" value="{{ user.phone_no }}">
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Address</label>
-          <textarea name="address" class="form-control" rows="3">{{ citizen.address }}</textarea>
+          <label class="form-label fw-semibold">Home Address</label>
+          <textarea name="address" class="form-control" rows="3">{{ user.address }}</textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary btn-lg w-100"
+                    onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();">
+                Save Changes
+            </button>
+        </div>
       </form>
     </div>
   </div>

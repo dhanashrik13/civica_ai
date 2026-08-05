@@ -1,0 +1,87 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Assign Issue #{{ issue.id }} | CivicPulse{% endblock %}
+
+{% block topbar %}
+<div>
+    <h4>Assign Officer</h4>
+    <small>Issue ID: #CN-{{ issue.id }}</small>
+</div>
+<div class="top-actions">
+    <button class="ai-btn"><i class="bi bi-stars"></i> AI Assistant</button>
+    <div class="admin-profile">
+        <i class="bi bi-person-circle" style="font-size: 1.5rem; color: #7c3aed;"></i>
+        {{ user.username }}
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="content" style="padding: 0; display: flex; justify-content: center;">
+    <div class="assign-container" style="background: white; width: 100%; max-width: 650px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); overflow: hidden;">
+        <div class="header" style="padding: 30px 40px 10px; text-align: center;">
+            <h2 style="margin: 0; color: var(--text-main); font-size: 24px;">Assign Officer</h2>
+            <p style="color: var(--text-muted); margin: 8px 0 0; font-size: 15px;">Review the issue details and delegate to a responder</p>
+        </div>
+
+        <div class="issue-details" style="padding: 20px 40px; background: #fafbff; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Issue ID</span>
+                <span class="detail-value" style="color:#7c3aed; font-weight:700;">#CN-{{ issue.id }}</span>
+            </div>
+
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Status</span>
+                <span class="detail-value"><span class="status-badge" style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; background: #fee2e2; color: #dc2626; text-transform: uppercase;">{{ issue.status|title }}</span></span>
+            </div>
+
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Title</span>
+                <span class="detail-value"><strong>{{ issue.title }}</strong></span>
+            </div>
+
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Category</span>
+                <span class="detail-value">{{ issue.category.name|default:"General" }}</span>
+            </div>
+
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Location</span>
+                <span class="detail-value">{{ issue.location.name|default:issue.location }}</span>
+            </div>
+
+            <div class="detail-row" style="display: grid; grid-template-columns: 120px 1fr; margin-bottom: 12px; font-size: 14px;">
+                <span class="detail-label" style="font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Description</span>
+                <span class="detail-value">{{ issue.description|default:"No description provided." }}</span>
+            </div>
+
+            {% if issue.image %}
+                <img src="{{ issue.image.url }}" alt="Issue Proof" class="issue-image" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; margin-top: 15px; border: 1px solid var(--border);">
+            {% endif %}
+        </div>
+
+        <div class="assign-form" style="padding: 30px 40px;">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="officer" style="display: block; margin-bottom: 10px; font-weight: 700; color: var(--text-main); font-size: 15px;">Select Field Officer</label>
+                    <select name="officer" id="officer" required style="width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: #fff; font-size: 15px; transition: 0.2s; outline: none;">
+                        <option value="" disabled selected>Select from active officers...</option>
+                        {% for officer in officers %}
+                            <option value="{{ officer.id }}">
+                                {{ officer.user.get_full_name|default:officer.user.username }}
+                                — {{ officer.department.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit" style="background: var(--primary-gradient); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">Confirm Assignment</button>
+            </form>
+
+            <a href="javascript:history.back()" class="back-link" style="display: block; text-align: center; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;">← Cancel and Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

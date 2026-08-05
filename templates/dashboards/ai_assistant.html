@@ -1,0 +1,18 @@
+<!-- DEPRECATED: Do not use. Use templates/assistant/assistant_refactored.html instead. -->
+{% extends 'base_officer.html' %}
+
+{% block title %}AI Assistant | Officer Portal{% endblock %}
+
+{% block page_title %}AI Assistant 🤖{% endblock %}
+{% block page_subtitle %}Intelligent analysis and automated recommendations{% endblock %}
+
+{% block content %}
+<div class="table-container" style="text-align: center; padding: 100px 20px;">
+    <div style="font-size: 64px; margin-bottom: 20px;">🤖</div>
+    <h2>AI Assistant is coming soon</h2>
+    <p style="color: var(--text-muted);">We are currently training our models to provide you with better insights.</p>
+    <a href="{% url 'dashboards:officer_dashboard' %}" class="ai-btn" style="text-decoration: none; display: inline-block; margin-top: 20px;">
+        Back to Dashboard
+    </a>
+</div>
+{% endblock %}

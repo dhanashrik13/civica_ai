@@ -1,0 +1,59 @@
+{% extends "citizen/base.html" %}
+
+{% block title %}{{ department.name }} | Department Details{% endblock %}
+
+{% block content %}
+<div class="table-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">{{ department.name }} Issues</h2>
+            <p class="text-muted mb-0">Total issues reported in this department</p>
+        </div>
+        <a href="{% url 'citizen:citizen_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Issue ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Date Reported</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td class="text-muted">#CN-{{ issue.id }}</td>
+                    <td><strong class="text-dark">{{ issue.title }}</strong></td>
+                    <td>
+                        <span class="badge-status
+                            {% if issue.status == 'pending' %}bg-warning text-dark
+                            {% elif issue.status == 'assigned' %}bg-info text-dark
+                            {% elif issue.status == 'resolved' %}bg-success text-white
+                            {% endif %}">
+                            {{ issue.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ issue.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'citizen:citizen_issue_detail' issue.id %}" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        No issues found for this department.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% load i18n %}
+<div class="topbar-left">
+    <h2 class="topbar-title">Good Morning ☀️</h2>
+    <span class="topbar-divider">|</span>
+    <p class="topbar-subtitle">Manage assigned issues efficiently</p>
+</div>
+<div class="topbar-right">
+    <!-- AI Assistant -->
+    <a href="{% url 'dashboards:officer_ai_assistant' %}" class="ai-btn">
+        <i class="bi bi-stars"></i> {% trans "AI Assistant" %}
+    </a>
+
+    <!-- Language Selector -->
+    <form action="{% url 'set_language' %}" method="post" id="officer-lang-form" class="m-0">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+        <input type="hidden" name="language" id="officer-lang-input">
+        <div class="lang-wrapper">
+            <button class="nav-pill-btn" type="button" onclick="toggleCustomDropdown(event, 'langDropdown')">
+                <i class="bi bi-globe"></i>
+                <span>{% get_current_language as CURRENT_LANG %}{% if CURRENT_LANG == 'hi' %}हिंदी{% elif CURRENT_LANG == 'mr' %}मराठी{% else %}English{% endif %}</span>
+                <i class="bi bi-chevron-down ms-1 small"></i>
+            </button>
+            <div class="lang-dropdown" id="langDropdown">
+                <button type="button" class="lang-item {% if CURRENT_LANG == 'en' %}active{% endif %}" onclick="submitOfficerLang('en')">English</button>
+                <button type="button" class="lang-item {% if CURRENT_LANG == 'hi' %}active{% endif %}" onclick="submitOfficerLang('hi')">हिंदी (Hindi)</button>
+                <button type="button" class="lang-item {% if CURRENT_LANG == 'mr' %}active{% endif %}" onclick="submitOfficerLang('mr')">मराठी (Marathi)</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Notification Bell -->
+    <div class="notif-wrapper">
+        <button class="notif-btn" type="button" onclick="toggleCustomDropdown(event, 'notifDropdown'); fetchNotifications();">
+            <i class="bi bi-bell-fill" style="font-size: 18px;"></i>
+            <span id="notif-badge" class="notif-badge d-none">0</span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-header">
+                <h6>{% trans "Notifications" %}</h6>
+            </div>
+            <div id="notif-items">
+                <div class="px-3 py-5 text-center text-muted small">
+                    <div class="spinner-border spinner-border-sm mb-2 text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Section -->
+    <div class="user-section">
+        <div class="user-details">
+            <span class="username">{{ request.user.username }}</span>
+            <span class="dept">{{ request.user.department.name|default:"Field Officer" }}</span>
+        </div>
+        <form id="topbar-logout-form" action="{% url 'accounts:logout' %}" method="POST" class="d-none">
+            {% csrf_token %}
+        </form>
+        {% if request.resolver_match.url_name != 'map_view' %}
+        <a href="#" onclick="event.preventDefault(); document.getElementById('topbar-logout-form').submit();" class="logout-btn">Logout</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function toggleCustomDropdown(event, id) {
+        event.stopPropagation();
+        const dropdown = document.getElementById(id);
+        const isOpen = dropdown.classList.contains('show');
+        
+        // Close all first
+        closeAllCustomDropdowns();
+        
+        if (!isOpen) {
+            dropdown.classList.add('show');
+        }
+    }
+
+    function closeAllCustomDropdowns() {
+        document.querySelectorAll('.lang-dropdown, .notif-dropdown').forEach(d => d.classList.remove('show'));
+    }
+
+    function submitOfficerLang(lang) {
+        document.getElementById('officer-lang-input').value = lang;
+        document.getElementById('officer-lang-form').submit();
+    }
+
+    // Close dropdowns when clicking outside
+    window.addEventListener('click', function(e) {
+        if (!e.target.closest('.lang-wrapper') && !e.target.closest('.notif-wrapper')) {
+            closeAllCustomDropdowns();
+        }
+    });
+</script>

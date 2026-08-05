@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Officer Portal | CivicPulse{% endblock %}</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fb;
+            color: var(--text-primary);
+        }
+
+        /* --- LAYOUT CORE (STRICT STRUCTURE) --- */
+        .dashboard-layout {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            max-width: 250px;
+            box-sizing: border-box;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1001;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            width: calc(100% - 250px);
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 70px);
+        }
+
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            width: calc(100% - 250px);
+            height: 70px;
+            z-index: 1000;
+            background: #0f2a44;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            box-sizing: border-box;
+        }
+
+        .page-content {
+            padding-top: 20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            margin-top: 0;
+            flex: 1;
+        }
+
+        /* --- IMPORTANT FIX (prevents topbar cut issue) --- */
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            width: calc(100% - 250px);
+            height: 100vh;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- SIDEBAR UI --- */
+        .logo { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+        .logo .sub { font-size: 12px; color: #6b7280; margin: 0; }
+        .menu-section { margin-bottom: 20px; }
+        .menu-title { font-size: 12px; color: #9ca3af; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .menu-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px;
+            text-decoration: none; color: #374151; font-size: 14px; margin-bottom: 5px;
+            transition: all 0.2s ease; font-weight: 500;
+        }
+        .menu-item:hover { background: #f3f4f6; color: #374151; }
+        .menu-item.active { background: linear-gradient(135deg, #6366f1, #7c3aed); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .status-box { margin-top: auto; background: #f9fafb; padding: 12px; border-radius: 10px; font-size: 12px; border: 1px solid #eef2ff; }
+        .status-box p { margin: 0; color: #10b981; font-weight: 600; }
+        .status-box strong { display: block; margin-top: 5px; color: #1e40af; }
+
+        /* --- TOPBAR UI --- */
+        .topbar-left { display: flex; align-items: center; gap: 10px; }
+        .topbar-title { margin: 0; font-size: 18px; font-weight: 600; color: #fff; }
+        .topbar-divider { color: rgba(255,255,255,0.3); font-size: 18px; }
+        .topbar-subtitle { margin: 0; color: rgba(255,255,255,0.7); font-size: 13px; }
+        .topbar-right { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            justify-content: flex-end;
+        }
+        .topbar .user-section { display: flex; align-items: center; gap: 12px; }
+        .topbar .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+        .topbar .username { font-weight: 600; font-size: 14px; color: #fff; }
+        .topbar .dept { font-size: 11px; color: rgba(255,255,255,0.7); }
+        .logout-btn { 
+            height: 36px; 
+            padding: 0 16px; 
+            border-radius: 8px; 
+            background: #ef4444; 
+            color: white; 
+            font-size: 13px; 
+            border: none; 
+            text-decoration: none; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .logout-btn:hover { background: #dc2626; color: white; }
+
+        /* --- NOTIFICATION DROPDOWN REPAIR --- */
+        .notif-dropdown {
+            width: 350px;
+            max-height: 500px;
+            flex-direction: column;
+            display: none;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 2100;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            overflow: hidden;
+            list-style: none;
+            color: #333;
+        }
+        .notif-dropdown.show { display: flex; }
+        .notif-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+        .notif-header h6 { margin: 0; font-weight: 700; color: #1e293b; font-size: 14px; }
+        
+        #notif-items {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px; /* Force internal scroll */
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        /* Custom scrollbar */
+        #notif-items::-webkit-scrollbar { width: 6px; }
+        #notif-items::-webkit-scrollbar-track { background: #f1f5f9; }
+        #notif-items::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .notif-item { transition: background 0.2s; border-bottom: 1px solid #f1f5f9; }
+        .notif-item:hover { background: #f8fafc !important; }
+        .notif-item.bg-light { background: #f0f7ff !important; } /* Unread state */
+        
+        .notif-item .dropdown-item {
+            white-space: normal !important;
+            padding: 12px 16px !important;
+            display: block !important;
+            width: 100%;
+        }
+        
+        .notif-item .dropdown-item .text-dark {
+            line-height: 1.5;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        @media (max-width: 480px) {
+            .notif-dropdown { width: 280px; position: fixed; left: 50%; transform: translateX(-50%); top: 70px; right: auto; }
+        }
+
+        .lang-wrapper, .notif-wrapper { position: relative; display: inline-block; }
+        .lang-dropdown {
+            position: absolute; top: 100%; right: 0; margin-top: 8px;
+            background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 1100; display: none; border: 1px solid #e2e8f0; list-style: none; overflow: hidden; color: #333;
+            min-width: 160px; padding: 8px 0;
+        }
+        .lang-dropdown.show { display: block; }
+        .lang-item { width: 100%; padding: 10px 16px; cursor: pointer; font-size: 13.5px; color: #475569; transition: all 0.2s; text-align: left; border: none; background: none; display: block; text-decoration: none; }
+        .lang-item:hover { background: #f1f5f9; color: #7c3aed; }
+        .lang-item.active { background: #7c3aed; color: white; }
+        .nav-pill-btn { height: 36px; padding: 0 12px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; color: #fff !important; transition: all 0.2s; text-decoration: none !important; cursor: pointer; }
+        .nav-pill-btn:hover { background: rgba(255,255,255,0.2); }
+        .notif-btn { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: #fff; transition: all 0.2s; position: relative; cursor: pointer; padding: 0; }
+        .notif-btn:hover { background: rgba(255,255,255,0.2); }
+        .notif-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; height: 18px; min-width: 18px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #0f2a44; }
+        .ai-btn { height: 36px; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: none; padding: 0 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
+        .ai-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); color: white; }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+
+    <div class="loader-overlay" id="pageLoader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- SIDEBAR -->
+        {% include "partials/officer_sidebar.html" %}
+
+        <div class="main-content">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                {% include "partials/officer_topbar.html" %}
+            </header>
+
+            <main class="page-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    {% include 'dashboards/partials/ai_assistant.html' %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% include 'partials/notification_js.html' %}
+
+    <script>
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

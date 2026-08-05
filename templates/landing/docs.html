@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Documentation</h1>
+<p>Welcome to CivicPulse documentation</p>
+
+<div>
+    <h3>Quick Start Guide</h3>
+    <a href="{% url 'quick_start' %}">Go →</a>
+</div>
+
+<div>
+    <h3>Video Tutorials</h3>
+    <a href="{% url 'videos' %}">Go →</a>
+</div>
+
+<div>
+    <h3>API Reference</h3>
+    <a href="{% url 'api_docs' %}">Go →</a>
+</div>
+
+<div>
+    <h3>FAQs</h3>
+    <a href="{% url 'faq' %}">Go →</a>
+</div>
+
+{% endblock %}

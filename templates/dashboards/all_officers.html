@@ -1,0 +1,214 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse | All Officers{% endblock %}
+
+{% block extra_css %}
+<style>
+/* PAGE BACKGROUND */
+.officer-directory-section {
+    background: #f9fafb;
+    margin: -20px;
+    padding: 20px;
+}
+
+/* CARD */
+.officer-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-left: 5px solid transparent;
+    cursor: pointer;
+    height: 100%;
+}
+
+.officer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* LEFT ACCENTS BY ROLE */
+.officer-card.accent-district { border-left-color: #3b82f6; } /* Blue */
+.officer-card.accent-taluka { border-left-color: #10b981; }   /* Green */
+.officer-card.accent-village { border-left-color: #f59e0b; }  /* Orange */
+
+.officer-top {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff; 
+    font-weight: 600; 
+    font-size: 16px;
+}
+
+.officer-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #111827;
+}
+
+.officer-role {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #6b7280;
+}
+
+.stat-row strong {
+    color: #111827;
+}
+
+.green {
+    color: #16a34a !important;
+}
+
+.efficiency {
+    margin-top: 15px;
+}
+
+.eff-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #6b7280;
+}
+
+.eff-row strong {
+    color: #111827;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary-gradient);
+}
+</style>
+{% endblock %}
+
+{% block page_title %}Team Performance Directory{% endblock %}
+{% block page_subtitle %}Detailed efficiency metrics for all field officers{% endblock %}
+
+{% block content %}
+<div class="officer-directory-section">
+<div class="row mb-3">
+    <div class="col-12 d-flex justify-content-end">
+        <form method="get" class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search officer..." 
+                    value="{{ request.GET.search|default:'' }}"
+                    class="form-control form-control-sm"
+                    style="width: 220px; border-radius: 8px;"
+                >
+                <button type="submit" class="btn btn-sm btn-primary ms-2" style="border-radius: 8px; background: #4f46e5; border: none;">
+                    Search
+                </button>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <label class="me-2 text-muted small fw-bold">SORT BY:</label>
+                <select name="sort" onchange="this.form.submit()" class="form-select form-select-sm" style="width: 180px; border-radius: 8px;">
+                    <option value="high" {% if request.GET.sort == "high" or not request.GET.sort %}selected{% endif %}>
+                        Highest Efficiency
+                    </option>
+                    <option value="low" {% if request.GET.sort == "low" %}selected{% endif %}>
+                        Lowest Efficiency
+                    </option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for officer in officers %}
+    <div class="col-md-4 mb-4">
+        <a href="{% url 'dashboards:officer_detail' officer.id %}" style="text-decoration: none; color: inherit; display: block; height: 100%;">
+            <div class="officer-card accent-{{ officer.level|lower }}">
+                <div class="officer-top">
+                    <div class="avatar">
+                        {{ officer.name|slice:":2"|upper }}
+                    </div>
+                    <div class="officer-info">
+                        <div class="officer-name">
+                            {{ officer.name }}
+                        </div>
+                        <div class="officer-role">
+                            {{ officer.level }} - {{ officer.department }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="officer-stats">
+                    <div class="stat-row">
+                        <span>Assigned Tasks</span>
+                        <strong>{{ officer.assigned_count }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Completed Tasks</span>
+                        <strong class="green">{{ officer.completed_count }}</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Avg Res. Time</span>
+                        <strong>{{ officer.avg_resolution_hours }}h</strong>
+                    </div>
+                    <div class="stat-row">
+                        <span>Overdue Rate</span>
+                        <strong class="text-danger">{{ officer.overdue_percentage }}%</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px; text-align:right; font-size: 13px;">
+                    <span style="text-decoration: none; color: #6366f1; font-weight: 500;">
+                        View Profile →
+                    </span>
+                </div>
+
+                <div class="efficiency">
+                    <div class="eff-row">
+                        <span>Efficiency</span>
+                        <strong>{{ officer.completion_rate }}%</strong>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width:{{ officer.completion_rate }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5 text-muted">
+        No officers found in the directory.
+    </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

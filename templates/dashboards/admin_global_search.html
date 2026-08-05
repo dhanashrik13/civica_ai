@@ -1,0 +1,77 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse | Global Search{% endblock %}
+
+{% block page_title %}Global Search{% endblock %}
+{% block page_subtitle %}Scanning all database entities{% endblock %}
+
+{% block content %}
+<div class="search-results">
+    {% if query %}
+        <h3 style="margin-bottom: 5px;">Showing results for "{{ query }}"</h3>
+        <p style="color: var(--text-gray); margin-bottom: 30px;">{{ total_count }} matching entries found.</p>
+
+        {% if issues %}
+        <div class="section-header" style="margin: 30px 0 15px 0; font-weight: 700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px;"><i class="bi bi-exclamation-triangle"></i> Issues & Reports</div>
+        {% for issue in issues %}
+        <div class="result-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; cursor: pointer;" onclick="window.location.href='{% url 'dashboards:admin_issue_detail' issue.id %}'">
+            <div>
+                <div style="font-weight: 600;">#{{ issue.id }}: {{ issue.title }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-gray);">
+                    {{ issue.category }} • {{ issue.village|default:"N/A" }}
+                </div>
+            </div>
+            <span class="badge {% if issue.status == 'resolved' %}status-resolved{% else %}status-pending{% endif %}" style="padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; {% if issue.status == 'resolved' %}background: #dcfce7; color: #166534;{% else %}background: #fee2e2; color: #991b1b;{% endif %}">
+                {{ issue.status|upper }}
+            </span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if officers %}
+        <div class="section-header" style="margin: 30px 0 15px 0; font-weight: 700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px;"><i class="bi bi-person-badge"></i> Department Officers</div>
+        {% for officer in officers %}
+        <div class="result-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; cursor: pointer;">
+            <div>
+                <div style="font-weight: 600;">{{ officer.user.username }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-gray);">
+                    {{ officer.department.name }} • {{ officer.taluka|default:"N/A" }}
+                </div>
+            </div>
+            <span class="badge type-officer" style="padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f5f3ff; color: #7c3aed;">OFFICER</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if citizens %}
+        <div class="section-header" style="margin: 30px 0 15px 0; font-weight: 700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px;"><i class="bi bi-people"></i> Registered Citizens</div>
+        {% for citizen in citizens %}
+        <div class="result-card" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; cursor: pointer;">
+            <div>
+                <div style="font-weight: 600;">{{ citizen.username }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-gray);">
+                    {{ citizen.email }} • Joined {{ citizen.date_joined|date:"M Y" }}
+                </div>
+            </div>
+            <span class="badge type-citizen" style="padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: #f1f5f9; color: #475569;">CITIZEN</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if total_count == 0 %}
+        <div style="text-align: center; padding: 100px;">
+            <i class="bi bi-search" style="font-size: 3rem; color: #e5e7eb;"></i>
+            <h3 style="margin-top: 15px;">No matches found</h3>
+            <p style="color: var(--text-gray);">Try searching for a different keyword, email, or issue ID.</p>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div style="text-align: center; padding: 100px;">
+            <i class="bi bi-search" style="font-size: 4rem; color: #f3f4f6;"></i>
+            <h2 style="margin-top: 20px;">Global Search</h2>
+            <p style="color: var(--text-gray);">Enter a keyword in the top search bar to begin a database scan.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

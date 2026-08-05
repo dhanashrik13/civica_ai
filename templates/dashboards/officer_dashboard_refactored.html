@@ -1,0 +1,488 @@
+{% extends 'base_officer.html' %}
+{% load i18n %}
+
+{% block title %}Officer Dashboard | Civica AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    :root {
+        --card-radius: 16px;
+        --card-padding: 20px;
+        --card-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        --dashboard-gap: 20px;
+    }
+
+    .leaflet-container { font-family: inherit; z-index: 1; }
+
+    /* DASHBOARD GRID SYSTEM */
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        gap: var(--dashboard-gap);
+    }
+
+    /* TOP STATS CARDS */
+    .cards { 
+        display: grid; 
+        grid-template-columns: repeat(5, 1fr); 
+        gap: var(--dashboard-gap); 
+    }
+
+    /* PRESSURE WIDGET */
+    .pressure-card {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: var(--card-padding);
+        box-shadow: var(--card-shadow);
+        border-left: 5px solid #6366f1;
+    }
+    .pressure-value { font-size: 24px; font-weight: 800; }
+    .status-critical { color: #dc2626; }
+    .status-high { color: #ea580c; }
+    .status-moderate { color: #d97706; }
+    .status-stable { color: #16a34a; }
+
+    /* SHARED CARD STYLING */
+    .dashboard-card {
+        background: white;
+        border-radius: var(--card-radius);
+        padding: var(--card-padding);
+        box-shadow: var(--card-shadow);
+        border: 1px solid #f1f5f9;
+        transition: transform 0.3s ease;
+    }
+
+    /* STAT CARDS COLORS (FULL BOX) */
+    .stat-card-officer.blue { background: #eff6ff; border: 1px solid #dbeafe; }
+    .stat-card-officer.cyan { background: #ecfeff; border: 1px solid #cffafe; }
+    .stat-card-officer.orange { background: #fff7ed; border: 1px solid #ffedd5; }
+    .stat-card-officer.green { background: #f0fdf4; border: 1px solid #dcfce7; }
+
+    .stat-card-officer { 
+        min-height: 130px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        align-items: flex-start;
+    }
+    .stat-card-officer:hover { transform: translateY(-5px); }
+    .stat-card-officer h2 { margin: 12px 0 4px; font-size: 32px; color: var(--text-primary); font-weight: 800; line-height: 1; }
+    .stat-card-officer p { margin: 0; color: #64748b; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .icon { 
+        width: 32px; 
+        height: 32px; 
+        border-radius: 8px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 16px; 
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .icon.blue { color: #2563eb; }
+    .icon.cyan { color: #0891b2; }
+    .icon.orange { color: #ea580c; }
+    .icon.green { color: #16a34a; }
+
+    /* TABLE SECTION */
+    .table-container {
+        width: 100%;
+    }
+
+    /* LOWER GRID (70/30 SPLIT) */
+    .dashboard-lower-grid { 
+        display: grid; 
+        grid-template-columns: 7fr 3fr; 
+        gap: var(--dashboard-gap); 
+        align-items: flex-start;
+    }
+
+    .content-row {
+        display: grid;
+        grid-template-columns: 7fr 3fr; /* keep existing proportions */
+        gap: 20px;
+    }
+
+    .actions-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--dashboard-gap);
+    }
+
+    .section-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* DEFINITIVE MAP FORENSIC REPAIR */
+    .issue-map-card {
+        padding: 0 !important;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+        background: white;
+        position: relative;
+    }
+
+    .map-header { 
+        padding: 16px 20px;
+        background: #fff;
+        z-index: 10;
+        border-bottom: 1px solid #f1f5f9;
+        flex-shrink: 0;
+    }
+
+    .issue-map-wrapper { 
+        flex: 1; 
+        width: 100%;
+        position: relative; 
+        background: #f8fafc;
+        overflow: hidden;
+    }
+
+    #dashboardIssueMap { 
+        width: 100%;
+        height: 100%;
+        display: block;
+        z-index: 1;
+    }
+
+    /* Force Leaflet to recognize container size */
+    .leaflet-container {
+        width: 100% !important;
+        height: 100% !important;
+        background: #f8fafc;
+    }
+
+    /* WIDGETS */
+    .quick-actions-card, .trending-card, .activity-card {
+        margin: 0;
+    }
+
+    /* COMPONENTS STYLING */
+    .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    .custom-table th { text-align: left; padding: 14px; font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; background: #f8fafc; }
+    .custom-table td { padding: 16px; border-top: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+    .custom-table tr:hover { background: #f9fafc; }
+
+    .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-block; }
+    .status-assigned { background: #e0f2fe; color: #0369a1; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-resolved { background: #dcfce7; color: #166534; }
+    .priority-high { color: #dc2626; font-weight: 700; }
+    .priority-medium { color: #d97706; }
+    .priority-low { color: #16a34a; }
+
+    .quick-actions { display: flex; gap: 12px; }
+    .quick-btn { padding: 10px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .quick-btn.primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff !important; }
+    .quick-btn.secondary { background: #f3f4f6; color: #111 !important; }
+
+    .trend-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .trend-item:last-child { border-bottom: none; }
+    .activity-item { display: flex; gap: 15px; padding-bottom: 20px; position: relative; }
+    .activity-item:not(:last-child)::after { content: ''; position: absolute; left: 17px; top: 35px; bottom: 0; width: 2px; background: #f1f5f9; }
+    .activity-icon { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index: 1; }
+    .view-all { display: block; text-align: center; margin-top: 15px; color: #4f46e5; text-decoration: none; font-weight: 700; font-size: 13px; }
+    
+    .search-input {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        width: 250px;
+    }
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        align-items: center;
+    }
+    .filter-select { padding: 0 12px; border-radius: 8px; border: 1px solid #ddd; background: #f8fafc; min-width: 130px; font-size: 13px; font-weight: 600; height: 38px; }
+    .filter-btn { padding: 0 20px; border: none; border-radius: 8px; background: #7c3aed; color: white; cursor: pointer; font-weight: 700; font-size: 13px; height: 38px; transition: all 0.2s; }
+    .filter-btn:hover { background: #6d28d9; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.2); }
+    .btn-view {
+        padding: 6px 14px;
+        background: #4f46e5;
+        color: #fff;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid section-container">
+    <!-- TOP STATS -->
+    <div class="cards">
+        <div class="dashboard-card stat-card-officer blue">
+            <div class="icon blue">📋</div>
+            <div><h2>{{ total_issues|default:"128" }}</h2><p>Total Issues</p></div>
+        </div>
+        <div class="dashboard-card stat-card-officer cyan">
+            <div class="icon cyan">👤</div>
+            <div><h2>{{ assigned_issues|default:"14" }}</h2><p>Assigned to Me</p></div>
+        </div>
+        <div class="dashboard-card stat-card-officer orange">
+            <div class="icon orange">⚙️</div>
+            <div><h2>{{ in_progress|default:"5" }}</h2><p>In Progress</p></div>
+        </div>
+        <div class="dashboard-card stat-card-officer green">
+            <div class="icon green">✔️</div>
+            <div><h2>{{ resolved|default:"84" }}</h2><p>Resolved</p></div>
+        </div>
+        <!-- Human Governance: Pressure Card -->
+        <div class="dashboard-card pressure-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-muted">OPERATIONAL PRESSURE</span>
+                <span class="badge status-{{ pressure.status|lower }}">{{ pressure.status }}</span>
+            </div>
+            <div class="pressure-value status-{{ pressure.status|lower }}">{{ pressure.level }}%</div>
+            <div class="progress mt-2" style="height: 6px;">
+                <div class="progress-bar bg-{{ pressure.status|yesno:'danger,warning,success' }}" role="progressbar" style="width: {{ pressure.level }}%"></div>
+            </div>
+            <div class="mt-2">
+                <small class="text-muted" style="font-size: 10px;">Burnout Risk: {{ pressure.burnout_risk|floatformat:1 }}%</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div class="dashboard-card table-container">
+        <form method="GET" class="table-header">
+            <input type="text" name="search" placeholder="Search by ID or Title..." class="search-input" value="{{ request.GET.search|default:'' }}">
+            <div class="filters" style="display: flex; gap: 8px;">
+                <select name="priority" class="filter-select">
+                    <option value="">All Priorities</option>
+                    <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>High</option>
+                    <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Low</option>
+                </select>
+                <select name="status" class="filter-select">
+                    <option value="">All Status</option>
+                    <option value="assigned" {% if request.GET.status == 'assigned' %}selected{% endif %}>Assigned</option>
+                    <option value="resolved" {% if request.GET.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+                <button type="submit" class="filter-btn">Filter</button>
+            </div>
+        </form>
+
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Department</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in page_obj %}
+                <tr>
+                    <td class="issue-id">#CN-{{ issue.id }}</td>
+                    <td class="issue-title">
+                        {{ issue.title }} <br>
+                        <small class="issue-meta" style="font-size: 11px; color: #64748b;">{{ issue.department }}</small>
+                    </td>
+                    <td>{{ issue.department }}</td>
+                    <td>
+                        <span class="badge priority-{{ issue.priority|lower }}">
+                            {{ issue.priority|title }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge status-{{ issue.status|lower }}">
+                            {{ issue.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ issue.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'dashboards:issue_detail' issue.id %}?next={{ request.get_full_path|urlencode }}" class="btn-view">
+                            View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="no-data" style="text-align: center; padding: 20px; color: #64748b;">No issues found matching your filters.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- LOWER SECTION (MAP + WIDGETS) -->
+    <div class="dashboard-lower-grid content-row">
+        <!-- MAP COLUMN -->
+        <div class="dashboard-card issue-map-card" id="dashboardMapContainer">
+            <div class="map-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div><h3 style="margin:0; font-size: 18px; font-weight: 700;">Issue Map</h3><small style="color:#64748b">Live spatial visualization</small></div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="active-count" style="font-size: 12px; font-weight: 700; color: #4f46e5; background: #eef2ff; padding: 4px 12px; border-radius: 20px;">{{ active_issues_count }} Active Issues</span>
+                    <a href="{% url 'dashboards:map_view' %}" class="small fw-bold text-decoration-none">Full Map →</a>
+                </div>
+            </div>
+            <div class="issue-map-wrapper">
+                <div id="dashboardIssueMap"></div>
+            </div>
+        </div>
+
+        <!-- WIDGETS COLUMN -->
+        <div class="actions-container section-container">
+            <div class="dashboard-card quick-actions-card">
+                <h3 style="margin:0; font-weight: 700; font-size: 18px;">Quick Actions</h3>
+                <div class="quick-actions" style="margin-top: 20px;">
+                    <a href="{% url 'dashboards:create_announcement' %}" class="quick-btn primary">
+                        ➕ Announcement
+                    </a>
+                    <a href="{% url 'dashboards:add_comment' %}" class="quick-btn secondary">
+                        💬 Comment
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-card trending-card">
+                <h3 style="margin:0; font-weight: 700; font-size: 16px; margin-bottom: 15px;">🔥 Trending - {{ user.department.name|default:"General" }}</h3>
+                <div class="trending-list">
+                    {% for issue in trending_issues %}
+                    <div class="trend-item" style="cursor: pointer;" onclick="window.location.href='{% url 'dashboards:issue_detail' issue.id %}'">
+                        <div class="trend-content">
+                            <div class="trend-title" style="font-weight: 600; font-size: 13px; color: #1e293b;">{{ issue.title|truncatechars:25 }}</div>
+                            <div class="trend-meta" style="font-size: 11px; color: #64748b; display: flex; gap: 8px;">
+                                <span>📍 {{ issue.location.name|default:issue.location|truncatechars:15 }}</span>
+                                <span>📅 {{ issue.created_at|date:"M d" }}</span>
+                            </div>
+                        </div>
+                        <span class="priority-tag {{ issue.priority|lower }}">{{ issue.priority }}</span>
+                    </div>
+                    {% empty %}
+                    <p style="color:#64748b; text-align:center; padding: 20px 0; font-size: 13px;">No trending issues</p>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'dashboards:assigned_issues' %}" class="view-all">View All Assignments</a>
+            </div>
+
+            <div class="dashboard-card activity-card">
+                <h3 style="margin:0; font-weight: 700; font-size: 16px; margin-bottom: 20px;">Recent Activity</h3>
+                <div class="activity-list">
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: {{ activity.bg }}; color: {{ activity.color }}; display: flex; align-items: center; justify-content: center; font-size: 14px;">{{ activity.icon }}</div>
+                        <div class="activity-content">
+                            <p style="margin:0; font-weight:600; font-size:13px; color: #1e293b;">{{ activity.message|truncatechars:40 }}</p>
+                            <small style="color:#64748b; font-size: 11px;">{{ activity.timestamp|timesince }} ago</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color:#64748b; text-align:center; padding: 20px 0; font-size: 13px;">No recent activity</p>
+                    {% endfor %}
+                    <a href="{% url 'dashboards:officer_activity' %}" class="view-all">View All Activity</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ issues|json_script:"issues-data" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapElement = document.getElementById('dashboardIssueMap');
+            const wrapper = document.querySelector('.issue-map-wrapper');
+            if (!mapElement || !wrapper) return;
+
+            // Cleanup
+            if (window.dashboardMap) {
+                window.dashboardMap.remove();
+            }
+            
+            // INITIALIZE
+            window.dashboardMap = L.map('dashboardIssueMap', {
+                zoomControl: true,
+                dragging: true,
+                scrollWheelZoom: false,
+                fadeAnimation: true,
+                zoomAnimation: true,
+                markerZoomAnimation: true,
+                trackResize: true
+            }).setView([18.84477, 74.467149], 10);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap',
+                updateWhenIdle: true
+            }).addTo(window.dashboardMap);
+
+            const redPinIcon = L.icon({
+                iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30],
+                shadowSize: [41, 41]
+            });
+
+            const issues = JSON.parse(document.getElementById("issues-data").textContent);
+            const markers = [];
+            
+            issues.forEach(issue => {
+                if (issue.latitude !== null && issue.longitude !== null) {
+                    const detailUrl = "{% url 'dashboards:issue_detail' 0 %}".replace('0', issue.id);
+                    const marker = L.marker([parseFloat(issue.latitude), parseFloat(issue.longitude)], {
+                        icon: redPinIcon
+                    }).addTo(window.dashboardMap);
+                    
+                    marker.bindPopup(`
+                        <div style="min-width: 140px;">
+                            <h6 style="margin-bottom: 4px; font-weight: bold;">${issue.title}</h6>
+                            <p style="font-size: 11px; margin-bottom: 6px;">Status: ${issue.status}</p>
+                            <a href="${detailUrl}" class="btn btn-primary btn-sm w-100 text-white" style="font-size: 10px;">View Details</a>
+                        </div>
+                    `);
+                    markers.push([parseFloat(issue.latitude), parseFloat(issue.longitude)]);
+                }
+            });
+
+            const syncSize = () => {
+                if (window.dashboardMap) {
+                    window.dashboardMap.invalidateSize();
+                    if (markers.length > 0) {
+                        window.dashboardMap.fitBounds(markers, { padding: [30, 30] });
+                    }
+                }
+            };
+
+            // Observer for dynamic layout shifts
+            const ro = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+                        requestAnimationFrame(syncSize);
+                    }
+                }
+            });
+            ro.observe(wrapper);
+
+            // Immediate validation after slight delay for CSS load
+            setTimeout(syncSize, 500);
+            
+            // Final safety sync
+            window.addEventListener('load', syncSize);
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends officer_mode|yesno:"base_officer.html,dashboards/base.html" %}
+
+{% block title %}Assigned Issues | CivicPulse{% endblock %}
+
+{% block extra_css %}
+.table-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.custom-table thead {
+    background: #f4f6fb;
+}
+
+.custom-table th {
+    text-align: left;
+    padding: 14px;
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+.custom-table td {
+    padding: 16px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.custom-table tr:hover {
+    background: #f9fafc;
+}
+
+/* ISSUE TITLE */
+.issue-title {
+    font-weight: 600;
+    color: #111827;
+}
+
+.sub-text {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* ISSUE ID */
+.issue-id {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+/* OFFICER */
+.officer-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.avatar {
+    width: 28px;
+    height: 28px;
+    background: #6366f1;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* BADGES */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* STATUS */
+.status-assigned { background: #e0f2fe; color: #0369a1; }
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-resolved { background: #dcfce7; color: #166534; }
+
+/* PRIORITY */
+.priority-high { color: #dc2626; font-weight: 600; }
+.priority-medium { color: #d97706; }
+.priority-low { color: #16a34a; }
+
+/* BUTTON */
+.btn-view {
+    padding: 6px 14px;
+    background: #4f46e5;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.btn-view:hover {
+    background: #4338ca;
+    color: #fff;
+}
+
+/* FILTER ALIGNMENT */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 250px;
+}
+
+.filters {
+    display: flex;
+    gap: 8px;
+}
+{% endblock %}
+
+{% block page_title %}{% if officer_mode %}My Assigned Issues{% else %}Assigned Issues Audit{% endif %}{% endblock %}
+{% block page_subtitle %}Tracking officer workload and issue resolution{% endblock %}
+
+{% block content %}
+<div class="table-container">
+    <form method="GET" class="table-header">
+        <input type="text" name="search" placeholder="Search..." class="search-input" value="{{ request.GET.search|default:'' }}">
+        <div class="filters">
+            <select name="status" class="form-select w-auto" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <option value="">All Status</option>
+                <option value="assigned" {% if request.GET.status == "assigned" %}selected{% endif %}>Assigned</option>
+                <option value="resolved" {% if request.GET.status == "resolved" %}selected{% endif %}>Resolved</option>
+                <option value="pending" {% if request.GET.status == "pending" %}selected{% endif %}>Pending</option>
+            </select>
+
+            <select name="priority" class="form-select w-auto" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #ddd;">
+                <option value="">All Priority</option>
+                <option value="high" {% if request.GET.priority == "high" %}selected{% endif %}>High</option>
+                <option value="medium" {% if request.GET.priority == "medium" %}selected{% endif %}>Medium</option>
+                <option value="low" {% if request.GET.priority == "low" %}selected{% endif %}>Low</option>
+            </select>
+
+            <button type="submit" class="btn-view" style="border: none; cursor: pointer;">
+                Filter
+            </button>
+            
+            {% if request.GET.search or request.GET.status or request.GET.priority %}
+                <a href="." class="btn-view" style="background: #6b7280;">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Issue</th>
+                <th>Scope</th>
+                <th>Officer</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues %}
+            <tr>
+                <td class="issue-id">#CN-{{ issue.id }}</td>
+                <td class="issue-title">
+                    {{ issue.title }}
+                    <div class="sub-text">{{ issue.department }}</div>
+                </td>
+                <td>
+                    <span class="badge" style="background: #f3f4f6; color: #374151;">
+                        {{ issue.get_governance_scope_display }}
+                    </span>
+                </td>
+                <td class="officer-cell">
+                    <div class="avatar">
+                        {% if issue.assigned_to and issue.assigned_to.user %}
+                            {{ issue.assigned_to.user.username|slice:":1"|upper }}
+                        {% else %}
+                            ?
+                        {% endif %}
+                    </div>
+                    <span>
+                        {% if issue.assigned_to and issue.assigned_to.user %}
+                            {{ issue.assigned_to.user.full_name|default:issue.assigned_to.user.username }}
+                        {% else %}
+                            <span style="color: red;">Unassigned</span>
+                        {% endif %}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge priority-{{ issue.priority|lower }}">
+                        {{ issue.priority|title }}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge status-{{ issue.status|lower }}">
+                        {{ issue.status|title }}
+                    </span>
+                </td>
+                <td>{{ issue.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <a href="{% if officer_mode %}{% url 'dashboards:issue_detail' issue.id %}{% else %}{% url 'dashboards:admin_issue_detail' issue.id %}{% endif %}?next={{ request.get_full_path|urlencode }}" class="btn-view">
+                            View
+                        </a>
+                        {% if not issue.assigned_to and not officer_mode %}
+                        <a href="{% url 'dashboards:admin_issue_detail' issue.id %}" class="btn-view" style="background: #dc2626;">
+                            Assign
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center py-5">
+                    <div class="d-flex flex-column align-items-center opacity-50">
+                        <i class="bi bi-clipboard-x fs-1 mb-2"></i>
+                        <p class="mb-0 fw-medium">No assigned issues found matching your criteria.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}" class="btn-view">Previous</a>
+    {% endif %}
+    
+    <span class="current-page" style="padding: 8px 16px; background: #eef2ff; border-radius: 8px; font-weight: 700; font-size: 14px;">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}" class="btn-view">Next</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

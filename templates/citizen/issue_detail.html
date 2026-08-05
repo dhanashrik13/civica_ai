@@ -1,0 +1,275 @@
+{% extends "citizen/base.html" %}
+{% block title %}Issue Detail | Civic Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .timeline { position: relative; padding-left: 30px; margin-top: 20px; }
+    .timeline::before { content: ""; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; }
+    .timeline-item { position: relative; margin-bottom: 25px; }
+    .timeline-marker { position: absolute; left: -30px; top: 5px; width: 16px; height: 16px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #e5e7eb; background: #94a3b8; }
+    .timeline-item.active .timeline-marker { background: #3b82f6; box-shadow: 0 0 0 2px #bfdbfe; }
+    .timeline-item.success .timeline-marker { background: #10b981; box-shadow: 0 0 0 2px #d1fae5; }
+    
+    .risk-meter { height: 8px; border-radius: 4px; background: #f1f5f9; overflow: hidden; margin: 10px 0; }
+    .risk-bar { height: 100%; transition: width 0.3s; }
+    
+    #issueMap { height: 250px; border-radius: 16px; margin-top: 15px; border: 1px solid #e5e7eb; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="table-card p-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge {% if issue.status == 'pending' %}bg-warning text-dark{% elif issue.status == 'assigned' %}bg-primary{% elif issue.status == 'resolved' %}bg-success{% endif %} text-uppercase px-3 py-2 rounded-pill shadow-sm" style="font-size: 11px; letter-spacing: 0.5px;">
+                    {{ issue.get_status_display }}
+                </span>
+                <span class="text-muted small">#CN-{{ issue.id }}</span>
+            </div>
+            <h1 class="h3 mb-1 fw-bold">{{ issue.title }}</h1>
+            <p class="text-muted mb-0"><i class="bi bi-geo-alt"></i> {{ issue.location }}</p>
+        </div>
+        <div class="text-end">
+            {% if issue.is_overdue %}
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-3 mb-2">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i> OVERDUE
+                </span>
+            {% elif issue.is_high_risk %}
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-3 py-2 rounded-3 mb-2">
+                    <i class="bi bi-graph-up-arrow me-1"></i> DELAY RISK
+                </span>
+            {% endif %}
+            <div class="text-muted small">Expected Resolution: <strong>{{ issue.created_at|date:"M d" }} + {{ issue.sla_days }} days</strong></div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <!-- Details & Photos -->
+            <div class="card border-0 bg-light rounded-4 p-4 mb-4">
+                <h5 class="fw-bold mb-3">Description</h5>
+                <p class="text-secondary" style="line-height: 1.6; font-size: 15px;">{{ issue.description }}</p>
+                
+                {% if issue.photo1 %}
+                <div class="mt-4">
+                    <h6 class="fw-bold mb-3 small text-uppercase text-muted">Attached Photos</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ issue.photo1.url }}" target="_blank">
+                                <img src="{{ issue.photo1.url }}" class="img-fluid rounded-3 shadow-sm border" alt="Photo 1">
+                            </a>
+                        </div>
+                        {% if issue.photo2 %}
+                        <div class="col-md-4">
+                            <a href="{{ issue.photo2.url }}" target="_blank">
+                                <img src="{{ issue.photo2.url }}" class="img-fluid rounded-3 shadow-sm border" alt="Photo 2">
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% if issue.photo3 %}
+                        <div class="col-md-4">
+                            <a href="{{ issue.photo3.url }}" target="_blank">
+                                <img src="{{ issue.photo3.url }}" class="img-fluid rounded-3 shadow-sm border" alt="Photo 3">
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Issue Timeline -->
+            <div class="card border-0 rounded-4 p-4 mb-4 shadow-sm border-top border-4 border-primary">
+                <h5 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i> Tracking Timeline</h5>
+                <div class="timeline">
+                    {% for event in issue.timeline_events %}
+                    <div class="timeline-item {% if event.type == 'resolved' %}success{% elif event.type == 'assigned' or event.type == 'reported' %}active{% endif %}">
+                        <div class="timeline-marker"></div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1 fw-bold" style="font-size: 14px; text-transform: capitalize;">{{ event.type }}</h6>
+                                <p class="mb-0 small text-secondary">{{ event.text }}</p>
+                            </div>
+                            <span class="text-muted" style="font-size: 11px;">{{ event.time|date:"M d, H:i" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card border-0 rounded-4 p-4 shadow-sm">
+                <h5 class="fw-bold mb-4"><i class="bi bi-chat-left-text me-2"></i> Discussion & Updates</h5>
+                
+                <div class="comment-list mb-4">
+                    {% for comment in issue.comments.all %}
+                    <div class="p-3 bg-light rounded-3 mb-3 {% if comment.user and comment.user.is_officer %}border-start border-primary border-4{% endif %}">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                {% if comment.user %}
+                                    <strong class="small {% if comment.user.is_officer %}text-primary{% else %}text-dark{% endif %}">
+                                        {{ comment.user.full_name|default:comment.user.username }}
+                                    </strong>
+                                    {% if comment.user.is_officer %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill" style="font-size: 9px;">OFFICIAL</span>
+                                    {% endif %}
+                                {% else %}
+                                    <strong class="small text-muted">System User</strong>
+                                {% endif %}
+                            </div>
+                            <span class="text-muted" style="font-size: 11px;">{{ comment.created_at|timesince }} ago</span>
+                        </div>
+                        <p class="mb-0 small text-secondary">{{ comment.text }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 bg-light rounded-4 border border-dashed">
+                        <p class="text-muted small mb-0">No updates or comments yet.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Comment Form -->
+                <form action="{% url 'dashboards:add_comment' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="issue_id" value="{{ issue.id }}">
+                    <div class="input-group">
+                        <textarea name="comment" class="form-control rounded-start-4" rows="1" placeholder="Add a comment or inquiry..." required></textarea>
+                        <button class="btn btn-primary px-4 rounded-end-4" type="submit">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted mt-2 d-block">Your comment will be visible to assigned officers and administrators.</small>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Quick Info -->
+            <div class="card border-0 rounded-4 p-4 mb-4 shadow-sm">
+                <h5 class="fw-bold mb-3 small text-uppercase text-muted border-bottom pb-2">Issue Information</h5>
+                <dl class="row mb-0 small g-3">
+                    <dt class="col-5 text-muted">Category</dt>
+                    <dd class="col-7 fw-bold">{{ issue.get_category_display }}</dd>
+                    
+                    <dt class="col-5 text-muted">Priority</dt>
+                    <dd class="col-7 fw-bold">
+                        <span class="{% if issue.priority == 'high' %}text-danger{% elif issue.priority == 'medium' %}text-warning{% else %}text-success{% endif %}">
+                            <i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> {{ issue.get_priority_display }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-5 text-muted">Department</dt>
+                    <dd class="col-7 fw-bold">{{ issue.department.name|default:"General" }}</dd>
+
+                    <dt class="col-5 text-muted">Assigned To</dt>
+                    <dd class="col-7">
+                        {% if issue.assigned_to %}
+                            <div class="fw-bold">{{ issue.assigned_to.user.username }}</div>
+                        {% else %}
+                            <span style="color: red;">Not Assigned</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+
+            <!-- Intelligence Panel -->
+            <div class="card border-0 rounded-4 p-4 mb-4 shadow-sm" style="background: linear-gradient(135deg, #ffffff, #f8faff); border-left: 5px solid #6366f1 !important;">
+                <h5 class="fw-bold mb-2 small text-indigo-600 text-uppercase"><i class="bi bi-cpu me-1"></i> AI Risk Assessment</h5>
+                <div class="risk-meter">
+                    <div class="risk-bar {% if issue.risk_score > 70 %}bg-danger{% elif issue.risk_score > 40 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ issue.risk_score }}%;"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small text-muted">System Risk Score</span>
+                    <span class="fw-bold {% if issue.risk_score > 70 %}text-danger{% elif issue.risk_score > 40 %}text-warning{% else %}text-success{% endif %}">{{ issue.risk_score }}%</span>
+                </div>
+                <p class="small text-secondary mb-0">
+                    {% if issue.risk_score > 70 %}
+                        High risk of delay detected. System has alerted management.
+                    {% elif issue.risk_score > 40 %}
+                        Moderate risk. Progress is being monitored.
+                    {% else %}
+                        Issue is tracking well within expected timeframes.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Location Map -->
+            <div class="card border-0 rounded-4 p-4 mb-4 shadow-sm">
+                <h5 class="fw-bold mb-2 small text-uppercase text-muted"><i class="bi bi-geo-alt me-1"></i> Incident Location</h5>
+                {% if issue.latitude and issue.longitude %}
+                    <div id="issueMap"></div>
+                    <div class="mt-2 text-center">
+                        <a href="https://www.google.com/maps?q={{ issue.latitude }},{{ issue.longitude }}" target="_blank" class="small text-decoration-none">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Open in Google Maps
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="bg-light rounded-3 p-4 text-center mt-2 border border-dashed">
+                        <i class="bi bi-map text-muted fs-4"></i>
+                        <p class="small text-muted mb-0 mt-2">Precise coordinates not available for this report.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            {% if issue.status == 'resolved' and issue.proof_image %}
+            <div class="card border-0 rounded-4 p-4 mb-4 shadow-sm border-top border-4 border-success">
+                <h5 class="fw-bold mb-3 small text-success text-uppercase">Resolution Proof</h5>
+                <a href="{{ issue.proof_image.url }}" target="_blank">
+                    <img src="{{ issue.proof_image.url }}" class="img-fluid rounded-3 border" alt="Resolution Proof">
+                </a>
+                <div class="mt-3 p-2 bg-success-subtle rounded text-center">
+                    <small class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i> VERIFIED RESOLUTION</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="mt-5 border-top pt-4 d-flex justify-content-between align-items-center">
+        <a href="{% url 'citizen:citizen_reports' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left"></i> Back to My Reports
+        </a>
+        <div class="text-muted small">
+            ID: {{ issue.id }} | Last updated {{ issue.updated_at|date:"M d, Y H:i" }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if issue.latitude and issue.longitude %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const map = L.map('issueMap', {
+            zoomControl: true,
+            dragging: true,
+            touchZoom: true,
+            scrollWheelZoom: false
+        }).setView([{{ issue.latitude }}, {{ issue.longitude }}], 15);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        const redPinIcon = L.icon({
+            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+            iconSize: [35, 35],
+            iconAnchor: [17, 35],
+            popupAnchor: [0, -35],
+            shadowSize: [41, 41]
+        });
+
+        L.marker([{{ issue.latitude }}, {{ issue.longitude }}], {
+            icon: redPinIcon
+        }).addTo(map)
+            .bindPopup("<b>Incident Location</b>")
+            .openPopup();
+            
+        setTimeout(() => map.invalidateSize(), 500);
+    });
+</script>
+{% endif %}
+{% endblock %}

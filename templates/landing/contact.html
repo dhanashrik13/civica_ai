@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "CivicPulse – Contact" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= HERO ================= */
+.contact-hero{
+  text-align:center;
+  padding:100px 20px 60px;
+}
+.badge{
+  display:inline-block;
+  padding:6px 16px;
+  border-radius:999px;
+  background:#dbeafe;
+  color:#2563eb;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:20px;
+}
+.contact-hero h1{
+  font-size:28px;
+  margin-bottom:15px;
+}
+.contact-hero p{
+  max-width:750px;
+  margin:auto;
+  color:#64748b;
+  line-height:1.7;
+}
+
+/* ================= CONTACT CARDS ================= */
+.contact-cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:40px;
+  padding:60px 80px;
+}
+.card{
+  background:white;
+  padding:45px;
+  border-radius:22px;
+  text-align:center;
+  border:2px solid #e2e8f0;
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 15px 35px rgba(0,0,0,0.05);
+}
+.icon-box{
+  width:65px;
+  height:65px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  margin:auto auto 20px;
+}
+.blue{background:#e0e7ff;color:#2563eb;}
+.purple{background:#f3e8ff;color:#7c3aed;}
+.green{background:#dcfce7;color:#16a34a;}
+.card h3{margin-bottom:10px;}
+.card p{color:#64748b;margin-bottom:8px;}
+
+/* ================= FORM SECTION ================= */
+.contact-section{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:40px;
+  padding:60px 80px;
+}
+.form-box{
+  background:white;
+  padding:40px;
+  border-radius:22px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.05);
+}
+.form-box h2{margin-bottom:10px;}
+.form-box p{color:#64748b;margin-bottom:30px;}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+input,select,textarea{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #e2e8f0;
+  background:#f1f5f9;
+}
+textarea{height:140px;resize:none;}
+.full{grid-column:1/-1;}
+.submit-btn{
+  margin-top:25px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* Sidebar */
+.sidebar-card{
+  background:white;
+  padding:30px;
+  border-radius:22px;
+  margin-bottom:25px;
+  border:1px solid #e2e8f0;
+}
+.sidebar-card h4{margin-bottom:10px;}
+.sidebar-card p{color:#64748b;margin-bottom:8px;}
+.outline-btn{
+  display:block;
+  margin-top:15px;
+  padding:12px;
+  text-align:center;
+  border-radius:12px;
+  border:2px solid #2563eb;
+  color:#2563eb;
+  font-weight:600;
+  text-decoration:none;
+}
+
+/* ================= FAQ ================= */
+.faq{
+  padding:80px;
+}
+.faq h2{
+  text-align:center;
+  margin-bottom:40px;
+}
+.faq-item{
+  background:white;
+  padding:25px;
+  border-radius:18px;
+  margin-bottom:20px;
+  border:1px solid #e2e8f0;
+}
+.faq-item h4{margin-bottom:8px;}
+.faq-item p{color:#64748b;}
+
+/* ================= CTA ================= */
+.cta{
+  margin-top:80px;
+  padding:100px 20px;
+  text-align:center;
+  background:linear-gradient(135deg,#2563eb,#9333ea);
+  color:white;
+}
+.cta h2{margin-bottom:15px;}
+.cta p{max-width:650px;margin:auto;margin-bottom:30px;}
+.cta button{
+  padding:14px 28px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  background:white;
+  color:#2563eb;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO -->
+<section class="contact-hero">
+    <div class="badge">{% trans "Contact Us" %}</div>
+    <h1>{% trans "How can we help you today?" %}</h1>
+    <p>{% trans "Whether you're a citizen reporting an issue or a government official looking to partner, we're here to help you build a better community." %}</p>
+</section>
+
+<!-- CONTACT CARDS -->
+<section class="contact-cards">
+    <div class="card">
+        <div class="icon-box blue"><i class="bi bi-chat-left-text"></i></div>
+        <h3>{% trans "General Inquiry" %}</h3>
+        <p>{% trans "Questions about how CivicPulse works or how to get started?" %}</p>
+        <p><strong>support@civicpulse.ai</strong></p>
+    </div>
+    <div class="card">
+        <div class="icon-box purple"><i class="bi bi-building"></i></div>
+        <h3>{% trans "Government Partners" %}</h3>
+        <p>{% trans "Interested in implementing CivicPulse in your city or department?" %}</p>
+        <p><strong>partners@civicpulse.ai</strong></p>
+    </div>
+    <div class="card">
+        <div class="icon-box green"><i class="bi bi-shield-check"></i></div>
+        <h3>{% trans "Support Center" %}</h3>
+        <p>{% trans "Need technical assistance or having trouble with your account?" %}</p>
+        <p><strong>+1 (800) CIVIC-AI</strong></p>
+    </div>
+</section>
+
+<!-- FORM SECTION -->
+<section class="contact-section">
+    <div class="form-box">
+        <h2>{% trans "Send us a message" %}</h2>
+        <p>{% trans "Fill out the form below and our team will get back to you within 24 hours." %}</p>
+        <form method="POST" class="form-grid">
+            {% csrf_token %}
+            <div>
+                <label class="fw-semibold mb-2">{% trans "Full Name" %}</label>
+                <input type="text" name="full_name" placeholder="{% trans 'Enter your name' %}" required>
+            </div>
+            <div>
+                <label class="fw-semibold mb-2">{% trans "Email Address" %}</label>
+                <input type="email" name="email" placeholder="{% trans 'Enter your email' %}" required>
+            </div>
+            <div class="full">
+                <label class="fw-semibold mb-2">{% trans "Subject" %}</label>
+                <input type="text" name="subject" placeholder="{% trans 'What is this about?' %}" required>
+            </div>
+            <div class="full">
+                <label class="fw-semibold mb-2">{% trans "Message" %}</label>
+                <textarea name="message" placeholder="{% trans 'How can we help?' %}" required></textarea>
+            </div>
+            <div class="full">
+                <button type="submit" class="submit-btn">{% trans "Submit Message" %}</button>
+            </div>
+        </form>
+    </div>
+
+    <div>
+        <div class="sidebar-card">
+            <h4>{% trans "Live Chat" %}</h4>
+            <p>{% trans "Average response time: 5 mins" %}</p>
+            <span class="text-muted small">{% trans "Chat support is currently offline. Please use the form." %}</span>
+        </div>
+        <div class="sidebar-card">
+            <h4>{% trans "Help Documentation" %}</h4>
+            <p>{% trans "Browse our detailed guides and tutorials." %}</p>
+            <a href="{% url 'landing:documentation' %}" class="outline-btn">{% trans "View Docs" %}</a>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+    <h2>{% trans "Quick Answers" %}</h2>
+    <div class="faq-item">
+        <h4>{% trans "Is my reporting anonymous?" %}</h4>
+        <p>{% trans "Yes, you can choose to remain anonymous when submitting certain types of reports." %}</p>
+    </div>
+    <div class="faq-item">
+        <h4>{% trans "How long until I see results?" %}</h4>
+        <p>{% trans "Most minor issues are addressed within 48–72 hours of being assigned to a department." %}</p>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>{% trans "Ready to make a difference?" %}</h2>
+    <p>{% trans "Join thousands of citizens already working with their local governments to improve their communities." %}</p>
+    <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg fw-bold px-4" style="text-decoration: none;">{% trans "Get Started Now" %}</a>
+</section>
+{% endblock %}

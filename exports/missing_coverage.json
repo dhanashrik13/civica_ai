@@ -1,0 +1,372 @@
+[
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Disaster Management Department",
+    "dept_id": 28
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Electricity Department",
+    "dept_id": 22
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Environment Department",
+    "dept_id": 26
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "General Administration",
+    "dept_id": 31
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Health Department",
+    "dept_id": 25
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Municipal Engineering Department",
+    "dept_id": 30
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Public Works Department (PWD)",
+    "dept_id": 18
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Road & Transport Department",
+    "dept_id": 23
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Rural Development",
+    "dept_id": 16
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Traffic Police Department",
+    "dept_id": 29
+  },
+  {
+    "type": "district",
+    "name": "Pune",
+    "dept": "Urban Planning Department",
+    "dept_id": 27
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Disaster Management Department",
+    "dept_id": 28
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Drainage & Sewerage Department",
+    "dept_id": 24
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Electrical",
+    "dept_id": 14
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Electricity Department",
+    "dept_id": 22
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Environment Department",
+    "dept_id": 26
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "General",
+    "dept_id": 6
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "General Administration",
+    "dept_id": 31
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Health & Sanitation",
+    "dept_id": 15
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Health Department",
+    "dept_id": 25
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Municipal Engineering Department",
+    "dept_id": 30
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Public Works Department (PWD)",
+    "dept_id": 11
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Public Works Department (PWD)",
+    "dept_id": 18
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Road & Transport Department",
+    "dept_id": 23
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Rural Development",
+    "dept_id": 16
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Sanitation Department",
+    "dept_id": 21
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Traffic Police Department",
+    "dept_id": 29
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Urban Planning Department",
+    "dept_id": 27
+  },
+  {
+    "type": "district",
+    "name": "Ahmednagar",
+    "dept": "Water Supply Department",
+    "dept_id": 20
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Disaster Management Department",
+    "dept_id": 28,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Drainage & Sewerage Department",
+    "dept_id": 24,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Electrical",
+    "dept_id": 14,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Electricity Department",
+    "dept_id": 22,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Environment Department",
+    "dept_id": 26,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "General",
+    "dept_id": 6,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "General Administration",
+    "dept_id": 31,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Health & Sanitation",
+    "dept_id": 15,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Health Department",
+    "dept_id": 25,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Municipal Engineering Department",
+    "dept_id": 30,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Public Works Department (PWD)",
+    "dept_id": 18,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Road & Transport Department",
+    "dept_id": 23,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Traffic Police Department",
+    "dept_id": 29,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Parner",
+    "dept": "Urban Planning Department",
+    "dept_id": 27,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Disaster Management Department",
+    "dept_id": 28,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Drainage & Sewerage Department",
+    "dept_id": 24,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Electrical",
+    "dept_id": 14,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Electricity Department",
+    "dept_id": 22,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Environment Department",
+    "dept_id": 26,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "General",
+    "dept_id": 6,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "General Administration",
+    "dept_id": 31,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Health & Sanitation",
+    "dept_id": 15,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Health Department",
+    "dept_id": 25,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Municipal Engineering Department",
+    "dept_id": 30,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Public Works Department (PWD)",
+    "dept_id": 18,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Road & Transport Department",
+    "dept_id": 23,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Traffic Police Department",
+    "dept_id": 29,
+    "district": "Ahmednagar"
+  },
+  {
+    "type": "taluka",
+    "name": "Shrigonda",
+    "dept": "Urban Planning Department",
+    "dept_id": 27,
+    "district": "Ahmednagar"
+  }
+]

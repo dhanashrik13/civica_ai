@@ -1,0 +1,318 @@
+<!-- DEPRECATED: Do not use. Use templates/assistant/assistant_refactored.html instead. -->
+{% extends "citizen/base.html" %}
+{% load static %}
+{% block title %}AI Assistant | Civic Pulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Chat Container Styles */
+    .chat-container {
+        background: #ffffff;
+        border-radius: 20px;
+        height: 75vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    /* Message List Area */
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 25px;
+        scroll-behavior: smooth;
+        background-color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Common Message Bubble */
+    .message {
+        padding: 14px 20px;
+        border-radius: 18px;
+        max-width: 75%;
+        font-size: 15px;
+        line-height: 1.6;
+        position: relative;
+        word-wrap: break-word;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* User Message (Right) */
+    .user-msg {
+        background: #4f46e5;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        margin-left: 20%;
+    }
+
+    /* AI Message (Left) */
+    .ai-msg {
+        background: #ffffff;
+        color: #000000 !important;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        border: 1px solid #e2e8f0;
+        margin-right: 20%;
+        opacity: 1 !important;
+        font-weight: 450;
+    }
+
+    .ai-msg div, .ai-msg span, .ai-msg p {
+        color: #000000 !important;
+        opacity: 1 !important;
+    }
+
+    /* Typing/Loading Indicator */
+    .typing-indicator {
+        font-style: italic;
+        font-size: 13px;
+        color: #64748b;
+        margin-top: -8px;
+        display: none;
+    }
+
+    /* Input Footer Area */
+    .chat-footer {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .chat-input-wrapper {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    #messageInput {
+        border-radius: 12px;
+        padding: 12px 18px;
+        border: 2px solid #f1f5f9;
+        transition: border-color 0.2s;
+    }
+
+    #messageInput:focus {
+        border-color: #4f46e5;
+        box-shadow: none;
+    }
+
+    .btn-send {
+        background: #4f46e5;
+        color: white;
+        border-radius: 12px;
+        padding: 10px 20px;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-send:hover {
+        background: #4338ca;
+        transform: scale(1.02);
+    }
+
+    .btn-send:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    /* Error Message Style */
+    .error-msg {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fee2e2;
+        align-self: center;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    /* Custom Scrollbar */
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-9 col-lg-10">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="fw-bold mb-0 text-dark"><i class="bi bi-robot text-primary me-2"></i> Civic Assistant</h4>
+            <span class="badge bg-success-soft text-success px-3 py-2 rounded-pill"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> System Online</span>
+        </div>
+        
+        <div class="chat-container">
+            <!-- Messages Display Area -->
+            <div class="chat-messages" id="chatBox">
+                <!-- Welcome Message -->
+                <div class="message ai-msg">
+                    Hello! I'm your AI Civic Assistant. I can help you understand municipal procedures, classify issues, or analyze documents. How can I assist you today?
+                </div>
+
+                <!-- Server-side History (if any) -->
+                {% for chat in chats %}
+                    <div class="message {% if chat.role == 'user' %}user-msg{% else %}ai-msg{% endif %}">
+                        {{ chat.message }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="px-4 pb-2 typing-indicator">
+                AI is thinking...
+            </div>
+
+            <!-- Input Form -->
+            <div class="chat-footer">
+                <form id="chatForm" class="chat-input-wrapper">
+                    {% csrf_token %}
+                    <input type="text" name="message" id="messageInput" class="form-control" 
+                        placeholder="Type your message here..." autocomplete="off">
+                    
+                    <div class="input-group" style="max-width: 200px;">
+                        <input type="file" name="document" id="documentInput" class="form-control" style="font-size: 11px;">
+                    </div>
+                    
+                    <button type="submit" id="sendBtn" class="btn-send">
+                        <span>Send</span>
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const chatForm = document.getElementById("chatForm");
+    const chatBox = document.getElementById("chatBox");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const typingIndicator = document.getElementById("typingIndicator");
+
+    /**
+     * Helper to append messages safely to the UI
+     */
+    function appendMessage(text, role) {
+        if (!text) return;
+        
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `message ${role === 'user' ? 'user-msg' : role === 'error' ? 'error-msg' : 'ai-msg'}`;
+        
+        // Use textContent for security, or innerHTML if you trust the source/formatting
+        msgDiv.textContent = text;
+        
+        chatBox.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    /**
+     * Auto-scroll to the latest message
+     */
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Initial scroll for history
+    scrollToBottom();
+
+    chatForm.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const message = messageInput.value.trim();
+        const documentFile = document.getElementById("documentInput").files[0];
+
+        // 1. Prevent empty submission
+        if (!message && !documentFile) return;
+
+        // 2. Immediate Rendering (User Message)
+        if (message) {
+            appendMessage(message, 'user');
+        } else if (documentFile) {
+            appendMessage(`[Uploaded File: ${documentFile.name}]`, 'user');
+        }
+
+        // 3. UI State: Clear input and disable
+        const formData = new FormData(chatForm);
+        messageInput.value = "";
+        messageInput.focus();
+        sendBtn.disabled = true;
+        typingIndicator.style.display = "block";
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        try {
+            // 4. Send to Backend
+            const response = await fetch(window.location.href, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest', // Inform Django it's an AJAX call
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+
+            if (!response.ok) throw new Error("Server communication failed.");
+
+            const data = await response.json();
+
+            // 5. Render AI Response
+            if (data.reply) {
+                appendMessage(data.reply, 'ai');
+            } else if (data.error) {
+                appendMessage(data.error, 'error');
+            }
+
+        } catch (error) {
+            console.error("Chat Error:", error);
+            appendMessage("Unable to connect to AI. Please check your connection.", 'error');
+        } finally {
+            // 6. Reset UI State
+            sendBtn.disabled = false;
+            typingIndicator.style.display = "none";
+            scrollToBottom();
+            
+            // Clear file input specifically
+            document.getElementById("documentInput").value = "";
+        }
+    });
+
+    // Enter key support (default for forms, but good to ensure)
+    messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            // form submit is handled automatically
+        }
+    });
+})();
+</script>
+{% endblock %}

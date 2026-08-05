@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<div class="page-card p-4">
+    <h1 class="h3 mb-4">Manage Users</h1>
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <h2 class="h5">Citizens</h2>
+            {% for item in citizens %}
+                <div class="border rounded p-3 mb-2">
+                    <strong>{{ item.full_name|default:item.username }}</strong><br>
+                    <small>{{ item.email }}</small>
+                </div>
+            {% empty %}<p class="text-muted">No citizens found.</p>{% endfor %}
+        </div>
+        <div class="col-lg-4">
+            <h2 class="h5">Officers</h2>
+            {% for item in officers %}
+                <div class="border rounded p-3 mb-2">
+                    <strong>{{ item.full_name|default:item.username }}</strong><br>
+                    <small>{{ item.email }}</small>
+                </div>
+            {% empty %}<p class="text-muted">No officers found.</p>{% endfor %}
+        </div>
+        <div class="col-lg-4">
+            <h2 class="h5">Admins</h2>
+            {% for item in admins %}
+                <div class="border rounded p-3 mb-2">
+                    <strong>{{ item.full_name|default:item.username }}</strong><br>
+                    <small>{{ item.email }}</small>
+                </div>
+            {% empty %}<p class="text-muted">No admins found.</p>{% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

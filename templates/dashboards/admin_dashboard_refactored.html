@@ -1,0 +1,996 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse Dashboard{% endblock %}
+
+{% block page_title %}Good Morning! ☀{% endblock %}
+{% block page_subtitle %}Here's what's happening with your city today{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+.unassigned-row {
+    background-color: #ffe5e5 !important;   /* light red */
+}
+
+.unassigned-row:hover {
+    background-color: #ffcccc !important;
+}
+
+.unassigned-row td {
+    color: #b30000;
+    font-weight: 500;
+}
+
+/* --- GLOBAL ALIGNMENT --- */
+.dashboard-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* --- SECTION SPACING --- */
+.stats,
+.dept-grid,
+.analytics-section,
+.dashboard-bottom,
+.issue-tracking-card,
+.citizen-activity,
+.team-performance {
+    margin-bottom: 30px !important;
+}
+
+/* --- UNIFIED CARD STYLE --- */
+.stat-card, 
+.performance-card, 
+.map-card, 
+.trending-card, 
+.activity-card, 
+.issue-tracking-card,
+.dept-card, 
+.officer-card,
+.citizen-activity, 
+.team-performance {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+/* --- HEADINGS --- */
+h3, h4 {
+    margin-bottom: var(--space-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* --- STATS GRID --- */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-xl);
+}
+
+.governance-card {
+    border-left: 5px solid #10b981;
+}
+.governance-card.Warning { border-left-color: #f59e0b; }
+.governance-card.Critical { border-left-color: #ef4444; }
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #7c3aed;
+    margin-bottom: 4px;
+}
+
+/* --- ANALYTICS GRID --- */
+.analytics-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-xl);
+    align-items: stretch;
+}
+
+.performance-card, .map-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px !important;
+}
+
+.chart-container {
+    height: 300px;
+    width: 100%;
+    position: relative;
+}
+
+/* FIXED: Unified wrapper for map to control height and centering */
+.map-wrapper {
+    height: 250px; /* Adjusted height to fit stats neatly */
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#performanceChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* FIXED: Static map preview - interactions disabled and full container fit */
+#liveMap {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 12px;
+    pointer-events: none;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* --- MAP --- */
+.map-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #f3f4f6; /* FIXED: Added divider for consistency with left card */
+}
+
+/* --- BOTTOM GRID --- */
+.dashboard-bottom {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 24px;
+}
+
+/* --- TRENDING & ACTIVITY IMPROVEMENTS --- */
+.trending-list, .activity-list {
+    max-height: 500px; /* Controlled scrolling for long content */
+    overflow-y: auto;
+    padding-right: 8px; /* Space for scrollbar */
+}
+
+/* Custom Scrollbar for clean look */
+.trending-list::-webkit-scrollbar, .activity-list::-webkit-scrollbar {
+    width: 4px;
+}
+.trending-list::-webkit-scrollbar-thumb, .activity-list::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+/* Trending Items Hierarchy */
+.trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.trend-item:last-child {
+    border-bottom: none;
+}
+
+.trend-item:hover {
+    background: #f9fafb;
+}
+
+.trend-title {
+    font-weight: 600;
+    color: #111827;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.trend-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.trend-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Activity Feed Hierarchy */
+.activity-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 4px;
+    border-radius: 12px;
+    transition: background 0.2s ease;
+}
+
+.activity-item:hover {
+    background: #f9fafb;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: #f3f4f6;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: #111827;
+    margin-bottom: 2px;
+}
+
+.activity-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.activity-time {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- CITIZEN ACTIVITY IMPROVEMENTS --- */
+.citizen-activity .activity-list {
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.citizen-activity .trend-item {
+    border-bottom: 1px solid #f3f4f6 !important;
+    padding: 12px 8px;
+    margin-bottom: 0 !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.citizen-activity .trend-item:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+}
+
+.citizen-activity .trend-item:last-child {
+    border-bottom: none !important;
+}
+
+.citizen-activity .avatar {
+    width: 38px;
+    height: 38px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-size: 12px;
+    border: 1px solid #e0e7ff;
+}
+
+.citizen-activity .text-primary {
+    color: #7c3aed !important;
+    font-size: 16px;
+}
+
+/* --- TABLES --- */
+.issue-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.issue-table th,
+.issue-table td {
+    text-align: left;
+    padding: 12px;
+    vertical-align: middle;
+}
+
+.issue-table th {
+    font-weight: 600;
+}
+
+/* --- DEPARTMENT OVERVIEW FIXES --- */
+.dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+}
+
+.dept-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.dept-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease !important;
+}
+
+.dept-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    border-color: #7c3aed !important;
+}
+
+.dept-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 24px !important;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 12px;
+}
+
+.dept-stats {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.dept-stats h2 {
+    font-size: 42px;
+    font-weight: 800;
+    color: #7c3aed;
+    margin-bottom: 0;
+}
+
+.dept-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.dept-meta span {
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Responsiveness for smaller screens */
+@media (max-width: 768px) {
+    .dept-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* --- TEAM PERFORMANCE --- */
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.officer-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.officer-top {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #7c3aed;
+}
+
+.priority {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.high { background: #fee2e2; color: #dc2626; }
+.medium { background: #fef3c7; color: #d97706; }
+.low { background: #dcfce7; color: #16a34a; }
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-pending { background: #fef3c7; color: #d97706; }
+.status-progress { background: #dbeafe; color: #2563eb; }
+.status-resolved { background: #dcfce7; color: #16a34a; }
+
+.progress-bar {
+    height: 6px;
+    background: #f3f4f6;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #7c3aed;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+    <!-- 1. Stats -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_issues }}</div>
+            <div class="text-muted small fw-bold">ACTIVE WORKLOAD</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_issues }}</div>
+            <div class="text-muted small fw-bold">TOTAL REPORTS</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ resolved_today }}</div>
+            <div class="text-muted small fw-bold">RESOLVED TODAY</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number text-danger">{{ critical_issues }}</div>
+            <div class="text-muted small fw-bold">CRITICAL (ACTIVE)</div>
+        </div>
+        <!-- Human Governance: Health Card -->
+        <div class="stat-card governance-card {{ governance_health }}">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="text-muted small fw-bold">GOVERNANCE HEALTH</span>
+                <span class="badge {% if governance_health == 'Stable' %}bg-success{% elif governance_health == 'Warning' %}bg-warning text-dark{% else %}bg-danger{% endif %}">{{ governance_health }}</span>
+            </div>
+            <div class="stat-number" style="color: {% if governance_health == 'Stable' %}#10b981{% elif governance_health == 'Warning' %}#f59e0b{% else %}#ef4444{% endif %};">{{ avg_district_pressure }}%</div>
+            <div class="text-muted small fw-bold">AVG PRESSURE</div>
+        </div>
+    </div>
+    <!-- 2. Analytics (chart + map) -->
+    <div class="analytics-section">
+        <div class="performance-card">
+            <div class="card-header">
+                <div>
+                    <h3>Performance Overview</h3>
+                    <p class="text-muted small">Issues reported vs resolved over time</p>
+                </div>
+                </div>
+                <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+                </div>
+                <div class="stats-row">                <div>
+                    <p class="text-muted small mb-1">Avg Response Time</p>
+                    <h2 class="fw-bold">{{ avg_response_hours|floatformat:2 }} hrs</h2>
+                </div>
+                <div>
+                    <p class="text-muted small mb-1">Resolution Rate</p>
+                    <h2 class="fw-bold">{{ resolution_rate|floatformat:2 }}%</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-card">
+            <div class="card-header">
+                <h3 class="m-0">✈ Live Map</h3>
+                <a href="{% url 'dashboards:admin_full_map' %}" class="small fw-bold text-decoration-none">Full Map →</a>
+            </div>
+            
+            <div class="map-wrapper">
+                <div id="liveMap"></div>
+            </div>
+            
+            <div class="map-stats">
+                <div class="stat critical">
+                    <h3 class="fw-bold">{{ critical_issues }}</h3>
+                    <p>Critical</p>
+                </div>
+                <div class="stat warning">
+                    <h3 class="fw-bold">{{ warning_issues }}</h3>
+                    <p>Warning</p>
+                </div>
+                <div class="stat resolved">
+                    <h3 class="fw-bold">{{ resolved_issues }}</h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Trending + Activity -->
+    <div class="dashboard-bottom">
+        <div class="trending-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3>🔥 Trending Issues {% if selected_department %}- {{ selected_department.name }}{% endif %}</h3>
+                <div class="d-flex align-items-center gap-2">
+                    {% if user.role != 'dept_admin' %}
+                    <form method="GET" class="d-flex align-items-center gap-2">
+                        <select name="department" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                            <option value="">All Departments</option>
+                            {% for dept in all_departments %}
+                            <option value="{{ dept.id }}" {% if selected_department.id == dept.id %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                    {% endif %}
+                    <a href="{% url 'issues:issue_list' %}{% if selected_department %}?department={{ selected_department.id }}{% endif %}" class="small fw-bold text-decoration-none">View All →</a>
+                </div>
+            </div>
+            <div class="trending-list">
+            {% for issue in trending_issues %}
+            <div class="trend-item" style="cursor: pointer;" onclick="window.location.href='{% url 'issues:issue_list' %}?department={{ issue.department.id }}'">
+                <div class="trend-left">
+                    <div class="trend-title">{{ issue.title }}</div>
+                    <div class="trend-meta">
+                        <span>📍 {{ issue.location }}</span>
+                        <span>📅 {{ issue.created_at|date:"M d, Y" }}</span>
+                        {% if issue.department %}
+                        <span class="ms-2">🏢 {{ issue.department.name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="trend-right text-end">
+                    <span class="priority {% if issue.priority == 'High' %}high{% elif issue.priority == 'Medium' %}medium{% else %}low{% endif %}">
+                        {{ issue.priority|upper }}
+                    </span>
+                    <div class="text-muted small mt-2">+{{ issue.report_count|default:"0" }} reports</div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-info-circle fs-2"></i>
+                <p class="mt-2">No trending issues at this time.</p>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+
+        <div class="activity-card">
+            <h3>Activity Feed</h3>
+            <div class="activity-list">
+                {% for activity in activities %}
+                <div class="activity-item">
+                    <div class="activity-icon bg-light text-primary">
+                        <i class="{{ activity.icon }}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">{{ activity.title }}</div>
+                        <div class="activity-desc">{{ activity.description }}</div>
+                        <div class="activity-time">{{ activity.time|timesince }} ago</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Issue Tracking -->
+    <div class="issue-tracking-card">
+        <div class="card-header d-flex justify-content-between align-items-center mb-4">
+            <h3 class="m-0">Issue Tracking</h3>
+            <a href="{% url 'dashboards:global_search' %}?export=true" class="btn btn-sm btn-outline-dark fw-bold px-3">Export Data</a>
+        </div>
+        <div class="d-flex gap-3 mb-4">
+            <input class="form-control form-control-sm issue-search" style="max-width: 300px;" type="text" placeholder="Search by ID, title, or location...">
+            <select class="form-select form-select-sm status-filter" style="max-width: 150px;">
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Resolved</option>
+            </select>
+        </div>
+        <div class="table-responsive">
+            <table class="issue-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Scope</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Reported By</th>
+                        <th>Assigned Officer</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for issue in page_obj %}
+                    <tr>
+                        <td>#{{ issue.id }}</td>
+
+                        <td>
+                            <strong>{{ issue.title }}</strong>
+                        </td>
+
+                        <td>{{ issue.get_governance_scope_display }}</td>
+
+                        <td>{{ issue.category }}</td>
+
+                        <td>{{ issue.location }}</td>
+
+                        <td>{{ issue.reported_by.full_name|default:issue.reported_by.username }}</td>
+
+                        <td>
+                            {% if issue.assigned_to and issue.assigned_to.user %}
+                                {{ issue.assigned_to.user.username }}
+                            {% else %}
+                                <span style="color: red;">Unassigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class="status-badge {% if issue.status == 'pending' %}status-pending{% elif issue.status == 'assigned' %}status-progress{% elif issue.status == 'resolved' %}status-resolved{% endif %}">
+                                {{ issue.status|title }}
+                            </span>
+                        </td>
+
+                        <td>{{ issue.created_at|date:"Y-m-d" }}</td>
+
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'issues:issue_detail' issue.id %}" class="btn btn-sm btn-light border" title="View">👁</a>
+                                <a href="{% url 'dashboards:edit_issue' issue.id %}" class="btn btn-sm btn-light border" title="Edit">✏</a>
+                                <form action="{% url 'dashboards:delete_issue' issue.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this issue?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-light border text-danger" title="Delete">🗑</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination d-flex justify-content-between align-items-center mt-4">
+            <span class="text-muted small">Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} issues</span>
+            <div class="d-flex gap-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn btn-sm btn-light border px-3">Previous</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="btn btn-sm btn-light border px-3">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Citizen Activity -->
+    <div class="citizen-activity">
+        <div class="card-header d-flex justify-content-between align-items-center mb-4">
+            <h3 class="m-0">👥 Citizen Activity by Department</h3>
+            <a href="{% url 'dashboards:all_citizen_activity' %}" class="small fw-bold text-decoration-none">View All</a>
+        </div>
+        <div class="activity-list" style="max-height: 600px;">
+            {% for group in active_citizens %}
+            <div class="dept-group mb-4">
+                <h5 class="fw-bold small text-muted mb-3 pb-1 border-bottom d-flex justify-content-between">
+                    <span>{{ group.department.name }}</span>
+                    <span class="badge bg-light text-dark border">{{ group.citizens|length }} Active</span>
+                </h5>
+                {% for citizen in group.citizens %}
+                <div class="trend-item border-0 mb-2 p-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar">{{ citizen.reported_by___legacy_full_name|default:citizen.reported_by__username|slice:":2"|upper }}</div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold small">{{ citizen.reported_by___legacy_full_name|default:citizen.reported_by__username }}</div>
+                            <div class="text-muted small">Last: {{ citizen.last_activity|date:"M d" }}</div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-primary">{{ citizen.report_count }}</div>
+                        <div class="text-muted small" style="font-size: 10px;">Reports</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% empty %}
+            <div class="text-center py-5 text-muted">
+                <p class="small">No active citizens to display.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 4. Team Performance -->
+    <div class="team-performance">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>🏆 Top Performers</h3>
+            <a href="{% url 'dashboards:view_all_officers' %}" class="small fw-bold text-decoration-none">View Rankings →</a>
+        </div>
+
+        <div class="team-grid">
+            {% for officer in officers %}
+            <div class="officer-card">
+                <div class="officer-top">
+                    <div class="avatar">{{ officer.name|slice:":2"|upper }}</div>
+                    <div>
+                        <div class="fw-bold small">{{ officer.name }}</div>
+                        <div class="text-muted small">Field Officer</div>
+                    </div>
+                </div>
+                <div class="small mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Assigned</span>
+                        <strong>{{ officer.assigned_count }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Completed</span>
+                        <strong class="text-success">{{ officer.completed_count }}</strong>
+                    </div>
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>Efficiency</span>
+                            <strong>{{ officer.completion_rate }}%</strong>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:{{ officer.completion_rate }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% if officer.id %}
+                    <a href="{% url 'dashboards:view_assigned_tasks_by_officer' officer.id %}" class="small fw-bold text-decoration-none text-end d-block">Tasks →</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 7. Department Overview (last) -->
+    <h4 class="fw-bold mt-5 mb-3">Department Overview</h4>
+    <div class="dept-grid">
+        {% for dept in departments %}
+        <a href="{% url 'dashboards:admin_department_detail' dept.id %}" class="dept-card-link">
+            <div class="dept-card">
+                <h4 class="dept-name">{{ dept.name }}</h4>
+
+                <div class="dept-stats">
+                    <h2>{{ dept.total }}</h2>
+                    <p class="text-muted small fw-bold">TOTAL REPORTS</p>
+                </div>
+
+                <div class="dept-meta">
+                    <span class="text-success"><i class="bi bi-check2-circle"></i> {{ dept.resolved }} Resolved</span>
+                    <span class="text-warning"><i class="bi bi-clock"></i> {{ dept.pending }} Pending</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="card-dashed-custom" style="grid-column: span 3;">
+            <p class="text-secondary-custom mb-0">No department data available yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ issues|json_script:"issues-data" }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Initialize Map
+    const map = L.map('liveMap', {
+        zoomControl: false,
+        attributionControl: false,
+        dragging: true,
+        touchZoom: true,
+        scrollWheelZoom: false,
+        doubleClickZoom: true
+    }).setView([18.5204, 73.8567], 11);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const redPinIcon = L.icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
+        shadowSize: [41, 41]
+    });
+
+    // 2. Initialize Chart
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                { 
+                    label: 'Reported', 
+                    data: [], 
+                    borderColor: '#7c3aed', 
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    fill: true,
+                    tension: 0.3 
+                },
+                { 
+                    label: 'Resolved', 
+                    data: [], 
+                    borderColor: '#10b981', 
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.3 
+                }
+            ]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: 'top' } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Fetch Data Functions
+    function fetchSummary() {
+        fetch('{% url "dashboards:api_dashboard_summary" %}')
+            .then(res => res.json())
+            .then(data => {
+                // Update stats cards if they have IDs or unique classes
+                // For now we rely on initial Django render for these, 
+                // but we can add live update if needed.
+            });
+    }
+
+    function fetchTimeSeries() {
+        fetch('{% url "dashboards:api_dashboard_timeseries" %}?days=7')
+            .then(res => res.json())
+            .then(data => {
+                performanceChart.data.labels = data.labels;
+                performanceChart.data.datasets[0].data = data.reported;
+                performanceChart.data.datasets[1].data = data.resolved;
+                performanceChart.update();
+            });
+    }
+
+    function loadMapData() {
+        // 1. Prepare Data safely using json_script
+        const issues = JSON.parse(document.getElementById("issues-data").textContent);
+        console.log("Issues:", issues);
+
+        if (issues.length > 0) {
+            const markers = [];
+            issues.forEach(issue => {
+                if (issue.latitude !== null && issue.longitude !== null) {
+                    // Generate the detail URL for admin
+                    const detailUrl = "{% url 'dashboards:admin_issue_detail' 0 %}".replace('0', issue.id);
+                    
+                    const marker = L.marker([parseFloat(issue.latitude), parseFloat(issue.longitude)], {
+                        icon: redPinIcon
+                    }).addTo(map)
+                        .bindPopup(`
+                            <div style="min-width: 140px;">
+                                <h6 style="margin-bottom: 4px; font-weight: bold;">${issue.title}</h6>
+                                <p style="font-size: 11px; margin-bottom: 6px;">Status: ${issue.status}</p>
+                                <a href="${detailUrl}" class="btn btn-primary btn-sm w-100 text-white" style="font-size: 10px;">View Details</a>
+                            </div>
+                        `);
+                    markers.push([parseFloat(issue.latitude), parseFloat(issue.longitude)]);
+                }
+            });
+            if (markers.length > 0) {
+                map.fitBounds(markers);
+            }
+        }
+    }
+
+    // Initial Load
+    fetchTimeSeries();
+    loadMapData();
+    
+    // Ensure map initializes properly with REQUIRED timeout
+    setTimeout(() => { 
+        map.invalidateSize(); 
+    }, 200);
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function assignOfficerAjax(selectElement, issueId) {
+    const officerId = selectElement.value;
+    if (!officerId) return;
+    const url = "{% url 'dashboards:assign_issue_ajax' 0 %}".replace('0', issueId);
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ officer_id: officerId })
+    }).then(res => res.json()).then(data => {
+        if (data.success) window.location.reload();
+    });
+}
+
+function autoAssign(issueId, btn) {
+    btn.disabled = true;
+    const url = "{% url 'dashboards:assign_issue_by_ml' 0 %}".replace('0', issueId);
+    fetch(url, { 
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') } 
+    })
+    .then(res => res.ok ? window.location.reload() : (btn.disabled = false));
+}
+
+const statusFilter = document.querySelector('.status-filter');
+if (statusFilter) {
+    statusFilter.addEventListener('change', function() {
+        const url = new URL(window.location);
+        const val = this.value.toLowerCase().replace(' ', '_');
+        val === 'all_status' ? url.searchParams.delete('status') : url.searchParams.set('status', val);
+        window.location.href = url.toString();
+    });
+}
+</script>
+{% endblock %}

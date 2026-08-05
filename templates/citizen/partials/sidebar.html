@@ -1,0 +1,41 @@
+{% load i18n %}
+<div class="logo">
+  <i class="bi bi-grid fs-3"></i>
+  {% trans "Civic Portal" %}
+</div>
+
+<a href="{% url 'citizen:citizen_dashboard' %}" class="{% if request.resolver_match.url_name == 'citizen_dashboard' %}active{% endif %}">
+  <i class="bi bi-speedometer2"></i> {% trans "Dashboard" %}
+</a>
+
+<a href="{% url 'issues:report_issue' %}" class="{% if request.resolver_match.url_name == 'report_issue' %}active{% endif %}">
+  <i class="bi bi-flag"></i> {% trans "Report Issue" %}
+</a>
+
+<a href="{% url 'citizen:citizen_reports' %}" class="{% if request.resolver_match.url_name == 'citizen_reports' %}active{% endif %}">
+  <i class="bi bi-file-earmark-text"></i> {% trans "My Reports" %}
+</a>
+
+<a href="{% url 'dashboards:common_map' %}" class="{% if request.resolver_match.url_name == 'common_map' %}active{% endif %}">
+  <i class="bi bi-map"></i> {% trans "Issue Map" %}
+</a>
+
+<a href="{% url 'citizen:citizen_ai_assistant' %}" class="{% if request.resolver_match.url_name == 'citizen_ai_assistant' %}active{% endif %}">
+  <i class="bi bi-robot"></i> {% trans "AI Assistant" %}
+</a>
+
+<a href="{% url 'citizen:citizen_edit_profile' %}" class="{% if request.resolver_match.url_name == 'citizen_edit_profile' %}active{% endif %}">
+    <i class="bi bi-gear"></i> {% trans "Settings" %}
+</a>
+<a href="{% url 'citizen:citizen_help_support' %}" class="{% if request.resolver_match.url_name == 'citizen_help_support' %}active{% endif %}">
+  <i class="bi bi-question-circle"></i> {% trans "Help & Support" %}
+</a>
+
+<div class="mt-auto pt-4">
+    <form action="{% url 'accounts:logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger w-100 rounded-pill">
+            <i class="bi bi-box-arrow-right"></i> {% trans "Logout" %}
+        </button>
+    </form>
+</div>

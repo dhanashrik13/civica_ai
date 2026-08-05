@@ -1,0 +1,487 @@
+{% extends "base_ai.html" %}
+
+{% block title %}Intelligence Workspace | CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --ai-primary: var(--primary-color);
+        --ai-bg-msg: var(--bg-card);
+        --ai-user-bg: #4f46e5;
+        --ai-border: #e2e8f0;
+        --ai-text-main: #1e293b;
+    }
+
+    .ai-main-container {
+        height: calc(100vh - 140px);
+        padding: 0 2rem 2rem;
+        display: flex;
+        flex-direction: column;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .ai-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--ai-border);
+    }
+
+    /* Tabs & Header */
+    .ai-header {
+        padding: 1.1rem 2rem;
+        border-bottom: 1px solid var(--ai-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ffffff;
+    }
+
+    .ai-tabs {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.4rem 1.8rem;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--ai-border);
+    }
+
+    .ai-tab-btn {
+        padding: 0.55rem 1.25rem;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: 10px;
+        transition: all 0.2s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ai-tab-btn.active {
+        background: white;
+        color: var(--ai-primary);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    /* Message Area */
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        scroll-behavior: smooth;
+        background: #fafbfc;
+    }
+
+    .message {
+        max-width: 70%;
+        padding: 0.8rem 1.2rem;
+        border-radius: 16px;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        animation: fadeIn 0.3s ease-out;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .ai-msg {
+        align-self: flex-start;
+        background: white;
+        color: #000000 !important;
+        border: 1px solid var(--ai-border);
+        border-bottom-left-radius: 2px;
+        opacity: 1 !important;
+        font-weight: 450;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .ai-msg div, .ai-msg span, .ai-msg p {
+        color: #000000 !important;
+        opacity: 1 !important;
+    }
+    .user-msg {
+        align-self: flex-end;
+        background: var(--ai-user-bg);
+        color: white;
+        border-bottom-right-radius: 2px;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.12);
+    }
+
+    /* Input Footer */
+    .chat-footer {
+        padding: 1.5rem 0 2rem;
+        background: #fafbfc;
+        display: flex;
+        justify-content: center;
+        border-top: 1px solid #f1f5f9;
+    }
+    .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 80%;
+        max-width: 750px;
+    }
+    .chat-input {
+        width: 100%;
+        padding: 1rem 4rem 1.1rem 1.5rem;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .chat-input:focus {
+        outline: none;
+        border-color: var(--ai-primary);
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.08);
+    }
+    .send-btn {
+        position: absolute;
+        right: 0.8rem;
+        background: var(--ai-primary);
+        color: white;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+    .send-btn:hover { transform: scale(1.05); background: #4338ca; }
+    .send-btn:disabled { background: #cbd5e1; transform: none; }
+
+    .analysis-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 4rem;
+    }
+    .analysis-input-card {
+        background: white;
+        border: 1px solid var(--ai-border);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .analysis-result {
+        background: white;
+        border: 1px solid var(--ai-border);
+        border-radius: 20px;
+        padding: 2rem;
+        border-left: 6px solid var(--ai-primary);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    .tag-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.6rem 1.25rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .tag-cat { background: #f0f9ff; color: #0369a1; }
+    .tag-prio { background: #fff7ed; color: #c2410c; }
+    .tag-dept { background: #f0fdf4; color: #15803d; }
+
+    .loading-dots { display: none; gap: 4px; }
+    .dot { width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%; animation: bounce 1.4s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+    .hidden { display: none !important; }
+    
+    @media (max-width: 768px) {
+        .ai-main-container { padding: 0 1rem 1rem; }
+        .ai-card { border-radius: 16px; }
+    }
+    .workspace-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 4rem 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .btn-back {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: white;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        transition: all 0.2s;
+    }
+    .btn-back:hover {
+        background: #f8fafc;
+        color: var(--ai-primary);
+        transform: translateX(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="workspace-nav">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'accounts:redirect_dashboard' %}" class="btn-back">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <div>
+            <div class="fw-bold text-dark">AI Intelligence Hub</div>
+            <div class="small text-muted">Officer Operational Support</div>
+        </div>
+    </div>
+    {% with user.role as role %}
+    <div class="ms-auto badge {% if role == 'super_admin' %}bg-danger{% else %}bg-primary{% endif %}-soft {% if role == 'super_admin' %}text-danger{% else %}text-primary{% endif %} rounded-pill px-3 py-2">
+        <i class="bi bi-shield-check me-1"></i> {{ role|title }} Access
+    </div>
+    {% endwith %}
+    <div class="small text-muted fw-semibold">
+        <i class="bi bi-patch-check-fill text-primary me-1"></i> CivicPulse Intelligence
+    </div>
+</nav>
+
+<div class="ai-main-container">
+    <div class="ai-card">
+        <!-- Compact Header -->
+        <div class="ai-header">
+            <div>
+                <h1 class="h6 fw-bold mb-0">Unified Intelligence Workspace</h1>
+                <p class="small text-muted mb-0">Real-time civic analysis & support</p>
+            </div>
+            <div class="badge bg-light text-muted border py-2 px-3 rounded-pill fw-bold" style="font-size: 0.7rem;">
+                SECURE v2.3
+            </div>
+        </div>
+
+        <!-- Integrated Navigation Tabs -->
+        <div class="ai-tabs">
+            <button class="ai-tab-btn active" onclick="switchTab('chat-pane')">
+                <i class="bi bi-chat-left-dots me-1"></i> Interactive Chat
+            </button>
+            <button class="ai-tab-btn" onclick="switchTab('analysis-pane')">
+                <i class="bi bi-lightning-charge me-1"></i> Issue Classifier
+            </button>
+        </div>
+
+        <div class="flex-grow-1 overflow-hidden d-flex flex-column">
+            <!-- CHAT VIEW -->
+            <div id="chat-pane" class="tab-pane active h-100 flex-column d-flex">
+                <div class="chat-messages" id="chatBox">
+                    <div class="message ai-msg">
+                        Welcome to the intelligence hub. I can help you analyze complaints, search for specific issues, or provide operational summaries. How can I assist you right now?
+                    </div>
+                    {% for chat in chats %}
+                        <div class="message {% if chat.role == 'user' %}user-msg{% else %}ai-msg{% endif %}">
+                            {{ chat.message }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="chatTyping" class="px-5 mb-2 loading-dots">
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                </div>
+
+                <div class="chat-footer">
+                    <form id="chatForm" class="input-wrapper">
+                        {% csrf_token %}
+                        <input type="text" id="chatInput" class="chat-input"
+                            placeholder="Message CivicPulse AI..." autocomplete="off">
+                        <button type="submit" id="chatSendBtn" class="send-btn">
+                            <i class="bi bi-arrow-up-short fs-3"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ANALYSIS VIEW -->
+            <div id="analysis-pane" class="tab-pane h-100 overflow-y-auto d-none flex-column">
+                <div class="analysis-container">
+                    <div class="analysis-input-card">
+                        <label class="form-label fw-bold small text-muted text-uppercase mb-3">Analyze Issue Description</label>
+                        <textarea id="analysisInput" class="form-control border-0 bg-white" rows="4"
+                            placeholder="Enter the civic issue details for automated classification..." style="resize: none;"></textarea>
+
+                        <div class="mt-4 d-flex align-items-center justify-content-between">
+                            <div class="small text-muted">Min 10 characters recommended</div>
+                            <button id="runAnalysisBtn" class="btn btn-primary px-4 py-2 rounded-pill fw-bold btn-sm">
+                                Analyze Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="analysisResult" class="analysis-result hidden">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3 class="h6 fw-bold mb-0">System Classification</h3>
+                            <div class="text-muted small">Confidence: <span id="res-conf" class="fw-bold">0</span>%</div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="small text-muted mb-2">Category</div>
+                                <span id="res-cat" class="tag-badge tag-cat">---</span>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="small text-muted mb-2">Priority</div>
+                                <span id="res-prio" class="tag-badge tag-prio">---</span>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="small text-muted mb-2">Target Dept</div>
+                                <span id="res-dept" class="tag-badge tag-dept">---</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-light p-4 rounded-4 border-start border-4 border-primary">
+                            <p id="res-sug" class="mb-0 text-dark" style="line-height: 1.8; white-space: pre-wrap; font-size: 0.95rem;"></p>
+                        </div>
+                    </div>
+
+                    <div id="analysisError" class="alert alert-danger mt-3 hidden small rounded-4"></div>
+                    <div id="analysisLoader" class="text-center py-4 hidden">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const TIMEOUT_MS = 10000;
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('d-none'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('d-flex'));
+        document.querySelectorAll('.ai-tab-btn').forEach(b => b.classList.remove('active'));
+        
+        const target = document.getElementById(tabId);
+        target.classList.remove('d-none');
+        target.classList.add('d-flex');
+        event.currentTarget.classList.add('active');
+    }
+
+    // --- CHAT LOGIC ---
+    (function() {
+        const chatForm = document.getElementById('chatForm');
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        const chatTyping = document.getElementById('chatTyping');
+
+        function appendMsg(text, role) {
+            const div = document.createElement('div');
+            div.className = `message ${role}-msg`;
+            div.textContent = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+
+            appendMsg(msg, 'user');
+            chatInput.value = '';
+            chatSendBtn.disabled = true;
+            chatTyping.style.display = 'flex';
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+            try {
+                const response = await fetch("{% url 'assistant:ai_assistant' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `message=${encodeURIComponent(msg)}&context=Intelligence Workspace`,
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                appendMsg(data.reply, 'ai');
+            } catch (err) {
+                appendMsg("Connection timed out. Please try again.", 'error');
+            } finally {
+                chatSendBtn.disabled = false;
+                chatTyping.style.display = 'none';
+                chatInput.focus();
+            }
+        });
+    })();
+
+    // --- CLASSIFIER LOGIC ---
+    (function() {
+        const analyzeBtn = document.getElementById('runAnalysisBtn');
+        const input = document.getElementById('analysisInput');
+        const loader = document.getElementById('analysisLoader');
+        const result = document.getElementById('analysisResult');
+        const error = document.getElementById('analysisError');
+
+        analyzeBtn.addEventListener('click', async () => {
+            const text = input.value.trim();
+            if (text.length < 5) return;
+
+            loader.classList.remove('hidden');
+            result.classList.add('hidden');
+            error.classList.add('hidden');
+            analyzeBtn.disabled = true;
+
+            try {
+                const response = await fetch("{% url 'ai_standalone:suggestions' %}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `text=${encodeURIComponent(text)}`
+                });
+                const data = await response.json();
+                
+                document.getElementById('res-conf').textContent = data.confidence;
+                document.getElementById('res-cat').textContent = data.category;
+                document.getElementById('res-prio').textContent = data.priority;
+                document.getElementById('res-dept').textContent = data.department;
+                document.getElementById('res-sug').textContent = data.suggestion;
+                
+                result.classList.remove('hidden');
+            } catch (err) {
+                error.textContent = "Analysis failed.";
+                error.classList.remove('hidden');
+            } finally {
+                analyzeBtn.disabled = false;
+                loader.classList.add('hidden');
+            }
+        });
+    })();
+</script>
+{% endblock %}

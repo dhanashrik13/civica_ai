@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "CivicPulse – Quick Start Guide" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="fw-bold">{% trans "Quick Start Guide" %}</h1>
+                <p class="text-secondary">{% trans "Become an active community member in four simple steps." %}</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Step 1 -->
+                <div class="col-md-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-primary rounded-circle p-2 me-3" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">1</span>
+                            <h5 class="m-0 fw-bold">{% trans "Create Your Account" %}</h5>
+                        </div>
+                        <p class="text-secondary small">{% trans "Sign up as a Citizen to start reporting. Use a valid email to receive real-time updates on your submissions." %}</p>
+                        <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-outline-primary">{% trans "Register Now" %}</a>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="col-md-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-primary rounded-circle p-2 me-3" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">2</span>
+                            <h5 class="m-0 fw-bold">{% trans "Capture & Report" %}</h5>
+                        </div>
+                        <p class="text-secondary small">{% trans "Spot a civic issue? Take a clear photo, enable GPS for precise location, and submit it through your dashboard." %}</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="col-md-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-primary rounded-circle p-2 me-3" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">3</span>
+                            <h5 class="m-0 fw-bold">{% trans "AI Routing" %}</h5>
+                        </div>
+                        <p class="text-secondary small">{% trans "Our AI automatically analyzes your report and routes it to the correct municipal department for resolution." %}</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="col-md-6">
+                    <div class="p-4 bg-white rounded-4 shadow-sm h-100 border border-light">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-primary rounded-circle p-2 me-3" style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;">4</span>
+                            <h5 class="m-0 fw-bold">{% trans "Track Progress" %}</h5>
+                        </div>
+                        <p class="text-secondary small">{% trans "Monitor your issue status in real-time. You'll get notified when it's assigned, updated, and finally resolved." %}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 p-4 bg-primary-subtle rounded-4 text-center">
+                <h5 class="fw-bold">{% trans "Need more help?" %}</h5>
+                <p class="mb-3">{% trans "Visit our full documentation for detailed guides on advanced features." %}</p>
+                <a href="{% url 'landing:documentation' %}" class="btn btn-primary">{% trans "View Documentation" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

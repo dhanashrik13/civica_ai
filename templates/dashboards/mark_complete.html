@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Mark Issue Complete: {{ issue.title }}</h3>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Completion Photo</label>
+      <input type="file" name="resolved_photo" class="form-control" required>
+    </div>
+    <button class="btn btn-success">Mark Resolved</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Page Not Found | CivicPulse{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h1 class="display-1 fw-bold text-primary">404</h1>
+            <h2 class="mb-4">{% trans "Oops! Page not found" %}</h2>
+            <p class="text-secondary mb-5">
+                {% trans "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable." %}
+            </p>
+            <div class="d-flex gap-3 justify-content-center">
+                <a href="{% url 'landing:home' %}" class="btn btn-primary px-4 py-2 rounded-3">
+                    <i class="bi bi-house-door me-2"></i>{% trans "Back to Home" %}
+                </a>
+                <a href="{% url 'landing:contact' %}" class="btn btn-outline-secondary px-4 py-2 rounded-3">
+                    {% trans "Contact Support" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

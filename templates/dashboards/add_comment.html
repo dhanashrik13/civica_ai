@@ -1,0 +1,46 @@
+{% extends "dashboards/officer_base.html" %}
+
+{% block title %}Add Comment{% endblock %}
+
+{% block page_title %}Add Comment{% endblock %}
+{% block page_subtitle %}Add a comment to an issue for tracking{% endblock %}
+
+{% block content %}
+<div class="card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <h4 style="margin-bottom: 20px;">Add Comment to Issue</h4>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Select Issue -->
+        <div class="mb-4">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Select Assigned Issue</label>
+            <select name="issue_id" class="form-control" required style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #f9fafb;">
+                <option value="">-- Select Issue --</option>
+                {% for issue in issues %}
+                    <option value="{{ issue.id }}">
+                        #CN-{{ issue.id }} - {{ issue.title }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Comment Input -->
+        <div class="mb-4">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Comment Text</label>
+            <textarea name="comment" class="form-control" rows="5" required placeholder="Type your comment here..." style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #f9fafb;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button type="submit" class="btn" 
+                    onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();"
+                    style="background: var(--primary-grad); color: white; padding: 12px 24px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer;">
+                Submit Comment
+            </button>
+            <a href="{% url 'dashboards:officer_dashboard' %}" class="btn" style="background: #f1f5f9; color: var(--text-main); padding: 12px 24px; border-radius: 10px; text-decoration: none; font-weight: 600;">
+                Back to Dashboard
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "CivicPulse – Frequently Asked Questions" %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">{% trans "Frequently Asked Questions" %}</h1>
+        <p class="text-secondary">{% trans "Everything you need to know about CivicPulse and our mission." %}</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="accordion" id="faqAccordion">
+                <!-- General -->
+                <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                            {% trans "What is CivicPulse?" %}
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary">
+                            {% trans "CivicPulse is an AI-driven platform that connects citizens directly with government departments to report and track civic issues efficiently." %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Privacy -->
+                <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                            {% trans "Is my reporting anonymous?" %}
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary">
+                            {% trans "Yes. While we require an account for accountability, you can choose to hide your identity from the public view when submitting reports." %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resolution -->
+                <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                            {% trans "How long does it take to resolve an issue?" %}
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary">
+                            {% trans "Resolution times vary by department and issue type. Most minor civic issues are addressed within 48 to 72 hours once assigned." %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI -->
+                <div class="accordion-item border-0 mb-3 shadow-sm rounded-4 overflow-hidden">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                            {% trans "How does the AI assistant help me?" %}
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-secondary">
+                            {% trans "Our AI assistant can explain local policies, help you categorize your issues correctly, and provide instant updates on your reporting status." %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

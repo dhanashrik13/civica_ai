@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "CivicPulse – About" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= HERO ================= */
+.about-hero {
+  background: #eef2f7;
+  padding: 80px 20px;
+  text-align: center;
+  margin-top: -1.5rem; /* Offset the py-4 from app-shell if needed, or just let it be */
+}
+
+.about-hero-inner {
+  max-width: 900px;
+  margin: auto;
+}
+
+.about-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #2563eb;
+  padding: 6px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 28px;
+}
+
+.about-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #0f172a;
+}
+
+.about-description {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #475569;
+}
+
+/* ================= MISSION & VISION ================= */
+.mission-vision {
+  background: #ffffff;
+  padding: 80px 0;
+}
+
+.mv-card {
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 40px;
+  height: 100%;
+  transition: 0.3s ease;
+}
+
+.mv-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #0f172a;
+}
+
+.mv-card p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #475569;
+}
+
+.mv-card:hover {
+  transform: translateY(-6px);
+}
+
+.mission-card { border: 2px solid #bfdbfe; }
+.vision-card { border: 2px solid #e9d5ff; }
+
+.mv-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 28px;
+  color: white;
+}
+
+.mission-icon { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.vision-icon { background: linear-gradient(135deg, #9333ea, #7e22ce); }
+
+.core-section {
+  padding: 80px 0;
+  background: #f9fafb;
+}
+
+.core-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.core-header h2 {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.core-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+}
+
+.core-card {
+  background: #ffffff;
+  padding: 35px 25px;
+  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.core-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.06);
+}
+
+.icon {
+  width: 65px;
+  height: 65px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin: auto;
+}
+
+.icon-blue { background: #e0e7ff; }
+.icon-purple { background: #f3e8ff; }
+.icon-red { background: #fee2e2; }
+.icon-green { background: #d1fae5; }
+
+.impact-section {
+  padding: 80px 0;
+  background: #f8fafc;
+}
+
+.impact-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.impact-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+.impact-item h3 {
+  font-size: 24px;
+  margin-top: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.impact-icon {
+  width: 60px;
+  height: 60px;
+  background: #dbeafe;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: auto;
+}
+
+.users-section {
+  padding: 80px 0;
+  background: #ffffff;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.user-card {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  transition: 0.3s ease;
+}
+
+.user-card ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.user-card ul li {
+  position: relative;
+  padding-left: 28px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.user-card ul li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.blue { background: #dbeafe; color: #2563eb; }
+.purple { background: #ede9fe; color: #7c3aed; }
+.green { background: #dcfce7; color: #16a34a; }
+
+.citizens { border-color: #bfdbfe; }
+.admins { border-color: #ddd6fe; }
+.officers { border-color: #bbf7d0; }
+
+.technology-section {
+  padding: 80px 0;
+  background: #f9fbff;
+}
+
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.tech-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #e3e7ef;
+  transition: 0.3s ease;
+}
+
+.awards-section {
+  padding: 80px 0;
+  background: #ffffff;
+}
+
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+.award-card {
+  background: #ffffff;
+  padding: 40px 20px;
+  border-radius: 18px;
+  text-align: center;
+  transition: 0.3s ease;
+}
+
+.cta {
+  padding: 80px 20px;
+  text-align: center;
+  color: white;
+  background: linear-gradient(135deg,#2563eb,#9333ea);
+  border-radius: 24px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 1200px) {
+  .impact-grid { grid-template-columns: repeat(3, 1fr); gap: 30px; }
+}
+
+@media (max-width: 992px) {
+  .core-grid, .tech-grid, .awards-grid { grid-template-columns: repeat(2, 1fr); }
+  .users-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 576px) {
+  .core-grid, .tech-grid, .awards-grid, .impact-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="about-hero">
+  <div class="about-hero-inner">
+    <div class="about-badge">About CivicPulse</div>
+    <h1 class="about-title">Transforming Civic Engagement Through Technology</h1>
+    <p class="about-description">
+      CivicPulse is more than a platform—it's a movement to make government more accessible,
+      responsive, and accountable to the people it serves. We're building the future of
+      citizen-government interaction, one issue at a time.
+    </p>
+  </div>
+</section>
+
+<!-- MISSION & VISION -->
+<section class="mission-vision">
+    <div class="row g-4">
+      <!-- Mission -->
+      <div class="col-md-6">
+        <div class="mv-card mission-card">
+          <div class="mv-icon mission-icon">
+            <i class="bi bi-bullseye"></i>
+          </div>
+          <h3>Our Mission</h3>
+          <p>
+            To democratize civic participation by providing accessible,
+            intelligent technology that bridges the gap between citizens
+            and their local government. We believe every voice deserves
+            to be heard, and every issue deserves a timely response.
+          </p>
+        </div>
+      </div>
+
+      <!-- Vision -->
+      <div class="col-md-6">
+        <div class="mv-card vision-card">
+          <div class="mv-icon vision-icon">
+            <i class="bi bi-lightbulb"></i>
+          </div>
+          <h3>Our Vision</h3>
+          <p>
+            A world where every community has the tools for transparent,
+            efficient civic engagement. Where governments are responsive,
+            citizens are empowered, and technology serves as a bridge—
+            not a barrier—to better public services.
+          </p>
+        </div>
+      </div>
+    </div>
+</section>
+
+<!-- CORE VALUES -->
+<section class="core-section">
+    <div class="core-header">
+      <h2>Our Core Values</h2>
+      <p>These principles guide everything we do, from product development to community engagement.</p>
+    </div>
+
+    <div class="core-grid">
+      <div class="core-card">
+        <div class="icon icon-blue">🎯</div>
+        <h4>Transparency</h4>
+        <p>Every action is tracked and visible to stakeholders, ensuring accountability at all levels.</p>
+      </div>
+      <div class="core-card">
+        <div class="icon icon-purple">🛡</div>
+        <h4>Security</h4>
+        <p>Enterprise-grade security protects citizen data and maintains privacy standards.</p>
+      </div>
+      <div class="core-card">
+        <div class="icon icon-red">❤️</div>
+        <h4>Empowerment</h4>
+        <p>We give every citizen a voice and the tools to make their community better.</p>
+      </div>
+      <div class="core-card">
+        <div class="icon icon-green">⚡</div>
+        <h4>Efficiency</h4>
+        <p>AI-powered routing and automation reduce response times and improve outcomes.</p>
+      </div>
+    </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact-section">
+    <div class="impact-header">
+      <h2>Our Impact</h2>
+      <p>Real numbers that showcase the difference we're making in communities</p>
+    </div>
+
+    <div class="impact-grid">
+      <div class="impact-item">
+        <div class="impact-icon">✔</div>
+        <h3>15,000+</h3>
+        <p>Issues Resolved</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">👥</div>
+        <h3>8,500+</h3>
+        <p>Active Citizens</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">⏰</div>
+        <h3>48 hrs</h3>
+        <p>Avg Response Time</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">📈</div>
+        <h3>95%</h3>
+        <p>Resolution Rate</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">🌍</div>
+        <h3>12</h3>
+        <p>Cities Served</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">💼</div>
+        <h3>50+</h3>
+        <p>Departments</p>
+      </div>
+    </div>
+</section>
+
+<!-- USERS -->
+<section class="users-section">
+    <div class="users-grid">
+      <!-- Citizens -->
+      <div class="user-card citizens">
+        <div class="icon icon-blue">👥</div>
+        <h3>Citizens</h3>
+        <p class="text-muted">Empowering everyday people to report issues and track their resolution</p>
+        <ul>
+          <li>Quick and easy issue reporting with photos and GPS</li>
+          <li>Real-time status updates on all submissions</li>
+          <li>Push notifications for important updates</li>
+          <li>Access to community statistics and trends</li>
+        </ul>
+      </div>
+
+      <!-- Admins -->
+      <div class="user-card admins">
+        <div class="icon icon-purple">🛡</div>
+        <h3>Admins</h3>
+        <p class="text-muted">Providing oversight and management tools for platform operations</p>
+        <ul>
+          <li>Complete visibility into all reported issues</li>
+          <li>Smart assignment and routing to departments</li>
+          <li>Comprehensive analytics and reporting dashboards</li>
+          <li>User management and role assignment</li>
+        </ul>
+      </div>
+
+      <!-- Officers -->
+      <div class="user-card officers">
+        <div class="icon icon-green">💼</div>
+        <h3>Officers</h3>
+        <p class="text-muted">Streamlining workflow for department staff and field officers</p>
+        <ul>
+          <li>Organized queue of assigned issues</li>
+          <li>Mobile-friendly interface for field work</li>
+          <li>Status update and resolution tools</li>
+          <li>Photo upload for proof of completion</li>
+        </ul>
+      </div>
+    </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section class="technology-section">
+    <div class="core-header">
+      <span class="badge bg-light text-primary mb-2">Technology</span>
+      <h2>Powered by Advanced Technology</h2>
+      <p>We leverage cutting-edge AI and cloud infrastructure to deliver a secure platform</p>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="icon-blue p-3 d-inline-block rounded mb-3"><i class="bi bi-cpu"></i></div>
+        <h4>AI-Powered Classification</h4>
+        <p>Machine learning automatically categorizes issues and routes them appropriately</p>
+      </div>
+      <div class="tech-card">
+        <div class="icon-blue p-3 d-inline-block rounded mb-3"><i class="bi bi-geo-alt"></i></div>
+        <h4>Geospatial Intelligence</h4>
+        <p>GPS and mapping integration for accurate issue location and analytics</p>
+      </div>
+      <div class="tech-card">
+        <div class="icon-blue p-3 d-inline-block rounded mb-3"><i class="bi bi-shield-lock"></i></div>
+        <h4>Security First</h4>
+        <p>End-to-end encryption and role-based access control for data protection</p>
+      </div>
+    </div>
+</section>
+
+<!-- AWARDS -->
+<section class="awards-section">
+    <div class="core-header">
+      <h2>Awards & Recognition</h2>
+      <p>Honored to be recognized by industry leaders and civic organizations</p>
+    </div>
+    <div class="awards-grid">
+      <div class="award-card border">
+        <div class="badge bg-primary rounded-circle p-3 mb-3"><i class="bi bi-award fs-4"></i></div>
+        <h4>Best Civic Tech 2024</h4>
+        <span class="text-muted">National Civic Technology Awards</span>
+      </div>
+      <div class="award-card border">
+        <div class="badge bg-purple rounded-circle p-3 mb-3" style="background-color: #9333ea !important;"><i class="bi bi-award fs-4 text-white"></i></div>
+        <h4>Innovation in Govt</h4>
+        <span class="text-muted">Smart Cities Initiative</span>
+      </div>
+      <div class="award-card border">
+        <div class="badge bg-success rounded-circle p-3 mb-3"><i class="bi bi-award fs-4"></i></div>
+        <h4>People's Choice</h4>
+        <span class="text-muted">Urban Innovation Summit</span>
+      </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Ready to Transform Your Community?</h2>
+  <p class="mb-4">Join thousands of citizens and government officials making their cities better with CivicPulse.</p>
+  <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg fw-bold px-5">Get Started Today</a>
+</section>
+
+{% endblock %}
+

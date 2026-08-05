@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation - CivicPulse{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="page-card p-4 p-md-5">
+            <h1 class="mb-4">API Documentation</h1>
+            <p class="text-secondary lead mb-5">Integrate with CivicPulse's civic infrastructure.</p>
+
+            <section class="mb-5">
+                <h3>Getting Started</h3>
+                <p>The CivicPulse API allows developers to programmatically report issues and retrieve status updates. Our REST API is built on Django REST Framework and returns JSON data.</p>
+            </section>
+
+            <section class="mb-5">
+                <h3>Core Endpoints</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover border">
+                        <thead class="bg-light">
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-primary">GET</span></td>
+                                <td><code>/api/v1/issues/</code></td>
+                                <td>List all public civic issues.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">POST</span></td>
+                                <td><code>/api/v1/report/</code></td>
+                                <td>Report a new civic issue.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-primary">GET</span></td>
+                                <td><code>/api/v1/issues/{id}/</code></td>
+                                <td>Retrieve detailed status of an issue.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h3>Sample Request</h3>
+                <div class="bg-dark text-light p-3 rounded font-monospace small">
+                    <pre class="mb-0">POST /api/v1/report/
+Content-Type: application/json
+Authorization: Token your_api_token
+
+{
+    "title": "Broken Streetlight",
+    "description": "The streetlight at 5th Ave is not working.",
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "category": "electricity"
+}</pre>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h3>Sample Response</h3>
+                <div class="bg-light p-3 rounded font-monospace border small text-dark">
+                    <pre class="mb-0">{
+    "status": "success",
+    "issue_id": "12345",
+    "message": "Report received and routed to Electricity Department.",
+    "estimated_resolution": "2026-04-16T10:00:00Z"
+}</pre>
+                </div>
+            </section>
+
+            <div class="p-4 border rounded shadow-sm text-center">
+                <p class="mb-0 text-secondary small">Need a developer key? Visit the Developer Portal in your account settings.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

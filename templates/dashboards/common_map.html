@@ -1,0 +1,235 @@
+{% extends base_template %}
+{% load i18n %}
+
+{% block title %}{% trans "Issue Map" %} | CivicPulse{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    /* STEP 1: REMOVE ALL PARENT CONFLICTS */
+    .main-content, .content, .container-fluid, .map-container-full {
+        width: 100%;
+        display: block;
+        overflow: visible !important;
+        position: relative;
+        transform: none !important; /* REMOVE ANY SCALE/TRANSFORM FROM PARENTS */
+    }
+
+    .map-container-full {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-top: 20px;
+        height: 600px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* STEP 2: FIX MAP CONTAINER (CRITICAL) */
+    #map {
+        height: 600px !important;
+        width: 100% !important;
+        min-height: 600px;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* STEP 3: FIX LEAFLET INTERNAL TILE LAYER (MOST IMPORTANT) */
+    .leaflet-container {
+        width: 100% !important;
+        height: 100% !important;
+        background: #f8fafc !important;
+    }
+
+    .leaflet-pane,
+    .leaflet-tile,
+    .leaflet-map-pane {
+        transform: none !important;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        color: #1e293b;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .back-btn:hover {
+        background: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .role-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: white;
+        padding: 8px 16px;
+        border-radius: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        font-weight: 700;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="bi bi-arrow-left"></i> {% trans "Back" %}
+    </a>
+    <h4 class="fw-bold m-0">{% trans "Live Issue Map" %}</h4>
+</div>
+
+<div class="map-container-full position-relative">
+    <div class="role-badge">
+        <i class="bi bi-person-badge text-primary me-2"></i>
+        {{ role|title }} {% trans "View" %}
+    </div>
+    <div id="map"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    function initMap() {
+        const issues = [
+            {% for issue in issues %}
+            {
+                id: {{ issue.id }},
+                title: "{{ issue.title|escapejs }}",
+                lat: {{ issue.latitude|default:0 }},
+                lng: {{ issue.longitude|default:0 }},
+                status: "{{ issue.get_status_display|escapejs }}",
+                category: "{{ issue.get_category_display|escapejs }}",
+                dept: "{{ issue.department.name|default:'General'|escapejs }}"
+            },
+            {% endfor %}
+        ];
+
+        const mapContainer = document.getElementById('map');
+        if (!mapContainer) return;
+
+        // STEP 7: DEBUG CHECK
+        console.log("Map container size:", mapContainer.offsetWidth);
+
+        // Initialize Map
+        const map = L.map('map').setView([18.5204, 73.8567], 12);
+
+        // STEP 6: TILE FIX (PREVENT PARTIAL LOAD)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap',
+            updateWhenIdle: true,
+            updateWhenZooming: false
+        }).addTo(map);
+
+        const redPinIcon = L.icon({
+            iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+            shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+            iconSize: [35, 35],
+            iconAnchor: [17, 35],
+            popupAnchor: [0, -35],
+            shadowSize: [41, 41]
+        });
+
+        const markers = [];
+
+        if (issues.length === 0) {
+            mapContainer.innerHTML = '<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#64748b; font-weight:600;">No issues found with location data for your role.</div>';
+            return;
+        }
+
+        issues.forEach(issue => {
+            if (issue.lat && issue.lng) {
+                const marker = L.marker([issue.lat, issue.lng], {
+                    icon: redPinIcon
+                }).addTo(map);
+                
+                // Role-based Detail URL
+                let detailUrl = "#";
+                {% if role == 'citizen' %}
+                    detailUrl = "{% url 'citizen:citizen_issue_detail' 0 %}".replace('0', issue.id);
+                {% elif role == 'officer' %}
+                    detailUrl = "{% url 'dashboards:issue_detail' 0 %}".replace('0', issue.id);
+                {% else %}
+                    detailUrl = "{% url 'dashboards:admin_issue_detail' 0 %}".replace('0', issue.id);
+                {% endif %}
+                
+                marker.bindPopup(`
+                    <div style="min-width: 180px; padding: 5px;">
+                        <div style="font-size: 10px; text-transform: uppercase; color: #6366f1; font-weight: 800; margin-bottom: 4px;">${issue.category}</div>
+                        <h6 style="margin-bottom: 8px; font-weight: 700; color: #1e293b;">${issue.title}</h6>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 11px; font-weight: 600; color: #64748b;">${issue.dept}</span>
+                            <span class="badge bg-light text-dark border" style="font-size: 10px;">${issue.status}</span>
+                        </div>
+                        <a href="${detailUrl}" class="btn btn-primary btn-sm w-100 text-white shadow-sm" style="font-size: 11px; border-radius: 6px;">
+                            <i class="bi bi-eye me-1"></i> {% trans "View Details" %}
+                        </a>
+                    </div>
+                `, {
+                    closeButton: false,
+                    className: 'custom-popup'
+                });
+
+                marker.bindTooltip(`<b>${issue.title}</b>`, {
+                    direction: 'top',
+                    offset: [0, -10]
+                });
+                
+                markers.push(marker);
+            }
+        });
+
+        // Auto-fit bounds
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.15));
+        }
+
+        // STEP 4: FORCE HARD RESIZE
+        setTimeout(function () {
+            map.invalidateSize(true);
+        }, 500);
+
+        window.addEventListener('resize', () => map.invalidateSize());
+
+        // STEP 5: HANDLE SIDEBAR LAYOUT SHIFT
+        document.querySelectorAll('.sidebar-toggle, .menu-toggle, #sidebarCollapse').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(() => map.invalidateSize(), 300);
+            });
+        });
+    }
+
+    // STEP 3: CRITICAL FIX — DELAY INITIALIZATION
+    window.addEventListener("load", function () {
+        setTimeout(initMap, 300);
+    });
+</script>
+<style>
+    .custom-popup .leaflet-popup-content-wrapper {
+        border-radius: 12px;
+        padding: 0;
+        overflow: hidden;
+    }
+    .custom-popup .leaflet-popup-content {
+        margin: 12px;
+    }
+</style>
+{% endblock %}

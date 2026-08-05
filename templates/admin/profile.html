@@ -1,0 +1,54 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Admin Profile | CivicPulse{% endblock %}
+
+{% block page_title %}Admin Profile{% endblock %}
+{% block page_subtitle %}Manage your administrative account settings{% endblock %}
+
+{% block content %}
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm rounded-4 border-0 p-4 text-center">
+                <div class="mx-auto bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 120px; height: 120px; font-size: 3rem;">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <h4>{{ user.username }}</h4>
+                <p class="text-muted text-uppercase small fw-bold">{{ user.role|default:"Administrator" }}</p>
+                
+                <div class="mt-4 d-grid">
+                    <a href="{% url 'dashboards:edit_profile' %}" class="btn btn-primary rounded-3">
+                        <i class="bi bi-pencil-square me-2"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow-sm rounded-4 border-0 p-4">
+                <h5 class="mb-4">Account Information</h5>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Full Name</div>
+                    <div class="col-sm-8 fw-bold">{{ user.full_name|default:"Not specified" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Email Address</div>
+                    <div class="col-sm-8 fw-bold">{{ user.email }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Phone Number</div>
+                    <div class="col-sm-8 fw-bold">{{ user.phone_no|default:"Not specified" }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Role</div>
+                    <div class="col-sm-8 fw-bold">{{ user.get_role_display|default:user.role }}</div>
+                </div>
+                <div class="row mb-0">
+                    <div class="col-sm-4 text-muted">Address</div>
+                    <div class="col-sm-8 fw-bold">{{ user.address|default:"Not specified" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

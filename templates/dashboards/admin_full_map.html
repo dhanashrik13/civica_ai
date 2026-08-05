@@ -1,0 +1,144 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Full Issue Map | CivicPulse{% endblock %}
+
+{% block page_title %}Interactive Map{% endblock %}
+{% block page_subtitle %}Geospatial overview of city issues{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+    /* FIX: Full height container and broken tile fix */
+    .map-page-wrapper {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 160px); /* Fill available viewport height */
+        min-height: 500px;
+        background: #f8fafc;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    #fullMap {
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1;
+    }
+
+    /* FIX: Ensure tiles don't have strange overlaps */
+    .leaflet-container {
+        background: #f8fafc !important;
+    }
+
+    .map-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        width: 200px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .map-page-wrapper {
+            height: calc(100vh - 200px);
+        }
+        .map-controls {
+            top: 10px;
+            right: 10px;
+            width: calc(100% - 20px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-page-wrapper">
+    <div class="map-controls">
+        <label class="d-block small fw-bold text-muted mb-2">FILTER BY STATUS:</label>
+        <select id="statusFilter" class="form-select form-select-sm">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="assigned">Assigned</option>
+            <option value="resolved">Resolved</option>
+        </select>
+    </div>
+    
+    {% if total_issues == 0 %}
+        <div class="alert alert-info m-3" style="position: absolute; z-index: 1000;">No issues available with valid coordinates.</div>
+    {% endif %}
+    <div id="fullMap"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const issues = {{ issues_json|safe }};
+    const map = L.map('fullMap').setView([18.5204, 73.8567], 12);
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+
+    const redPinIcon = L.icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
+        shadowSize: [41, 41]
+    });
+
+    let markerLayer = L.layerGroup().addTo(map);
+
+    function renderMarkers(filterStatus = "all") {
+        markerLayer.clearLayers();
+        const filteredIssues = filterStatus === "all" ? issues : issues.filter(i => i.status === filterStatus);
+        
+        const markers = [];
+        filteredIssues.forEach(issue => {
+            if (issue.latitude && issue.longitude) {
+                const marker = L.marker([issue.latitude, issue.longitude], {
+                    icon: redPinIcon
+                });
+                
+                marker.on('click', function() {
+                    const url = "{% url 'dashboards:admin_issue_detail' 0 %}".replace('0', issue.id);
+                    window.location.href = url;
+                });
+
+                marker.bindTooltip(`<b>${issue.title}</b><br>${issue.status}`);
+                marker.addTo(markerLayer);
+                markers.push(marker);
+            }
+        });
+
+        if (markers.length > 0) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    }
+
+    document.getElementById("statusFilter").addEventListener("change", (e) => {
+        renderMarkers(e.target.value);
+    });
+
+    renderMarkers();
+    
+    // Fix map rendering
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 300);
+});
+</script>
+{% endblock %}

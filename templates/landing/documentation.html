@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "CivicPulse – Documentation" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ================= HERO ================= */
+.doc-hero {
+    padding: 60px 0;
+    text-align: center;
+    background: var(--gradient-light);
+    border-radius: 24px;
+    margin-bottom: 50px;
+}
+
+.doc-hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.search-box {
+    max-width: 600px;
+    margin: auto;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow);
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 15px;
+}
+
+/* ================= CARDS ================= */
+.doc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+    margin-bottom: 60px;
+}
+
+.doc-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    transition: 0.3s ease;
+    text-align: center;
+}
+
+.doc-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+}
+
+.icon-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 20px;
+}
+
+.icon-blue { background: #dbeafe; color: #2563eb; }
+.icon-purple { background: #ede9fe; color: #7c3aed; }
+.icon-green { background: #dcfce7; color: #16a34a; }
+.icon-red { background: #fee2e2; color: #dc2626; }
+
+/* ================= STEPS ================= */
+.step-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    height: 100%;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.step-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.step-list li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--secondary);
+}
+
+.step-list li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- HERO -->
+    <section class="doc-hero">
+        <div class="badge bg-primary-subtle text-primary mb-3">{% trans "Documentation" %}</div>
+        <h1>{% trans "Knowledge Base & Guides" %}</h1>
+        <p class="text-secondary mb-4">
+            {% trans "Find everything you need to master CivicPulse and improve your community." %}
+        </p>
+
+        <div class="search-box">
+            <i class="bi bi-search text-muted"></i>
+            <input type="text" placeholder="{% trans 'Search documentation...' %}">
+        </div>
+    </section>
+
+    <!-- QUICK LINKS -->
+    <div class="doc-grid">
+        <div class="doc-card">
+            <div class="icon-box icon-blue"><i class="bi bi-rocket-takeoff"></i></div>
+            <h4>{% trans "Quick Start" %}</h4>
+            <p class="small text-muted">{% trans "Launch your first report in minutes." %}</p>
+            <a href="{% url 'landing:quick_start' %}" class="btn btn-link p-0 text-decoration-none">{% trans "Read Guide" %} →</a>
+        </div>
+
+        <div class="doc-card">
+            <div class="icon-box icon-purple"><i class="bi bi-play-circle"></i></div>
+            <h4>{% trans "Tutorials" %}</h4>
+            <p class="small text-muted">{% trans "Step-by-step video instructions." %}</p>
+            <a href="{% url 'landing:videos' %}" class="btn btn-link p-0 text-decoration-none">{% trans "Watch Now" %} →</a>
+        </div>
+
+        <div class="doc-card">
+            <div class="icon-box icon-green"><i class="bi bi-terminal"></i></div>
+            <h4>{% trans "API Reference" %}</h4>
+            <p class="small text-muted">{% trans "Developer tools and integrations." %}</p>
+            <a href="{% url 'landing:api_docs' %}" class="btn btn-link p-0 text-decoration-none">{% trans "View Docs" %} →</a>
+        </div>
+
+        <div class="doc-card">
+            <div class="icon-box icon-red"><i class="bi bi-chat-dots"></i></div>
+            <h4>{% trans "FAQs" %}</h4>
+            <p class="small text-muted">{% trans "Answers to common questions." %}</p>
+            <a href="{% url 'landing:faq' %}" class="btn btn-link p-0 text-decoration-none">{% trans "Get Help" %} →</a>
+        </div>
+    </div>
+
+    <!-- GETTING STARTED -->
+    <div class="mb-5">
+        <h2 class="fw-bold mb-4">{% trans "Core Workflows" %}</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h5>{% trans "Citizen Reporting" %}</h5>
+                    <p class="small text-muted">{% trans "How to submit and track issues effectively." %}</p>
+                    <ul class="step-list">
+                        <li>{% trans "Use high-quality photos for better resolution." %}</li>
+                        <li>{% trans "Ensure GPS location is enabled for precision." %}</li>
+                        <li>{% trans "Check for existing issues to avoid duplicates." %}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <h5>{% trans "Officer Management" %}</h5>
+                    <p class="small text-muted">{% trans "Workflow for field officers and staff." %}</p>
+                    <ul class="step-list">
+                        <li>{% trans "Review assigned tasks daily." %}</li>
+                        <li>{% trans "Update status as soon as progress is made." %}</li>
+                        <li>{% trans "Upload proof of resolution for transparency." %}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

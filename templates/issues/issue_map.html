@@ -1,0 +1,379 @@
+{% extends "citizen/base.html" %}
+{% load static %}
+
+{% block title %}Unified Issue Map | Civic Portal{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+<style>
+/* CONTENT OVERRIDE */
+.content {
+  flex: 1;
+  position: relative;
+  padding: 0 !important; /* Full edge-to-edge map */
+  height: calc(100vh - 64px); /* Subtract topbar height */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* MAP */
+#map {
+  flex: 1;
+  width: 100%;
+  height: 100%; /* Ensure it fills the flex container */
+  min-height: 500px;
+  background: #f0f0f0; /* Fallback background */
+  z-index: 1;
+}
+
+/* FLOATING OVERLAYS */
+.map-overlay {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 90%;
+  max-width: 800px;
+  pointer-events: none; /* Allow clicking map through container gap */
+}
+
+.map-controls {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  pointer-events: auto; /* Re-enable for controls */
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 25px;
+  right: 15px;
+  z-index: 1000;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  font-size: 12px;
+}
+
+.legend-item { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+/* POPUP STYLING */
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+}
+.leaflet-popup-content { margin: 0; width: 220px !important; }
+.popup-header {
+  background: #f8fafc;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.popup-body { padding: 12px; }
+
+/* FIX SCROLL TRAPPING */
+#map:focus { outline: none; }
+
+/* MARKER INTERACTIVITY FIX */
+.custom-div-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer !important;
+}
+.marker-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+  pointer-events: auto;
+}
+.custom-div-icon:hover .marker-dot {
+  transform: scale(1.3);
+}
+.leaflet-marker-icon {
+  pointer-events: auto !important;
+}
+
+/* OFFICER UI FIXES FOR TOPBAR COMPONENTS */
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.topbar-title { margin: 0; font-size: 18px; font-weight: 600; color: #fff; }
+.topbar-divider { color: rgba(255,255,255,0.3); font-size: 18px; }
+.topbar-subtitle { margin: 0; color: rgba(255,255,255,0.7); font-size: 13px; }
+.topbar-right { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    justify-content: flex-end;
+}
+.topbar .user-section { display: flex; align-items: center; gap: 12px; }
+.topbar .user-details { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.2; }
+.topbar .username { font-weight: 600; font-size: 14px; color: #fff; }
+.topbar .dept { font-size: 11px; color: rgba(255,255,255,0.7); }
+
+.lang-wrapper, .notif-wrapper { position: relative; display: inline-block; }
+.notif-dropdown, .lang-dropdown {
+    position: absolute; top: 100%; right: 0; margin-top: 8px;
+    background: #ffffff; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 1100; display: none; border: 1px solid #e2e8f0; list-style: none; overflow: hidden; color: #333;
+    width: 320px; text-align: left;
+}
+.lang-dropdown { width: 160px; }
+.notif-dropdown.show, .lang-dropdown.show { display: block; }
+.notif-header { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+.notif-header h6 { margin: 0; font-weight: 700; color: #1e293b; font-size: 14px; }
+.lang-item { width: 100%; padding: 10px 16px; cursor: pointer; font-size: 13.5px; color: #475569; transition: all 0.2s; text-align: left; border: none; background: none; display: block; text-decoration: none; }
+.lang-item:hover { background: #f1f5f9; color: #6366f1; }
+.lang-item.active { background: #6366f1; color: white; }
+
+.nav-pill-btn { height: 36px; padding: 0 12px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; color: #fff !important; transition: all 0.2s; text-decoration: none !important; cursor: pointer; }
+.nav-pill-btn:hover { background: rgba(255,255,255,0.2); }
+.notif-btn { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: #fff; transition: all 0.2s; position: relative; cursor: pointer; padding: 0; }
+.notif-btn:hover { background: rgba(255,255,255,0.2); }
+.notif-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 10px; font-weight: 700; height: 18px; min-width: 18px; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #0a2342; }
+.ai-btn { height: 36px; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: none; padding: 0 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
+.ai-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3); color: white; }
+
+/* TOPBAR ADJUSTMENTS */
+.topbar {
+    z-index: 1010 !important; /* Above map overlays */
+}
+.topbar .logout-btn { display: none !important; } /* Redundant safety */
+
+/* RESPONSIVE MAP HEIGHT */
+@media (max-width: 768px) {
+  .content {
+    height: calc(100vh - 56px); /* Mobile topbar height usually smaller */
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+      <!-- FLOATING CONTROLS -->
+      <div class="map-overlay">
+        <div class="map-controls">
+          <div class="d-flex align-items-center me-auto">
+            <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+            <span class="fw-bold d-none d-md-inline">Civic Pulse Map</span>
+          </div>
+          
+          <select id="categoryFilter" class="form-select form-select-sm border-0 bg-light" style="width: auto;">
+            <option value="">All Categories</option>
+            <option value="pwd">Public Works (PWD)</option>
+            <option value="water_supply">Water Supply</option>
+            <option value="sanitation">Sanitation</option>
+            <option value="electricity">Electricity</option>
+            <option value="road_transport">Road & Transport</option>
+            <option value="drainage_sewerage">Drainage & Sewerage</option>
+            <option value="health">Health</option>
+            <option value="environment">Environment</option>
+            <option value="urban_planning">Urban Planning</option>
+            <option value="disaster_management">Disaster Management</option>
+            <option value="traffic_police">Traffic Police</option>
+            <option value="municipal_engineering">Municipal Engineering</option>
+          </select>
+
+          <select id="statusFilter" class="form-select form-select-sm border-0 bg-light" style="width: auto;">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+
+          <select id="priorityFilter" class="form-select form-select-sm border-0 bg-light" style="width: auto;">
+            <option value="">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="emergency">Emergency</option>
+          </select>
+
+          {% if user.role == 'officer' %}
+          <div class="form-check form-switch ms-2">
+            <input class="form-check-input" type="checkbox" id="assignedToggle">
+            <label class="form-check-label small fw-bold" for="assignedToggle">My Assigned</label>
+          </div>
+          {% endif %}
+          
+          <button id="refreshBtn" class="btn btn-sm btn-primary rounded-pill px-3 ms-2">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div> Emergency</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #f97316;"></div> High</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #3b82f6;"></div> Medium</div>
+        <div class="legend-item"><div class="legend-dot" style="background: #10b981;"></div> Resolved</div>
+      </div>
+
+      <!-- MAP -->
+      <div id="map"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // SCROLL FIX: scrollWheelZoom: false prevents scroll trapping until clicked
+  const map = L.map("map", { 
+    worldCopyJump: true,
+    scrollWheelZoom: false
+  }).setView([19.7515, 75.7139], 7);
+
+  // Re-enable scroll zoom on interaction
+  map.on('focus', () => { map.scrollWheelZoom.enable(); });
+  map.on('blur', () => { map.scrollWheelZoom.disable(); });
+
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    maxZoom: 19,
+    attribution: '&copy; CARTO',
+    detectRetina: true
+  }).addTo(map);
+
+  // Fix: Force invalidateSize after a short delay to ensure container size is captured
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 300);
+
+  const markerCluster = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    zoomToBoundsOnClick: true,
+    removeOutsideVisibleBounds: true,
+    animate: true
+  });
+  map.addLayer(markerCluster);
+
+  function getMarkerIcon(priority, status) {
+    let color = "#3b82f6"; // Medium/Default
+    if (status === 'resolved') color = "#10b981";
+    else if (priority === 'emergency') color = "#ef4444";
+    else if (priority === 'high') color = "#f97316";
+    else if (priority === 'low') color = "#94a3b8";
+
+    // Increase iconSize to 24x24 for better click target, but keep dot small
+    return L.divIcon({
+      className: 'custom-div-icon',
+      html: `<div class="marker-dot" style="background-color:${color};"></div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+  }
+
+  async function loadData() {
+    const category = document.getElementById("categoryFilter").value;
+    const status = document.getElementById("statusFilter").value;
+    const priority = document.getElementById("priorityFilter").value;
+    const assignedToggle = document.getElementById("assignedToggle");
+    const assigned = assignedToggle ? assignedToggle.checked : false;
+
+    const url = new URL("{% url 'issues:issue_map_data' %}", window.location.origin);
+    if (category) url.searchParams.append("category", category);
+    if (status) url.searchParams.append("status", status);
+    if (priority) url.searchParams.append("priority", priority);
+    if (assigned) url.searchParams.append("assigned_to_me", "true");
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      renderMarkers(data.issues);
+    } catch (err) {
+      console.error("Map Data Fetch Error:", err);
+    }
+  }
+
+  function renderMarkers(issues) {
+    markerCluster.clearLayers();
+
+    issues.forEach(issue => {
+      const lat = parseFloat(issue.latitude);
+      const lng = parseFloat(issue.longitude);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      // Filter priority in frontend as backend doesn't handle it yet (Phase 6)
+      const pFilter = document.getElementById("priorityFilter").value;
+      if (pFilter && issue.priority !== pFilter) return;
+
+      const marker = L.marker([lat, lng], {
+        icon: getMarkerIcon(issue.priority, issue.status),
+        interactive: true,
+        bubblingMouseEvents: true
+      });
+
+      let detailUrl;
+      {% if user.role == "citizen" %}
+        detailUrl = "{% url 'citizen:citizen_issue_detail' 0 %}".replace('0', issue.id);
+      {% elif user.role == "officer" %}
+        detailUrl = "{% url 'dashboards:issue_detail' 0 %}".replace('0', issue.id);
+      {% else %}
+        detailUrl = "{% url 'dashboards:admin_issue_detail' 0 %}".replace('0', issue.id);
+      {% endif %}
+
+      const dateStr = new Date(issue.created_at).toLocaleDateString();
+
+      const popupContent = `
+        <div class="popup-header">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="badge ${issue.priority === 'emergency' ? 'bg-danger' : 'bg-primary'} small">${issue.priority.toUpperCase()}</span>
+            <span class="text-muted small">${dateStr}</span>
+          </div>
+          <h6 class="mt-2 mb-0 fw-bold">${issue.title}</h6>
+        </div>
+        <div class="popup-body">
+          <div class="small mb-1"><strong>Dept:</strong> ${issue.department__name || 'N/A'}</div>
+          <div class="small mb-1"><strong>Loc:</strong> ${issue.location || 'N/A'}</div>
+          <div class="small mb-2"><strong>Status:</strong> <span class="text-primary fw-bold">${issue.status.replace('_', ' ').toUpperCase()}</span></div>
+          <a href="${detailUrl}" class="btn btn-primary btn-sm w-100 py-1">View Details</a>
+        </div>
+      `;
+
+      marker.bindPopup(popupContent, {
+        maxWidth: 250,
+        minWidth: 200,
+        className: 'custom-popup'
+      });
+
+      markerCluster.addLayer(marker);
+    });
+
+    if (markerCluster.getLayers().length > 0) {
+      map.fitBounds(markerCluster.getBounds().pad(0.1));
+    }
+  }
+
+  // Event Listeners
+  ["categoryFilter", "statusFilter", "priorityFilter"].forEach(id => {
+    document.getElementById(id).addEventListener("change", loadData);
+  });
+
+  const assignedToggle = document.getElementById("assignedToggle");
+  if (assignedToggle) assignedToggle.addEventListener("change", loadData);
+
+  document.getElementById("refreshBtn").addEventListener("click", loadData);
+
+  // Initial Load
+  loadData();
+});
+</script>
+{% endblock %}

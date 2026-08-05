@@ -1,0 +1,70 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse | View Officers{% endblock %}
+
+{% block page_title %}Manage Officers{% endblock %}
+{% block page_subtitle %}View and manage all active city administrators{% endblock %}
+
+{% block content %}
+<div class="table-card" style="background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); overflow: hidden;">
+    <div class="table-header" style="padding: 20px 30px; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin:0;">Active Officers</h3>
+        <a href="{% url 'dashboards:add_officer' %}" class="ai-btn" style="text-decoration:none; font-size: 0.8rem;">
+            + Add New Officer
+        </a>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #f9fafb;">
+                <th style="text-align: left; padding: 15px 30px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-gray); letter-spacing: 0.5px;">Officer Name</th>
+                <th style="text-align: left; padding: 15px 30px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-gray); letter-spacing: 0.5px;">Department</th>
+                <th style="text-align: left; padding: 15px 30px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-gray); letter-spacing: 0.5px;">Level</th>
+                <th style="text-align: left; padding: 15px 30px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-gray); letter-spacing: 0.5px;">Jurisdiction</th>
+                <th style="text-align: left; padding: 15px 30px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-gray); letter-spacing: 0.5px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for officer in officers %}
+            <tr>
+                <td style="padding: 18px 30px; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem;">
+                    <div class="officer-info" style="display: flex; align-items: center; gap: 12px;">
+                        <div class="avatar-circle" style="width: 35px; height: 35px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #7c3aed; font-weight: bold;">{{ officer.user.username|slice:":1"|upper }}</div>
+                        <div>
+                            <b>{{ officer.user.username }}</b><br>
+                            <small style="color:gray;">{{ officer.user.email }}</small>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding: 18px 30px; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem;">{{ officer.department.name }}</td>
+                <td style="padding: 18px 30px; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem;">
+                    <span class="badge badge-{{ officer.level }}" style="padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; {% if officer.level == 'village' %}background: #dcfce7; color: #166534;{% elif officer.level == 'taluka' %}background: #fef9c3; color: #854d0e;{% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                        {{ officer.level|title }}
+                    </span>
+                </td>
+                <td style="padding: 18px 30px; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem;">
+                    {% if officer.level == 'village' %}
+                        {{ officer.village }}, {{ officer.taluka }}
+                    {% elif officer.level == 'taluka' %}
+                        {{ officer.taluka }}, {{ officer.district }}
+                    {% else %}
+                        {{ officer.district }} District
+                    {% endif %}
+                </td>
+                <td style="padding: 18px 30px; border-bottom: 1px solid #f3f4f6; font-size: 0.95rem;">
+                    <button class="btn-action" title="Edit" style="padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; background: white; cursor: pointer; color: var(--text-gray); transition: 0.2s; margin-right: 5px;"><i class="bi bi-pencil"></i></button>
+                    <button class="btn-action" title="View Logs" style="padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; background: white; cursor: pointer; color: var(--text-gray); transition: 0.2s; margin-right: 5px;"><i class="bi bi-file-earmark-text"></i></button>
+                    <button class="btn-action" style="padding: 6px; border-radius: 6px; border: 1px solid #e5e7eb; background: white; cursor: pointer; color:#ef4444; transition: 0.2s; margin-right: 5px;" title="Deactivate"><i class="bi bi-trash"></i></button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-gray);">
+                    No officers found. <a href="{% url 'dashboards:add_officer' %}" style="color: #7c3aed;">Add your first officer</a>.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

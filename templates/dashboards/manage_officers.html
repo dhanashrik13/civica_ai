@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <div class="flex-between mb-4">
+    <h3 class="m-0">Officers</h3>
+    <a href="{% url 'dashboards:add_officer' %}" class="btn btn-primary">Add Officer</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Active</th></tr></thead>
+      <tbody>
+        {% for off in officers %}
+        <tr>
+          <td>{{ off.id }}</td>
+          <td>{{ off.username }}</td>
+          <td>{{ off.email }}</td>
+          <td>
+            {% if off.is_active %}
+                <span class="status-pill resolved">Active</span>
+            {% else %}
+                <span class="status-pill pending">Inactive</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

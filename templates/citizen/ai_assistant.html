@@ -1,0 +1,148 @@
+<!-- DEPRECATED: Do not use. Use templates/assistant/assistant_refactored.html instead. -->
+{% extends "citizen/base.html" %}
+{% load static %}
+{% block title %}AI Assistant | Civic Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+.chat-container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.message {
+    padding: 12px 18px;
+    border-radius: 15px;
+    margin-bottom: 12px;
+    max-width: 80%;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.user-msg {
+    background: #0a2342;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 2px;
+}
+
+.ai-msg {
+    background: #f1f5f9;
+    color: #000000 !important;
+    border-bottom-left-radius: 2px;
+    opacity: 1 !important;
+    font-weight: 450;
+}
+
+.ai-msg div, .ai-msg span, .ai-msg p {
+    color: #000000 !important;
+    opacity: 1 !important;
+}
+
+.chat-input {
+    display: flex;
+    gap: 12px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+}
+.chat-input input {
+    /* Reverted overrides */
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <h4 class="fw-bold mb-4">🤖 AI Civic Assistant</h4>
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chatBox">
+                <div class="message ai-msg">
+                    Hello! I'm your AI Civic Assistant. How can I help you today? You can ask me about local policies, report procedures, or even upload documents for analysis.
+                </div>
+                {% for chat in chats %}
+                    <div class="message {% if chat.role == 'user' %}user-msg{% else %}ai-msg{% endif %}">
+                        {{ chat.message }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form id="chatForm" class="chat-input" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="message" id="messageInput" class="form-control" placeholder="Ask about any civic issue..." required>
+                <div class="input-group" style="max-width: 250px;">
+                    <input type="file" name="document" id="documentInput" class="form-control" style="font-size: 12px;">
+                </div>
+                <button class="btn btn-primary px-4">
+                    <i class="bi bi-send"></i> Send
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const form = document.getElementById("chatForm");
+const chatBox = document.getElementById("chatBox");
+
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const message = document.getElementById("messageInput").value;
+
+    chatBox.innerHTML += `<div class="message user-msg">${message}</div>`;
+    document.getElementById("messageInput").value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    try {
+        const response = await fetch("", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        const data = await response.json();
+
+        chatBox.innerHTML += `<div class="message ai-msg">${data.reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (error) {
+        chatBox.innerHTML += `<div class="message ai-msg text-danger">Sorry, there was an error processing your request.</div>`;
+    }
+});
+</script>
+{% endblock %}

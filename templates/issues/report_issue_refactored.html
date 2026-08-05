@@ -1,0 +1,516 @@
+{% extends "citizen/base.html" %}
+{% load static i18n %}
+{% block title %}Report Issue | Civic Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Fixed: Using normal document flow and background-image to prevent overlap and interaction issues */
+    .report-hero {
+        width: 100%;
+        min-height: 200px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        /* Dark overlay + Image for better text contrast */
+        background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), 
+                    url('https://images.unsplash.com/photo-1517089534706-33c2ec3b9b31?q=80&w=1200&auto=format&fit=crop') center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 40px;
+        color: white;
+        box-sizing: border-box;
+    }
+
+    .report-hero h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .report-hero p {
+        font-size: 1.1rem;
+        opacity: 0.95;
+        max-width: 550px;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        .report-hero {
+            min-height: 180px;
+            padding: 30px 20px;
+        }
+        .report-hero h1 {
+            font-size: 1.6rem;
+        }
+        .report-hero p {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <!-- Fixed: Hero Section is now a standard block element in normal flow -->
+        <div class="report-hero">
+            <h1>Report Civic Issues Easily</h1>
+            <p>Help your city by reporting problems quickly and tracking their resolution in real-time.</p>
+        </div>
+
+        <div class="table-card p-4">
+            <h1 class="h3 mb-4 fw-bold">Report a Civic Issue</h1>
+            <form method="post" enctype="multipart/form-data" class="row g-3" id="issue-form">
+                {% csrf_token %}
+                {% if form.errors %}
+                <div class="col-12">
+                    <div style="color: red; border: 1px solid red; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h6 class="fw-bold">Please correct the following errors:</h6>
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                {{ form.latitude }}{{ form.longitude }}{{ form.district }}{{ form.taluka }}{{ form.village }}{{ form.ward }}{{ form.city }}
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Title</label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Category</label>
+                    {{ form.category }}
+                    {% for error in form.category.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Description</label>
+                    {{ form.description }}
+                    {% for error in form.description.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-sm btn-outline-info" id="ai-analyze-btn">
+                            ✨ Analyze with AI Assistant
+                        </button>
+                        <div id="ai-suggestions" class="mt-2 p-3 rounded bg-light d-none border">
+                            <h6 class="fw-bold mb-2">🤖 AI Recommendations:</h6>
+                            <div id="ai-content" class="small text-muted"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Governance Scope / Area Type</label>
+                    {{ form.governance_scope }}
+                    {% for error in form.governance_scope.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4" id="district-container">
+                    <label class="form-label fw-semibold">District</label>
+                    <select class="form-select" id="district-select" name="district_id"><option value="">Select</option></select>
+                    {% for error in form.district.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 d-none" id="taluka-container">
+                    <label class="form-label fw-semibold">Taluka</label>
+                    <select class="form-select" id="taluka-select" name="taluka_id"><option value="">Select</option></select>
+                    {% for error in form.taluka.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 d-none" id="village-container">
+                    <label class="form-label fw-semibold">Village</label>
+                    <select class="form-select" id="village-select" name="village_id"><option value="">Select</option></select>
+                    {% for error in form.village.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 d-none" id="city-container">
+                    <label class="form-label fw-semibold">City</label>
+                    <select class="form-select" id="city-select" name="city_id"><option value="">Select</option></select>
+                    {% for error in form.city.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 d-none" id="ward-container">
+                    <label class="form-label fw-semibold">Ward / Area</label>
+                    <select class="form-select" id="ward-select" name="ward_id"><option value="">Select</option></select>
+                    {% for error in form.ward.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Formatted location</label>
+                    {{ form.location }}
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Photo 1</label>
+                    {{ form.photo1 }}
+                    {% for error in form.photo1.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                    <div id="preview1" class="mt-2 d-none"><img src="" class="img-thumbnail" style="max-height: 100px;"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Photo 2</label>
+                    {{ form.photo2 }}
+                    {% for error in form.photo2.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                    <div id="preview2" class="mt-2 d-none"><img src="" class="img-thumbnail" style="max-height: 100px;"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Photo 3</label>
+                    {{ form.photo3 }}
+                    {% for error in form.photo3.errors %}
+                        <div style="color: red; font-size: 0.875rem; margin-top: 5px;">{{ error }}</div>
+                    {% endfor %}
+                    <div id="preview3" class="mt-2 d-none"><img src="" class="img-thumbnail" style="max-height: 100px;"></div>
+                </div>
+                <div class="col-12 text-end mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5" id="submit-issue-btn">
+                        <span class="spinner-border spinner-border-sm d-none" id="submit-spinner" role="status" aria-hidden="true"></span>
+                        <span id="submit-text">Submit Issue</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{ locations|json_script:"locations-data" }}
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Civic Portal: Initializing Governance Location System...");
+
+    const locationsDataElem = document.getElementById("locations-data");
+    if (!locationsDataElem) {
+        console.error("FATAL: #locations-data not found in DOM.");
+        return;
+    }
+
+    const locations = JSON.parse(locationsDataElem.textContent);
+    console.log(`Dataset loaded: ${locations.length} locations found.`);
+
+    const scopeSelect = document.getElementById("id_governance_scope");
+    const districtSelect = document.getElementById("district-select");
+    const talukaSelect = document.getElementById("taluka-select");
+    const villageSelect = document.getElementById("village-select");
+    const citySelect = document.getElementById("city-select");
+    const wardSelect = document.getElementById("ward-select");
+
+    const controls = [scopeSelect, districtSelect, talukaSelect, villageSelect, citySelect, wardSelect];
+    const missing = controls.filter(c => !c);
+    if (missing.length > 0) {
+        console.error("FATAL: Some control elements are missing from the DOM.", missing);
+        return;
+    }
+
+    const containers = {
+        district: document.getElementById("district-container"),
+        taluka: document.getElementById("taluka-container"),
+        village: document.getElementById("village-container"),
+        city: document.getElementById("city-container"),
+        ward: document.getElementById("ward-container")
+    };
+
+    const hiddenFields = {
+        district: document.getElementById("id_district"),
+        taluka: document.getElementById("id_taluka"),
+        village: document.getElementById("id_village"),
+        city: document.getElementById("id_city"),
+        ward: document.getElementById("id_ward"),
+        location: document.getElementById("id_location")
+    };
+
+    function clearDropdown(select) {
+        select.innerHTML = '<option value="">Select</option>';
+        select.value = "";
+    }
+
+    function updateLocationString() {
+        const parts = [];
+        const scope = scopeSelect.value;
+        console.log(`Syncing location string for scope: ${scope}`);
+
+        // Always check District
+        if (districtSelect.selectedIndex > 0) {
+            const dText = districtSelect.options[districtSelect.selectedIndex].text;
+            parts.push(dText);
+            hiddenFields.district.value = dText;
+        } else {
+            hiddenFields.district.value = "";
+        }
+
+        // Rural Path
+        if (scope === 'village' || scope === 'taluka') {
+            if (talukaSelect.selectedIndex > 0) {
+                const tText = talukaSelect.options[talukaSelect.selectedIndex].text;
+                parts.push(tText);
+                hiddenFields.taluka.value = tText;
+            } else { hiddenFields.taluka.value = ""; }
+
+            if (scope === 'village' && villageSelect.selectedIndex > 0) {
+                const vText = villageSelect.options[villageSelect.selectedIndex].text;
+                parts.push(vText);
+                hiddenFields.village.value = vText;
+            } else { hiddenFields.village.value = ""; }
+            
+            hiddenFields.city.value = "";
+            hiddenFields.ward.value = "";
+        }
+        // Urban Path
+        else if (scope === 'ward' || scope === 'city') {
+            if (citySelect.selectedIndex > 0) {
+                const cText = citySelect.options[citySelect.selectedIndex].text;
+                parts.push(cText);
+                hiddenFields.city.value = cText;
+            } else { hiddenFields.city.value = ""; }
+
+            if (scope === 'ward' && wardSelect.selectedIndex > 0) {
+                const wText = wardSelect.options[wardSelect.selectedIndex].text;
+                parts.push(wText);
+                hiddenFields.ward.value = wText;
+            } else { hiddenFields.ward.value = ""; }
+
+            hiddenFields.taluka.value = "";
+            hiddenFields.village.value = "";
+        }
+        
+        const finalStr = parts.join(" > ");
+        hiddenFields.location.value = finalStr;
+        console.log("Location String Update:", finalStr);
+    }
+
+    function handleScopeChange() {
+        const scope = scopeSelect.value;
+        console.log(`Scope changed to: ${scope}. Resetting hierarchy.`);
+        
+        [districtSelect, talukaSelect, villageSelect, citySelect, wardSelect].forEach(clearDropdown);
+        Object.values(hiddenFields).forEach(f => { if(f) f.value = ""; });
+
+        // Hide all
+        Object.values(containers).forEach(c => { if(c) c.classList.add('d-none'); });
+
+        if (!scope) {
+            updateLocationString();
+            return;
+        }
+
+        // Show District (Universal Base)
+        containers.district.classList.remove('d-none');
+        const districts = locations.filter(l => l.type === 'district').sort((a,b) => a.name.localeCompare(b.name));
+        districts.forEach(d => districtSelect.add(new Option(d.name, d.id)));
+
+        if (scope === 'village') {
+            containers.taluka.classList.remove('d-none');
+            containers.village.classList.remove('d-none');
+        } else if (scope === 'taluka') {
+            containers.taluka.classList.remove('d-none');
+        } else if (scope === 'ward') {
+            containers.city.classList.remove('d-none');
+            containers.ward.classList.remove('d-none');
+        } else if (scope === 'city') {
+            containers.city.classList.remove('d-none');
+        }
+        updateLocationString();
+    }
+
+    scopeSelect.addEventListener("change", handleScopeChange);
+
+    districtSelect.addEventListener("change", () => {
+        const distId = districtSelect.value;
+        const scope = scopeSelect.value;
+        console.log(`District changed: ${distId}. Filtering children for scope: ${scope}`);
+
+        [talukaSelect, villageSelect, citySelect, wardSelect].forEach(clearDropdown);
+
+        if (!distId) {
+            updateLocationString();
+            return;
+        }
+
+        if (scope === 'village' || scope === 'taluka') {
+            const talukas = locations.filter(l => l.type === 'taluka' && String(l.parent_id) === String(distId))
+                .sort((a,b) => a.name.localeCompare(b.name));
+            console.log(`Found ${talukas.length} talukas.`);
+            talukas.forEach(l => talukaSelect.add(new Option(l.name, l.id)));
+        } else if (scope === 'ward' || scope === 'city') {
+            const cities = locations.filter(l => l.type === 'city' && String(l.parent_id) === String(distId))
+                .sort((a,b) => a.name.localeCompare(b.name));
+            console.log(`Found ${cities.length} cities.`);
+            cities.forEach(l => citySelect.add(new Option(l.name, l.id)));
+        }
+        updateLocationString();
+    });
+
+    talukaSelect.addEventListener("change", () => {
+        const talId = talukaSelect.value;
+        console.log(`Taluka changed: ${talId}. Filtering villages.`);
+        clearDropdown(villageSelect);
+
+        if (talId && scopeSelect.value === 'village') {
+            const villages = locations.filter(l => l.type === 'village' && String(l.parent_id) === String(talId))
+                .sort((a,b) => a.name.localeCompare(b.name));
+            console.log(`Found ${villages.length} villages.`);
+            villages.forEach(l => villageSelect.add(new Option(l.name, l.id)));
+        }
+        updateLocationString();
+    });
+
+    citySelect.addEventListener("change", () => {
+        const cityId = citySelect.value;
+        console.log(`City changed: ${cityId}. Filtering wards.`);
+        clearDropdown(wardSelect);
+
+        if (cityId && scopeSelect.value === 'ward') {
+            // Zone Hierarchy Jump
+            const zoneIds = locations.filter(l => l.type === 'zone' && String(l.parent_id) === String(cityId)).map(z => z.id);
+            const wards = locations.filter(l => l.type === 'ward' && zoneIds.includes(l.parent_id))
+                .sort((a,b) => a.name.localeCompare(b.name));
+            console.log(`Found ${wards.length} wards via ${zoneIds.length} zones.`);
+            wards.forEach(l => wardSelect.add(new Option(l.name, l.id)));
+        }
+        updateLocationString();
+    });
+
+    [villageSelect, wardSelect].forEach(s => s.addEventListener("change", () => {
+        console.log("Leaf node changed, updating string.");
+        updateLocationString();
+    }));
+
+    // Initialize State
+    handleScopeChange();
+
+    // --- UTILS ---
+
+    // IMAGE PREVIEW
+    function setupPreview(inputId, previewId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const previewDiv = document.getElementById(previewId);
+        const previewImg = previewDiv.querySelector('img');
+
+        input.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    previewImg.src = e.target.result;
+                    previewDiv.classList.remove('d-none');
+                };
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                previewDiv.classList.add('d-none');
+            }
+        });
+    }
+
+    setupPreview('id_photo1', 'preview1');
+    setupPreview('id_photo2', 'preview2');
+    setupPreview('id_photo3', 'preview3');
+
+    // SUBMISSION
+    document.getElementById('issue-form').addEventListener('submit', function(e) {
+        const title = document.getElementById('id_title').value;
+        const description = document.getElementById('id_description').value;
+        const scope = scopeSelect.value;
+        
+        let validLocation = false;
+        if (scope === 'village' && villageSelect.value) validLocation = true;
+        else if (scope === 'ward' && wardSelect.value) validLocation = true;
+        else if (scope === 'taluka' && talukaSelect.value) validLocation = true;
+        else if (scope === 'city' && citySelect.value) validLocation = true;
+        else if (scope === 'district' && districtSelect.value) validLocation = true;
+
+        console.log("Validating submission...", { title, description, scope, validLocation });
+
+        if (!title || !description || !validLocation) {
+            e.preventDefault();
+            alert("Please fill in all required fields (Title, Description, and valid Location for the selected Scope).");
+            return;
+        }
+
+        const btn = document.getElementById('submit-issue-btn');
+        const spinner = document.getElementById('submit-spinner');
+        const text = document.getElementById('submit-text');
+
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        text.innerText = "Submitting...";
+    });
+
+    // AI ASSISTANT
+    const aiBtn = document.getElementById('ai-analyze-btn');
+    if (aiBtn) {
+        aiBtn.addEventListener('click', async function() {
+            const description = document.getElementById('id_description').value;
+            if (!description || description.length < 10) {
+                alert("Please provide a more detailed description first.");
+                return;
+            }
+
+            const originalText = aiBtn.innerText;
+            aiBtn.innerText = "⏳ Analyzing...";
+            aiBtn.disabled = true;
+
+            try {
+                const response = await fetch("{% url 'ai_standalone:suggestions' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ description: description })
+                });
+
+                const data = await response.json();
+                const container = document.getElementById('ai-suggestions');
+                const content = document.getElementById('ai-content');
+
+                if (data.error) {
+                    content.innerHTML = `<span class="text-danger">Error: ${data.error}</span>`;
+                } else {
+                    let deptHtml = `<div class="mb-1"><strong>Primary Department:</strong> ${data.department}</div>`;
+                    if (data.secondary_department) {
+                        deptHtml += `<div class="mb-1 text-muted"><strong>Secondary/Escalation:</strong> ${data.secondary_department}</div>`;
+                    }
+                    
+                    content.innerHTML = `
+                        <div class="mb-1"><strong>Category:</strong> ${data.category}</div>
+                        <div class="mb-1"><strong>Priority:</strong> ${data.priority}</div>
+                        ${deptHtml}
+                        <div class="mt-2 p-2 rounded border-start border-4 border-info bg-white">
+                             <div class="fw-bold small text-info text-uppercase">Reasoning:</div>
+                             <div class="small fst-italic">"${data.response}"</div>
+                             ${data.analysis && data.analysis.root_cause ? `<div class="mt-1 small"><strong>Root Cause:</strong> ${data.analysis.root_cause}</div>` : ''}
+                        </div>
+                    `;
+                }
+                container.classList.remove('d-none');
+            } catch (err) {
+                console.error("AI Assistant Error:", err);
+                alert("AI Assistant is currently unavailable.");
+            } finally {
+                aiBtn.innerText = originalText;
+                aiBtn.disabled = false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

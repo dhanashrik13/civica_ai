@@ -1,0 +1,53 @@
+{% load i18n %}
+<aside class="sidebar">
+    <div class="logo">
+        ⚡ <span>Civica AI</span>
+        <p class="sub">{% trans "Officer Portal" %}</p>
+    </div>
+
+    <div class="menu-section">
+        <p class="menu-title">{% trans "Main Navigation" %}</p>
+
+        <a href="{% url 'dashboards:officer_dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'officer_dashboard' %}active{% endif %}">
+            📊 {% trans "Dashboard" %}
+        </a>
+
+        <a href="{% url 'dashboards:assigned_issues' %}" class="menu-item {% if request.resolver_match.url_name == 'assigned_issues' %}active{% endif %}">
+            📋 {% trans "Assigned Issues" %}
+        </a>
+
+        <a href="{% url 'dashboards:all_issues' %}" class="menu-item {% if request.resolver_match.url_name == 'all_issues' %}active{% endif %}">
+            📁 {% trans "All Issues" %}
+        </a>
+
+        <a href="{% url 'dashboards:map_view' %}" class="menu-item {% if request.resolver_match.url_name == 'map_view' or request.resolver_match.url_name == 'common_map' %}active{% endif %}">
+            📍 {% trans "Map View" %}
+        </a>
+
+        <a href="{% url 'dashboards:create_announcement' %}" class="menu-item {% if request.resolver_match.url_name == 'create_announcement' %}active{% endif %}">
+            📢 {% trans "Post Announcement" %}
+        </a>
+
+        <a href="{% url 'dashboards:announcement_list' %}" class="menu-item {% if request.resolver_match.url_name == 'announcement_list' %}active{% endif %}">
+            📜 {% trans "Announcements" %}
+        </a>
+    </div>
+
+    <div class="menu-section">
+        <p class="menu-title">{% trans "System" %}</p>
+
+        <a href="{% url 'dashboards:reports' %}" class="menu-item {% if request.resolver_match.url_name == 'reports' %}active{% endif %}">
+            📈 {% trans "Analytics" %}
+        </a>
+
+        <a href="{% url 'dashboards:profile' %}" class="menu-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            👤 {% trans "Profile" %}
+        </a>
+    </div>
+
+    <div class="status-box">
+        <p>• {% trans "Live Status" %}</p>
+        <small>{% trans "Systems optimal" %}</small>
+        <strong>{% trans "Uptime 99.9%" %}</strong>
+    </div>
+</aside>

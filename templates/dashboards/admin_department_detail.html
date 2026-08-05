@@ -1,0 +1,77 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}{{ department.name }} | Admin Portal{% endblock %}
+
+{% block page_title %}{{ department.name }} Issues{% endblock %}
+{% block page_subtitle %}Complete list of reports for this department{% endblock %}
+
+{% block extra_css %}
+<style>
+    .unassigned-row {
+        background-color: #ffe5e5 !important;   /* light red */
+    }
+
+    .unassigned-row:hover {
+        background-color: #ffcccc !important;
+    }
+
+    .unassigned-row td {
+        color: #b30000;
+        font-weight: 500;
+    }
+
+    .page-card { 
+        background: var(--bg-card); 
+        border-radius: var(--radius); 
+        padding: 30px; 
+        box-shadow: var(--shadow); 
+        border: 1px solid var(--border-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-card">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Reported By</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr class="{% if not issue.assigned_to %}unassigned-row{% endif %}">
+                    <td class="fw-bold text-primary">#CN-{{ issue.id }}</td>
+                    <td><strong class="text-dark">{{ issue.title }}</strong></td>
+                    <td>{{ issue.location }}</td>
+                    <td>{{ issue.reported_by.full_name|default:issue.reported_by.username }}</td>
+                    <td>
+                        <span class="status-pill {{ issue.status|slugify }}">
+                            {{ issue.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="text-muted">{{ issue.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'dashboards:admin_issue_detail' issue.id %}" class="btn btn-primary btn-sm">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                        No issues found for this department.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

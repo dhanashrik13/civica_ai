@@ -1,0 +1,115 @@
+<script>
+/**
+ * LIVE NOTIFICATION ENGINE v2.0
+ * Unified logic for Citizen, Officer, and Admin portals.
+ * Ensures data is strictly database-driven.
+ */
+
+async function fetchNotifications() {
+    console.log("[LIVE-NOTIF] Fetching fresh data from database...");
+    const itemsContainer = document.getElementById('notif-items');
+    const badge = document.getElementById('notif-badge');
+    const countLabel = document.getElementById('notif-count');
+    
+    if (!itemsContainer) {
+        console.warn("[LIVE-NOTIF] itemsContainer not found in DOM.");
+        return;
+    }
+
+    try {
+        const response = await fetch("{% url 'notifications:list' %}");
+        const data = await response.json();
+        
+        console.log(`[LIVE-NOTIF] Received ${data.notifications.length} records. Unread: ${data.unread_count}`);
+
+        // Update badge and count
+        if (badge) {
+            if (data.unread_count > 0) {
+                badge.innerText = data.unread_count;
+                badge.classList.remove('d-none');
+            } else {
+                badge.classList.add('d-none');
+            }
+        }
+        
+        if (countLabel) {
+            countLabel.innerText = `${data.unread_count} New`;
+        }
+
+        // Render List
+        if (data.notifications.length === 0) {
+            itemsContainer.innerHTML = '<li class="px-3 py-4 text-center text-muted small">No notifications yet</li>';
+            return;
+        }
+
+        itemsContainer.innerHTML = data.notifications.map(n => {
+            const typeLabel = n.type.replace(/_/g, ' ').toUpperCase();
+            const unreadClass = n.is_read ? '' : 'bg-light';
+            const statusDot = n.is_read ? '' : '<span class="status-dot bg-primary rounded-circle" style="width: 8px; height: 8px; flex-shrink: 0; display: inline-block; margin-left: 10px;"></span>';
+            
+            return `
+            <li class="border-bottom notif-item ${unreadClass}" onclick="markAsRead(${n.id}, this)" style="cursor: pointer;">
+                <a class="dropdown-item px-3 py-2 text-wrap" href="${n.url}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="fw-bold mb-1" style="font-size: 11px; color: #6366f1;">${typeLabel}</div>
+                        ${statusDot}
+                    </div>
+                    <div class="small text-dark">${n.message}</div>
+                    <div class="text-muted mt-1" style="font-size: 10px;">${n.created_at}</div>
+                </a>
+            </li>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("[LIVE-NOTIF] API Error:", err);
+    }
+}
+
+async function markAsRead(id, element) {
+    console.log(`[LIVE-NOTIF] Marking record #${id} as read...`);
+    const url = "{% url 'notifications:mark_read' 0 %}".replace('0', id);
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            element.classList.remove('bg-light', 'bg-primary-subtle');
+            const dot = element.querySelector('.status-dot');
+            if (dot) dot.remove();
+            
+            // Re-fetch to sync counts or manually decrement
+            const badge = document.getElementById('notif-badge');
+            if (badge) {
+                let count = parseInt(badge.innerText);
+                if (count > 0) {
+                    count--;
+                    badge.innerText = count;
+                    if (count === 0) badge.classList.add('d-none');
+                }
+            }
+            const countLabel = document.getElementById('notif-count');
+            if (countLabel) {
+                let countText = countLabel.innerText.split(' ')[0];
+                let count = parseInt(countText);
+                if (count > 0) countLabel.innerText = `${count - 1} New`;
+            }
+        }
+    } catch (err) {
+        console.error("[LIVE-NOTIF] MarkRead Error:", err);
+    }
+}
+
+// Initial Sync & Polling
+document.addEventListener('DOMContentLoaded', () => {
+    fetchNotifications();
+    setInterval(fetchNotifications, 60000); // 1 minute polling
+});
+</script>

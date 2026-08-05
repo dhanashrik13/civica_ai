@@ -1,0 +1,53 @@
+{% extends "citizen/base.html" %}
+{% block title %}My Reports | Civic Portal{% endblock %}
+{% block content %}
+<div class="table-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 mb-0 fw-bold">My Reported Issues</h1>
+        <a class="btn btn-primary" href="{% url 'issues:report_issue' %}">
+            <i class="bi bi-plus-lg"></i> New Report
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Issue ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Date Reported</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in reports %}
+                <tr>
+                    <td class="text-muted">#CN-{{ issue.id }}</td>
+                    <td><strong class="text-dark">{{ issue.title }}</strong></td>
+                    <td>
+                        <span class="status-pill {{ issue.status|slugify }}">
+                            {{ issue.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ issue.created_at|date:"M d, Y" }}</td>
+                    <td class="text-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{% url 'citizen:citizen_issue_detail' issue.id %}" class="btn btn-sm btn-secondary">View</a>
+                            <form method="post" action="{% url 'dashboards:citizen_delete_issue' issue.id %}" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">No reports available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

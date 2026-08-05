@@ -1,0 +1,48 @@
+<div class="sidebar">
+    <div class="logo">
+        <div class="logo-icon"><i class="bi bi-lightning-fill"></i></div>
+        <div>
+            <div class="logo-text">CivicPulse</div>
+            <div class="logo-sub">Smart City Platform</div>
+        </div>
+    </div>
+    <div class="sidebar-scroll">
+        <div class="menu-title">MAIN</div>
+        <a href="{% url 'dashboards:admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+            <i class="bi bi-grid"></i> Overview
+        </a>
+        <a href="{% url 'dashboards:add_officer' %}" class="{% if request.resolver_match.url_name == 'add_officer' %}active{% endif %}">
+            <i class="bi bi-person-plus"></i> Add Officer
+        </a>
+        <a href="{% url 'dashboards:view_all_officers' %}" class="{% if request.resolver_match.url_name == 'view_all_officers' %}active{% endif %}">
+            <i class="bi bi-people"></i> View Officers
+        </a>
+        <a href="{% url 'dashboards:officer_workload_report' %}" class="{% if request.resolver_match.url_name == 'officer_workload_report' %}active{% endif %}">
+            <i class="bi bi-bar-chart-line"></i> Workload Report
+        </a>
+        <a href="{% url 'dashboards:all_citizen_activity' %}" class="{% if request.resolver_match.url_name == 'all_citizen_activity' %}active{% endif %}">
+            <i class="bi bi-chat-left-dots"></i> Citizen Activity
+        </a>
+        <a href="{% url 'dashboards:view_assigned_tasks' %}" class="{% if request.resolver_match.url_name == 'view_assigned_tasks' %}active{% endif %}">
+            <i class="bi bi-list-check"></i> Assigned Issues
+        </a>
+        <a href="{% url 'dashboards:approve_announcements' %}" class="{% if request.resolver_match.url_name == 'approve_announcements' %}active{% endif %}">
+            <i class="bi bi-megaphone"></i> Announcements
+        </a>
+        <a href="{% url 'dashboards:common_map' %}" class="{% if request.resolver_match.url_name == 'common_map' %}active{% endif %}">
+            <i class="bi bi-map"></i> Live Map
+        </a>
+        <a href="{% url 'dashboards:global_search' %}" class="{% if request.resolver_match.url_name == 'global_search' %}active{% endif %}">
+            <i class="bi bi-search"></i> Search
+        </a>
+        <div class="menu-title">SYSTEM</div>
+        <a href="{% url 'dashboards:edit_profile' %}" class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+            <i class="bi bi-gear"></i> Edit Profile
+        </a>
+    </div>
+    <div class="live-status">
+        <span class="status-dot">●</span> <b>Live Status</b><br>
+        Systems running smoothly<br>
+        Uptime <b>99.9%</b>
+    </div>
+</div>

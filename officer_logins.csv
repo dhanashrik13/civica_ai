@@ -1,0 +1,86 @@
+Name,Username,Email,Password,Designation,Department,District,Location
+Manoj Thorat,manoj.thorat.421,manoj.thorat.421@mahagov.in,Civica@123,CEO Zilla Parishad,Water Supply,Pune,Pune
+Vidya Gaikwad,vidya.gaikwad.697,vidya.gaikwad.697@mahagov.in,Civica@123,Municipal Commissioner,Electrical,Pune,Pune
+Sandeep Thorat,sandeep.thorat.287,sandeep.thorat.287@mahagov.in,Civica@123,Executive Engineer,Water Supply,Pune,Pimpri
+Snehal Jadhav,snehal.jadhav.184,snehal.jadhav.184@mahagov.in,Civica@123,Executive Engineer,Electrical,Pune,Viman Nagar
+Ganesh Jadhav,ganesh.jadhav.496,ganesh.jadhav.496@mahagov.in,Civica@123,Ward Officer,Sanitation,Pune,Baner
+Abhijeet Sawant,abhijeet.sawant.428,abhijeet.sawant.428@mahagov.in,Civica@123,Block Development Officer,Sanitation,Pune,Baner
+Vikas Jadhav,vikas.jadhav.704,vikas.jadhav.704@mahagov.in,Civica@123,Block Development Officer,Sanitation,Pune,Baramati
+Nitin Ghorpade,nitin.ghorpade.542,nitin.ghorpade.542@mahagov.in,Civica@123,Junior Engineer,Sanitation,Pune,Viman Nagar
+Jyoti Sawant,jyoti.sawant.454,jyoti.sawant.454@mahagov.in,Civica@123,Water Inspector,Solid Waste Management,Pune,Pimpri
+Snehal Ghorpade,snehal.ghorpade.361,snehal.ghorpade.361@mahagov.in,Civica@123,Junior Engineer,Solid Waste Management,Pune,Haveli
+Sachin Shinde,sachin.shinde.398,sachin.shinde.398@mahagov.in,Civica@123,Water Inspector,Water Supply,Pune,Pimpri
+Rahul Shinde,rahul.shinde.703,rahul.shinde.703@mahagov.in,Civica@123,Sanitary Inspector,Water Supply,Pune,Shirur
+Deepak Shinde,deepak.shinde.830,deepak.shinde.830@mahagov.in,Civica@123,Junior Engineer,Public Works Department (PWD),Pune,Kothrud
+Prashant Bhonsle,prashant.bhonsle.459,prashant.bhonsle.459@mahagov.in,Civica@123,Gram Sevak,Health & Sanitation,Pune,Pimpri
+Rajendra Bhonsle,rajendra.bhonsle.608,rajendra.bhonsle.608@mahagov.in,Civica@123,Water Inspector,Public Works Department (PWD),Pune,Haveli
+Sandeep Joshi,sandeep.joshi.541,sandeep.joshi.541@mahagov.in,Civica@123,Water Inspector,Rural Development,Pune,Haveli
+Vikas Joshi,vikas.joshi.743,vikas.joshi.743@mahagov.in,Civica@123,Sanitary Inspector,Solid Waste Management,Pune,Viman Nagar
+Vidya Ghorpade,vidya.ghorpade.968,vidya.ghorpade.968@mahagov.in,Civica@123,Municipal Commissioner,Public Works Department (PWD),Ahilyanagar,Ahilyanagar
+Snehal Joshi,snehal.joshi.164,snehal.joshi.164@mahagov.in,Civica@123,Municipal Commissioner,Electrical,Ahilyanagar,Ahilyanagar
+Snehal Shinde,snehal.shinde.119,snehal.shinde.119@mahagov.in,Civica@123,Executive Engineer,Public Works Department (PWD),Ahilyanagar,Shrirampur
+Deepali Shinde,deepali.shinde.685,deepali.shinde.685@mahagov.in,Civica@123,Ward Officer,Electrical,Ahilyanagar,Nagar
+Prashant Chavan,prashant.chavan.919,prashant.chavan.919@mahagov.in,Civica@123,Executive Engineer,Sanitation,Ahilyanagar,Shrirampur
+Rajesh Patil,rajesh.patil.891,rajesh.patil.891@mahagov.in,Civica@123,Block Development Officer,Electrical,Ahilyanagar,Sangamner
+Rajesh Jadhav,rajesh.jadhav.405,rajesh.jadhav.405@mahagov.in,Civica@123,Executive Engineer,Water Supply,Ahilyanagar,Rahata
+Prakash Pawar,prakash.pawar.951,prakash.pawar.951@mahagov.in,Civica@123,Gram Sevak,Health & Sanitation,Ahilyanagar,Shrirampur
+Jyoti Pawar,jyoti.pawar.973,jyoti.pawar.973@mahagov.in,Civica@123,Water Inspector,Electrical,Ahilyanagar,Sangamner
+Sunil Pawar,sunil.pawar.459,sunil.pawar.459@mahagov.in,Civica@123,Water Inspector,Public Works Department (PWD),Ahilyanagar,Shrirampur
+Deepali Gaikwad,deepali.gaikwad.558,deepali.gaikwad.558@mahagov.in,Civica@123,Water Inspector,Health & Sanitation,Ahilyanagar,Shrirampur
+Deepak Patil,deepak.patil.142,deepak.patil.142@mahagov.in,Civica@123,Water Inspector,Electrical,Ahilyanagar,Sangamner
+Rahul Joshi,rahul.joshi.524,rahul.joshi.524@mahagov.in,Civica@123,Gram Sevak,Electrical,Ahilyanagar,Nagar
+Varsha Deshmukh,varsha.deshmukh.435,varsha.deshmukh.435@mahagov.in,Civica@123,Sanitary Inspector,Rural Development,Ahilyanagar,Rahata
+Prashant Patil,prashant.patil.327,prashant.patil.327@mahagov.in,Civica@123,Junior Engineer,Water Supply,Ahilyanagar,Nagar
+Deepali Gaikwad,deepali.gaikwad.999,deepali.gaikwad.999@mahagov.in,Civica@123,Gram Sevak,Water Supply,Ahilyanagar,Nagar
+Prashant Kadam,prashant.kadam.582,prashant.kadam.582@mahagov.in,Civica@123,Gram Sevak,Solid Waste Management,Ahilyanagar,Sangamner
+Sachin Sawant,sachin.sawant.260,sachin.sawant.260@mahagov.in,Civica@123,Deputy Commissioner,Water Supply,Nashik,Nashik
+Sanjay Deshmukh,sanjay.deshmukh.688,sanjay.deshmukh.688@mahagov.in,Civica@123,CEO Zilla Parishad,Solid Waste Management,Nashik,Nashik
+Vijay Bhonsle,vijay.bhonsle.929,vijay.bhonsle.929@mahagov.in,Civica@123,Ward Officer,Solid Waste Management,Nashik,Sinnar
+Sunita Shinde,sunita.shinde.261,sunita.shinde.261@mahagov.in,Civica@123,Ward Officer,Electrical,Nashik,Malegaon
+Sunita Deshmukh,sunita.deshmukh.546,sunita.deshmukh.546@mahagov.in,Civica@123,Executive Engineer,Electrical,Nashik,Niphad
+Amit Chavan,amit.chavan.995,amit.chavan.995@mahagov.in,Civica@123,Executive Engineer,Health & Sanitation,Nashik,Malegaon
+Prakash Bhonsle,prakash.bhonsle.757,prakash.bhonsle.757@mahagov.in,Civica@123,Ward Officer,Solid Waste Management,Nashik,Malegaon
+Vidya Gaikwad,vidya.gaikwad.120,vidya.gaikwad.120@mahagov.in,Civica@123,Water Inspector,Water Supply,Nashik,Nashik City
+Santosh Gaikwad,santosh.gaikwad.559,santosh.gaikwad.559@mahagov.in,Civica@123,Water Inspector,Public Works Department (PWD),Nashik,Niphad
+Sachin Chavan,sachin.chavan.677,sachin.chavan.677@mahagov.in,Civica@123,Sanitary Inspector,Sanitation,Nashik,Sinnar
+Manoj Pawar,manoj.pawar.145,manoj.pawar.145@mahagov.in,Civica@123,Gram Sevak,Water Supply,Nashik,Sinnar
+Suresh Sawant,suresh.sawant.116,suresh.sawant.116@mahagov.in,Civica@123,Junior Engineer,Sanitation,Nashik,Niphad
+Anil More,anil.more.257,anil.more.257@mahagov.in,Civica@123,Water Inspector,Water Supply,Nashik,Niphad
+Sunil Kulkarni,sunil.kulkarni.310,sunil.kulkarni.310@mahagov.in,Civica@123,Water Inspector,Solid Waste Management,Nashik,Sinnar
+Santosh Sawant,santosh.sawant.110,santosh.sawant.110@mahagov.in,Civica@123,Junior Engineer,Electrical,Nashik,Niphad
+Rajesh Kulkarni,rajesh.kulkarni.570,rajesh.kulkarni.570@mahagov.in,Civica@123,Junior Engineer,Water Supply,Nashik,Nashik City
+Rajendra Gaikwad,rajendra.gaikwad.366,rajendra.gaikwad.366@mahagov.in,Civica@123,Sanitary Inspector,Electrical,Nashik,Malegaon
+Rajendra Bhonsle,rajendra.bhonsle.245,rajendra.bhonsle.245@mahagov.in,Civica@123,CEO Zilla Parishad,Solid Waste Management,Nagpur,Nagpur
+Sunil Patil,sunil.patil.685,sunil.patil.685@mahagov.in,Civica@123,Deputy Commissioner,Public Works Department (PWD),Nagpur,Nagpur
+Anjali More,anjali.more.447,anjali.more.447@mahagov.in,Civica@123,Executive Engineer,Public Works Department (PWD),Nagpur,Nagpur City
+Sanjay Ghorpade,sanjay.ghorpade.906,sanjay.ghorpade.906@mahagov.in,Civica@123,Block Development Officer,Rural Development,Nagpur,Kamthi
+Amit Deshmukh,amit.deshmukh.869,amit.deshmukh.869@mahagov.in,Civica@123,Ward Officer,Public Works Department (PWD),Nagpur,Kamthi
+Vikas More,vikas.more.774,vikas.more.774@mahagov.in,Civica@123,Ward Officer,Electrical,Nagpur,Ramtek
+Sanjay Kulkarni,sanjay.kulkarni.806,sanjay.kulkarni.806@mahagov.in,Civica@123,Executive Engineer,Sanitation,Nagpur,Ramtek
+Suresh Gaikwad,suresh.gaikwad.555,suresh.gaikwad.555@mahagov.in,Civica@123,Sanitary Inspector,Sanitation,Nagpur,Katol
+Prakash Kadam,prakash.kadam.150,prakash.kadam.150@mahagov.in,Civica@123,Gram Sevak,Health & Sanitation,Nagpur,Kamthi
+Prakash Chavan,prakash.chavan.941,prakash.chavan.941@mahagov.in,Civica@123,Gram Sevak,Water Supply,Nagpur,Ramtek
+Sandeep Chavan,sandeep.chavan.353,sandeep.chavan.353@mahagov.in,Civica@123,Junior Engineer,Rural Development,Nagpur,Nagpur City
+Suresh Kulkarni,suresh.kulkarni.228,suresh.kulkarni.228@mahagov.in,Civica@123,Gram Sevak,Rural Development,Nagpur,Ramtek
+Deepali More,deepali.more.465,deepali.more.465@mahagov.in,Civica@123,Water Inspector,Sanitation,Nagpur,Nagpur City
+Sunil Gaikwad,sunil.gaikwad.978,sunil.gaikwad.978@mahagov.in,Civica@123,Sanitary Inspector,Solid Waste Management,Nagpur,Katol
+Anjali Ghorpade,anjali.ghorpade.710,anjali.ghorpade.710@mahagov.in,Civica@123,Sanitary Inspector,Water Supply,Nagpur,Nagpur City
+Rajesh Kulkarni,rajesh.kulkarni.520,rajesh.kulkarni.520@mahagov.in,Civica@123,Water Inspector,Sanitation,Nagpur,Ramtek
+Abhijeet Ghorpade,abhijeet.ghorpade.758,abhijeet.ghorpade.758@mahagov.in,Civica@123,Junior Engineer,Sanitation,Nagpur,Katol
+Nitin Kulkarni,nitin.kulkarni.440,nitin.kulkarni.440@mahagov.in,Civica@123,Deputy Commissioner,Rural Development,Nanded,Nanded
+Deepak Chavan,deepak.chavan.966,deepak.chavan.966@mahagov.in,Civica@123,Municipal Commissioner,Health & Sanitation,Nanded,Nanded
+Manoj Joshi,manoj.joshi.809,manoj.joshi.809@mahagov.in,Civica@123,Executive Engineer,Sanitation,Nanded,Loha
+Manisha Ghorpade,manisha.ghorpade.179,manisha.ghorpade.179@mahagov.in,Civica@123,Block Development Officer,Public Works Department (PWD),Nanded,Mudkhed
+Manoj Kulkarni,manoj.kulkarni.453,manoj.kulkarni.453@mahagov.in,Civica@123,Ward Officer,Solid Waste Management,Nanded,Mudkhed
+Vijay Jadhav,vijay.jadhav.151,vijay.jadhav.151@mahagov.in,Civica@123,Executive Engineer,Solid Waste Management,Nanded,Nanded City
+Jyoti Thorat,jyoti.thorat.616,jyoti.thorat.616@mahagov.in,Civica@123,Ward Officer,Health & Sanitation,Nanded,Nanded City
+Prashant More,prashant.more.582,prashant.more.582@mahagov.in,Civica@123,Gram Sevak,Rural Development,Nanded,Nanded City
+Snehal Jadhav,snehal.jadhav.200,snehal.jadhav.200@mahagov.in,Civica@123,Gram Sevak,Rural Development,Nanded,Nanded City
+Sandeep Thorat,sandeep.thorat.551,sandeep.thorat.551@mahagov.in,Civica@123,Sanitary Inspector,Solid Waste Management,Nanded,Deglur
+Sunil Pawar,sunil.pawar.296,sunil.pawar.296@mahagov.in,Civica@123,Junior Engineer,Electrical,Nanded,Mudkhed
+Santosh Thorat,santosh.thorat.880,santosh.thorat.880@mahagov.in,Civica@123,Sanitary Inspector,Health & Sanitation,Nanded,Nanded City
+Anil Pawar,anil.pawar.513,anil.pawar.513@mahagov.in,Civica@123,Gram Sevak,Sanitation,Nanded,Mudkhed
+Rahul Bhonsle,rahul.bhonsle.716,rahul.bhonsle.716@mahagov.in,Civica@123,Water Inspector,Electrical,Nanded,Mudkhed
+Sandeep Thorat,sandeep.thorat.130,sandeep.thorat.130@mahagov.in,Civica@123,Gram Sevak,Electrical,Nanded,Deglur
+Sanjay Shinde,sanjay.shinde.859,sanjay.shinde.859@mahagov.in,Civica@123,Sanitary Inspector,Solid Waste Management,Nanded,Mudkhed
+Nitin More,nitin.more.216,nitin.more.216@mahagov.in,Civica@123,Junior Engineer,Water Supply,Nanded,Nanded City

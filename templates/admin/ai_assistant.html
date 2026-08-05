@@ -1,0 +1,33 @@
+<!-- DEPRECATED: Do not use. Use templates/assistant/assistant_refactored.html instead. -->
+{% extends "dashboards/base.html" %}
+
+{% block title %}AI Assistant | CivicPulse{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h3>AI Assistant</h3>
+    <p class="text-muted">How can I help you manage the city today?</p>
+    <hr>
+    
+    <div class="card shadow-sm rounded-4 overflow-hidden" style="height: 600px;">
+        <div class="card-body d-flex flex-column">
+            <div class="chat-messages flex-grow-1 overflow-auto p-3" id="chat-box">
+                <div class="d-flex mb-3">
+                    <div class="bg-primary text-white p-3 rounded-4 shadow-sm" style="max-width: 80%;">
+                        Hello Admin! I am your CivicPulse AI assistant. I can help you analyze trends, find specific issues, or suggest officer assignments.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input mt-3 border-top pt-3">
+                <form class="d-flex gap-2">
+                    <input type="text" class="form-control rounded-pill px-4" placeholder="Ask me anything...">
+                    <button class="btn btn-primary rounded-circle" style="width: 45px; height: 45px;">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

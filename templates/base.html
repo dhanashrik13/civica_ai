@@ -1,46 +1,306 @@
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Civica AI{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}CivicPulse{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            padding-top: 90px;
+        }
+
+        .navbar-custom {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          z-index: 1000;
+          background: #ffffff;
+          padding: 18px 0;
+          border-bottom: 1px solid var(--border-color);
+        }
+        .nav-container {
+          width: 88%;
+          margin: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .nav-links {
+          list-style: none;
+          display: flex;
+          gap: 48px;
+          margin: 0;
+          padding: 0;
+        }
+        .nav-links li a {
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 16px;
+          color: #475569;
+          transition: 0.2s ease;
+        }
+        .nav-links li a:hover {
+          color: #2563eb;
+        }
+        .nav-links li a.active {
+          color: #2563eb;
+          font-weight: 600;
+        }
+        .nav-right {
+          display: flex;
+          align-items: center;
+          gap: 26px;
+        }
+        .login-link {
+          text-decoration: none;
+          font-weight: 500;
+          color: #6b21a8;
+        }
+        .login-link:hover {
+          text-decoration: underline;
+        }
+        .get-started-btn {
+          background: #2563eb;
+          color: #ffffff;
+          padding: 10px 22px;
+          border-radius: 10px;
+          text-decoration: none;
+          font-weight: 600;
+          transition: 0.2s ease;
+        }
+        .get-started-btn:hover {
+          background: #1d4ed8;
+          color: #ffffff;
+        }
+
+        /* FOOTER STYLES */
+        .footer-custom {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 70px 0 30px 0;
+        }
+        .footer-link {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .footer-link:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
 </head>
 <body>
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Civica AI</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="#">Welcome, {{ user.username }}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
-            </li>
-          {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'accounts:choose_role' 'login' %}">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'accounts:choose_role' 'register' %}">Register</a>
-            </li>
-          {% endif %}
+    <nav class="navbar-custom">
+      <div class="nav-container">
+        <!-- Left -->
+        <a class="navbar-brand d-flex align-items-center fw-bold" href="{% url 'landing:home' %}">
+          <img src="{% static 'images/logo.jpeg' %}"
+               style="height:38px;width:38px;border-radius:12px;margin-right:10px;" alt="CivicPulse">
+          CivicPulse
+        </a>
+
+        <!-- Center -->
+        <ul class="nav-links">
+          <li>
+            <a href="{% url 'landing:home' %}" 
+               class="{% if request and request.resolver_match and request.resolver_match.url_name == 'home' %}active{% endif %}"
+               {% if request and request.resolver_match and request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>
+               {% trans "Home" %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'landing:about' %}" 
+               class="{% if request and request.resolver_match and request.resolver_match.url_name == 'about' %}active{% endif %}"
+               {% if request and request.resolver_match and request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>
+               {% trans "About" %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'landing:feature' %}" 
+               class="{% if request and request.resolver_match and request.resolver_match.url_name == 'feature' %}active{% endif %}"
+               {% if request and request.resolver_match and request.resolver_match.url_name == 'feature' %}aria-current="page"{% endif %}>
+               {% trans "Features" %}
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'landing:contact' %}" 
+               class="{% if request and request.resolver_match and request.resolver_match.url_name == 'contact' %}active{% endif %}"
+               {% if request and request.resolver_match and request.resolver_match.url_name == 'contact' %}aria-current="page"{% endif %}>
+               {% trans "Contact" %}
+            </a>
+          </li>
         </ul>
+
+        <!-- Right -->
+        <div class="nav-right">
+          <!-- Notification Dropdown -->
+          {% if user.is_authenticated %}
+          <div class="dropdown me-3" id="notification-dropdown">
+            <button class="btn btn-link text-decoration-none p-0 position-relative" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bell fs-5" style="color: #475569;"></i>
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="notif-badge" style="font-size: 0.6rem; padding: 0.25em 0.4em;">
+                0
+              </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-0 overflow-hidden" aria-labelledby="notifDropdown" style="width: 320px; border-radius: 16px;">
+              <div class="p-3 border-bottom bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0 fw-bold">Notifications</h6>
+                  <span class="badge bg-primary-subtle text-primary rounded-pill" id="notif-count">0 New</span>
+                </div>
+              </div>
+              <div id="notif-items" style="max-height: 350px; overflow-y: auto;">
+                <div class="p-4 text-center text-muted">
+                  <div class="spinner-border spinner-border-sm mb-2" role="status"></div>
+                  <p class="small m-0">Loading...</p>
+                </div>
+              </div>
+            </ul>
+          </div>
+          {% endif %}
+
+          <!-- Language Switcher -->
+          <form action="{% url 'set_language' %}" method="post" id="lang-form" class="me-3">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+            <div class="dropdown">
+              <button class="btn btn-link dropdown-toggle text-decoration-none p-0" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: #475569; font-weight: 500;">
+                <i class="bi bi-globe me-1"></i>
+                {% get_current_language as CURRENT_LANG %}
+                {% if CURRENT_LANG == 'hi' %}हिंदी{% elif CURRENT_LANG == 'mr' %}मराठी{% else %}English{% endif %}
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="languageDropdown" style="border-radius: 12px; min-width: 140px;">
+                <li>
+                  <button type="button" class="dropdown-item rounded-2 {% if CURRENT_LANG == 'en' %}active{% endif %}" onclick="submitLang('en')">English</button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item rounded-2 {% if CURRENT_LANG == 'hi' %}active{% endif %}" onclick="submitLang('hi')">हिंदी (Hindi)</button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item rounded-2 {% if CURRENT_LANG == 'mr' %}active{% endif %}" onclick="submitLang('mr')">मराठी (Marathi)</button>
+                </li>
+              </ul>
+              <input type="hidden" name="language" id="lang-input">
+            </div>
+          </form>
+
+          <script>
+            function submitLang(lang) {
+              document.getElementById('lang-input').value = lang;
+              document.getElementById('lang-form').submit();
+            }
+          </script>
+
+          {% if user.is_authenticated %}
+            <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="login-link" style="background: none; border: none; padding: 0; font-family: inherit; font-size: inherit; cursor: pointer;">{% trans "Logout" %}</button>
+            </form>
+          {% else %}
+            <a href="{% url 'accounts:login' role='citizen' %}" class="login-link">{% trans "Login" %}</a>
+          {% endif %}
+          <a href="{% url 'accounts:register' %}" class="get-started-btn">{% trans "Get Started" %}</a>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <!-- Page Content -->
-  <div class="container mt-4">
-    {% block content %}{% endblock %}
-  </div>
+    <main class="app-shell py-4">
+        <div class="container">
+            {% if messages %}
+                <div class="mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} mb-2">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Logo + Description -->
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{% static 'images/logo.jpeg' %}"
+                             style="height:42px; width:42px; border-radius:12px; margin-right:12px;"
+                             alt="CivicPulse Logo">
+                        <h5 class="mb-0 text-white fw-bold">CivicPulse</h5>
+                    </div>
+                    <p style="max-width:320px; font-size: 15px; line-height: 1.6;">
+                        {% trans "Empowering communities through smart civic engagement. Report issues, track progress, and connect with government departments seamlessly." %}
+                    </p>
+                    <div class="d-flex gap-3 mt-4">
+                        <span class="text-muted small">{% trans "Follow our updates on official channels" %}</span>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="col-md-2">
+                    <h6 class="text-white fw-bold mb-4">{% trans "Navigation" %}</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'landing:home' %}" class="footer-link">{% trans "Home" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:about' %}" class="footer-link">{% trans "About Us" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:feature' %}" class="footer-link">{% trans "Features" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:contact' %}" class="footer-link">{% trans "Contact" %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Platform -->
+                <div class="col-md-3">
+                    <h6 class="text-white fw-bold mb-4">{% trans "Platform" %}</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'accounts:register' %}" class="footer-link">{% trans "Get Started" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'accounts:login' role='citizen' %}" class="footer-link">{% trans "Login" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'accounts:register' %}" class="footer-link">{% trans "Register & Report Issue" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'accounts:register' %}" class="footer-link">{% trans "Register & Track Issues" %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div class="col-md-3">
+                    <h6 class="text-white fw-bold mb-4">{% trans "Legal & Support" %}</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'landing:privacy' %}" class="footer-link">{% trans "Privacy Policy" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:terms' %}" class="footer-link">{% trans "Terms of Service" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:support' %}" class="footer-link">{% trans "Help & Support" %}</a></li>
+                        <li class="mb-2"><a href="{% url 'landing:api_docs' %}" class="footer-link">{% trans "API Documentation" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="border-color:#1e293b; margin:40px 0;">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0" style="font-size: 14px;">© 2026 CivicPulse. {% trans "All rights reserved." %}</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <span style="font-size: 14px;">
+                        {% trans "Built for Smarter Communities" %}
+                        <i class="bi bi-patch-check-fill text-primary ms-1"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% if user.is_authenticated %}
+        {% include 'partials/notification_js.html' %}
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

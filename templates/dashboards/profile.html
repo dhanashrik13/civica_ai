@@ -1,0 +1,176 @@
+{% extends "dashboards/officer_base.html" %}
+
+{% block title %}My Profile | CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ================= PROFILE CONTENT ================= */
+    .profile-content {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 30px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        height: fit-content;
+    }
+
+    .profile-img-container {
+        width: 120px;
+        height: 120px;
+        background: var(--bg-main);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        border: 4px solid white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        color: #7c3aed;
+    }
+
+    .profile-card h3 { margin: 0; font-size: 20px; }
+    .profile-card p { color: var(--text-muted); margin: 5px 0 20px; font-size: 14px; }
+
+    .settings-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .form-group input {
+        padding: 12px 15px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #f8fafc;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+    }
+
+    .form-group input:focus {
+        border-color: #7c3aed;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+    }
+
+    .save-btn {
+        background: var(--primary-grad);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        width: fit-content;
+        margin-top: 10px;
+    }
+
+    .badge-dept {
+        background: #eff6ff;
+        color: #2563eb;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+        .profile-content {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block page_title %}Account Settings{% endblock %}
+{% block page_subtitle %}Manage your personal and security information{% endblock %}
+
+{% block content %}
+<div class="profile-content">
+
+    <div class="profile-card">
+        <div class="profile-img-container">👤</div>
+        <h3>{{ request.user.full_name|default:request.user.username }}</h3>
+        <p>Officer ID: #OF-{{ request.user.id }}</p>
+        <span class="badge-dept">{{ request.user.department.name|default:"General Department" }}</span>
+        <hr style="margin: 25px 0; border: 0.5px solid #eee;">
+        <div style="text-align: left; font-size: 14px;">
+            <p><strong>Member Since:</strong><br>{{ request.user.date_joined|date:"M d, Y" }}</p>
+            <p><strong>Last Login:</strong><br>{{ request.user.last_login|date:"M d, H:i" }}</p>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h3 style="margin-bottom: 25px;">Personal Information</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" value="{{ request.user.username }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" value="{{ request.user.email }}" name="email">
+                </div>
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" value="{{ request.user.first_name }}" name="first_name">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" value="{{ request.user.last_name }}" name="last_name">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" value="{{ request.user.phone|default:'' }}" name="phone">
+                </div>
+                <div class="form-group">
+                    <label>Designation</label>
+                    <input type="text" value="Field Officer" disabled>
+                </div>
+            </div>
+
+            <h3 style="margin: 30px 0 25px;">Security</h3>
+            <div class="form-group" style="max-width: 400px;">
+                <label>New Password</label>
+                <input type="password" placeholder="Leave blank to keep current">
+            </div>
+
+            <button type="submit" class="save-btn"
+                    onclick="this.disabled=true; this.innerText='Processing...'; this.form.submit();">
+                Update Profile
+            </button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

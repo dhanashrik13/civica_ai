@@ -1,0 +1,196 @@
+{% load static %}
+<!-- Map CSS Dependencies -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+
+<style>
+    .legend {
+        background: white;
+        padding: 10px 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        line-height: 1.6;
+        font-size: 13px;
+        font-weight: 600;
+        z-index: 1000;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
+    
+    .filter-btn-group {
+        display: flex;
+        gap: 8px;
+        background: #f8fafc;
+        padding: 6px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .map-filter-btn {
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .map-filter-btn.active {
+        background: white;
+        color: #0a2342;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .custom-popup .leaflet-popup-content-wrapper { border-radius: 12px; padding: 5px; }
+    .custom-popup .leaflet-popup-tip-container { display: none; }
+</style>
+
+<div class="map-component-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 header-bar">
+        <div>
+            <h2 class="fw-bold mb-0">🌍 Issue Map</h2>
+            <p class="text-muted small mb-0">Live spatial visualization of community reports</p>
+        </div>
+        <div class="filter-btn-group">
+            <button class="map-filter-btn active" onclick="filterMap('all', this)">Show All</button>
+            <button class="map-filter-btn" onclick="filterMap('pending', this)">Pending</button>
+            <button class="map-filter-btn" onclick="filterMap('assigned', this)">In Progress</button>
+            <button class="map-filter-btn" onclick="filterMap('resolved', this)">Resolved</button>
+        </div>
+    </div>
+    <div id="map" style="width: 100%; height: 650px; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.03);"></div>
+</div>
+
+<!-- Map JS Dependencies -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+{{ issues|json_script:"issues-data" }}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Prepare Data safely using json_script
+    const issues = JSON.parse(document.getElementById("issues-data").textContent);
+    console.log("Issues:", issues);
+    
+    // 2. Initialize Map
+    const map = L.map('map', {
+        zoomControl: true,
+        scrollWheelZoom: false
+    }).setView([18.5204, 73.8567], 12);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // 3. Red Location Pin Icon
+    const redPinIcon = L.icon({
+        iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+        iconSize: [35, 35],
+        iconAnchor: [17, 35],
+        popupAnchor: [0, -35],
+        shadowSize: [41, 41]
+    });
+
+    // 4. Status Color Helper
+    function getStatusColor(status) {
+        status = status.toLowerCase();
+        if (status === "pending") return "#f59e0b"; // Orange
+        if (status === "assigned" || status === "in_progress") return "#3b82f6"; // Blue
+        if (status === "resolved") return "#10b981"; // Green
+        return "#94a3b8";
+    }
+
+    // 5. Marker Cluster Group
+    const markerCluster = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        spiderfyOnMaxZoom: true
+    });
+
+    const allMarkers = [];
+
+    // 6. Add Interactive Markers using REQUIRED logic
+    issues.forEach(issue => {
+        if (issue.latitude !== null && issue.longitude !== null) {
+            let detailUrl;
+            {% if role == "citizen" or user.role == "citizen" %}
+                detailUrl = "{% url 'citizen:citizen_issue_detail' 0 %}".replace('0', issue.id);
+            {% elif role == "officer" or user.role == "officer" %}
+                detailUrl = "{% url 'dashboards:issue_detail' 0 %}".replace('0', issue.id);
+            {% else %}
+                detailUrl = "{% url 'dashboards:admin_issue_detail' 0 %}".replace('0', issue.id);
+            {% endif %}
+
+            const marker = L.marker([parseFloat(issue.latitude), parseFloat(issue.longitude)], { icon: redPinIcon });
+            marker.issueStatus = issue.status.toLowerCase();
+
+            marker.bindPopup(`
+                <div style="min-width:180px; font-family: 'Inter', sans-serif;">
+                    <div style="font-size: 10px; font-weight: 800; color: ${getStatusColor(issue.status)}; text-transform: uppercase; margin-bottom: 4px;">${issue.status}</div>
+                    <h6 style="margin-bottom: 8px; font-weight: 700; color: #1e293b; line-height: 1.3;">${issue.title}</h6>
+                    <p style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+                        Category: <strong>${issue.category}</strong>
+                    </p>
+                    <a href="${detailUrl}" class="btn btn-primary btn-sm w-100" style="background: #0a2342; border: none; color: white; font-size: 11px; padding: 6px; font-weight: 600; border-radius: 6px;">
+                        View Details
+                    </a>
+                </div>
+            `, {
+                closeButton: false,
+                className: 'custom-popup'
+            });
+
+            marker.bindTooltip(issue.title);
+            markerCluster.addLayer(marker);
+            allMarkers.push(marker);
+        }
+    });
+
+    map.addLayer(markerCluster);
+
+    // 7. Legend
+    const legend = L.control({ position: "topright" });
+    legend.onAdd = function () {
+        const div = L.DomUtil.create("div", "legend");
+        div.innerHTML = `
+            <div style="margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;"><strong>Issue Status</strong></div>
+            <div class="legend-item"><span class="dot" style="background:#f59e0b"></span> Pending</div>
+            <div class="legend-item"><span class="dot" style="background:#3b82f6"></span> In Progress</div>
+            <div class="legend-item"><span class="dot" style="background:#10b981"></span> Resolved</div>
+        `;
+        return div;
+    };
+    legend.addTo(map);
+
+    // 8. Filtering Function
+    window.filterMap = function(status, btn) {
+        document.querySelectorAll('.map-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        markerCluster.clearLayers();
+        allMarkers.forEach(marker => {
+            if (status === 'all' || marker.issueStatus === status || (status === 'assigned' && marker.issueStatus === 'in_progress')) {
+                markerCluster.addLayer(marker);
+            }
+        });
+        if (markerCluster.getLayers().length > 0) {
+            map.fitBounds(markerCluster.getBounds().pad(0.1));
+        }
+    };
+
+    // 9. Auto Fit Initial
+    if (allMarkers.length > 0) {
+        map.fitBounds(markerCluster.getBounds().pad(0.1));
+    }
+
+    // 10. Fix Rendering with REQUIRED timeout
+    setTimeout(() => { 
+        map.invalidateSize(); 
+    }, 200);
+});
+</script>

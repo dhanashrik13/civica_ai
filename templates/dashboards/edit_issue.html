@@ -1,0 +1,58 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Edit Issue | Admin Portal{% endblock %}
+
+{% block page_title %}Edit Issue #{{ issue.id }}{% endblock %}
+{% block page_subtitle %}Modify incident details and category{% endblock %}
+
+{% block content %}
+<div class="page-card p-4" style="max-width: 800px; background: white; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label fw-bold">Title</label>
+      <input type="text" name="title" class="form-control" value="{{ issue.title }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Description</label>
+      <textarea name="description" class="form-control" rows="4" required>{{ issue.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Category</label>
+      <input type="text" name="category" class="form-control" value="{{ issue.category }}">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Status</label>
+      <select name="status" class="form-select">
+          <option value="pending" {% if issue.status == 'pending' %}selected{% endif %}>Pending</option>
+          <option value="assigned" {% if issue.status == 'assigned' %}selected{% endif %}>Assigned</option>
+          <option value="resolved" {% if issue.status == 'resolved' %}selected{% endif %}>Resolved</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Location</label>
+      <select name="location" class="form-select" required>
+        <option value="">Select Location</option>
+        {% for loc in locations %}
+          <option value="{{ loc.id }}" {% if issue.location_id == loc.id %}selected{% endif %}>
+            {{ loc.name }} ({{ loc.get_type_display }})
+          </option>
+        {% endfor %}
+      </select>
+      {% if not issue.location %}
+        <div class="form-text text-warning">Current location: {{ issue.location_name|default:"Not specified" }}</div>
+      {% endif %}
+    </div>
+
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">Update Issue</button>
+        <a href="{% url 'dashboards:admin_issue_detail' issue.id %}" class="btn btn-outline-secondary px-4">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

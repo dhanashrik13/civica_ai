@@ -1,0 +1,36 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Edit Profile | CivicPulse{% endblock %}
+
+{% block page_title %}Edit Admin Profile{% endblock %}
+{% block page_subtitle %}Update your account details and preferences{% endblock %}
+
+{% block content %}
+<div class="page-card p-4" style="max-width: 800px;">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Full Name</label>
+                <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" placeholder="Your Full Name">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ user.email }}" placeholder="email@example.com">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Phone Number</label>
+                <input type="text" name="phone_no" class="form-control" value="{{ user.phone_no }}" placeholder="+91 ...">
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-bold">Address</label>
+                <textarea name="address" class="form-control" rows="3" placeholder="Residential or Office Address">{{ user.address }}</textarea>
+            </div>
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                <a href="{% url 'dashboards:admin_dashboard' %}" class="btn btn-outline-secondary px-4 ms-2">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

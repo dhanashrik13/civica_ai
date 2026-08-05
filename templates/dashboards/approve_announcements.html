@@ -1,0 +1,78 @@
+{% extends "dashboards/base.html" %}
+{% block title %}Approve Announcements{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm rounded-4 border-0 p-4 mb-4">
+        <h4 class="fw-bold mb-4">Pending Approval</h4>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Created By</th>
+                        <th>Expires At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ann in pending_announcements %}
+                    <tr>
+                        <td>{{ ann.title }}</td>
+                        <td>{{ ann.created_by.username }}</td>
+                        <td>{{ ann.expires_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="announcement_id" value="{{ ann.id }}">
+                                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success">Approve</button>
+                                <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No pending announcements.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm rounded-4 border-0 p-4">
+        <h4 class="fw-bold mb-4">Approved Announcements</h4>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Expires At</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ann in approved_announcements %}
+                    <tr>
+                        <td>{{ ann.title }}</td>
+                        <td>{{ ann.expires_at|date:"M d, Y H:i" }}</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td>
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="announcement_id" value="{{ ann.id }}">
+                                <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No approved announcements.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

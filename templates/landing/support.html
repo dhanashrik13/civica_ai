@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Help & Support - CivicPulse{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="page-card p-4 p-md-5">
+            <h1 class="mb-4">Help & Support</h1>
+            
+            <section class="mb-5">
+                <h3>Frequently Asked Questions</h3>
+                <div class="accordion accordion-flush mt-3" id="supportFaq">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                                How do I report a new issue?
+                            </button>
+                        </h2>
+                        <div id="q1" class="accordion-collapse collapse" data-bs-parent="#supportFaq">
+                            <div class="accordion-body text-secondary">
+                                After logging in, navigate to the 'Report Issue' section. Upload a photo, specify the location using GPS or manual entry, and provide a clear description. Our AI will automatically categorize it.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                                Can I track my reported issues?
+                            </button>
+                        </h2>
+                        <div id="q2" class="accordion-collapse collapse" data-bs-parent="#supportFaq">
+                            <div class="accordion-body text-secondary">
+                                Yes, the 'My Reports' section in your dashboard lists all submitted issues with real-time status updates from the relevant departments.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q3">
+                                What if my issue is assigned to the wrong department?
+                            </button>
+                        </h2>
+                        <div id="q3" class="accordion-collapse collapse" data-bs-parent="#supportFaq">
+                            <div class="accordion-body text-secondary">
+                                Our AI system classifies issues with high accuracy. However, department administrators can manually reassign issues if necessary.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h3>Contact Info</h3>
+                <p>Need more assistance? Reach out to us through any of the following channels:</p>
+                <div class="row g-4 mt-2">
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center p-3 border rounded">
+                            <i class="bi bi-envelope text-primary fs-3 me-3"></i>
+                            <div>
+                                <small class="text-secondary d-block">Email Support</small>
+                                <strong>support@civica-ai.com</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="d-flex align-items-center p-3 border rounded">
+                            <i class="bi bi-telephone text-primary fs-3 me-3"></i>
+                            <div>
+                                <small class="text-secondary d-block">Phone</small>
+                                <strong>+1 (800) CIVIC-AI</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-5">
+                <h3>Simple Help Instructions</h3>
+                <div class="card bg-primary text-white border-0">
+                    <div class="card-body p-4">
+                        <ol class="mb-0">
+                            <li><strong>Register:</strong> Create your free citizen account.</li>
+                            <li><strong>Submit:</strong> Snap a photo and report your civic concern.</li>
+                            <li><strong>Track:</strong> Watch as AI routes it and departments take action.</li>
+                            <li><strong>Resolve:</strong> Get notified once the problem is fixed!</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

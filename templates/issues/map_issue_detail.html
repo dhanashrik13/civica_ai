@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Issue Detail - Map View{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="page-card p-4">
+                <nav aria-label="breadcrumb" class="mb-4">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'issues:issue_map' %}">Map</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">#{{ issue.id }}</li>
+                  </ol>
+                </nav>
+
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h1 class="h2 mb-1">{{ issue.title }}</h1>
+                        <p class="text-muted d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt-fill"></i> {{ issue.location }}
+                        </p>
+                    </div>
+                    <span class="badge rounded-pill px-3 py-2 
+                        {% if issue.status == 'resolved' %}text-bg-success
+                        {% elif issue.status == 'assigned' %}text-bg-primary
+                        {% else %}text-bg-warning{% endif %}">
+                        {{ issue.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-7">
+                        <h5 class="h6 text-uppercase fw-bold text-muted mb-3">Description</h5>
+                        <p class="lead" style="font-size: 1.1rem;">{{ issue.description }}</p>
+                        
+                        {% if issue.photo1 %}
+                        <div class="mt-4">
+                            <img src="{{ issue.photo1.url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ issue.title }}">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-5">
+                        <div class="bg-light p-3 rounded-4 border">
+                            <h5 class="h6 text-uppercase fw-bold text-muted mb-3">Metadata</h5>
+                            <dl class="row mb-0">
+                                <dt class="col-5">Category</dt>
+                                <dd class="col-7">{{ issue.get_category_display }}</dd>
+                                
+                                <dt class="col-5">Priority</dt>
+                                <dd class="col-7">
+                                    <span class="text-{{ issue.priority|yesno:'danger,warning,info' }}">
+                                        {{ issue.get_priority_display }}
+                                    </span>
+                                </dd>
+                                
+                                <dt class="col-5">Reported</dt>
+                                <dd class="col-7">{{ issue.created_at|date:"M d, Y" }}</dd>
+                                
+                                <dt class="col-5">Assigned To</dt>
+                                <dd class="col-7">{{ issue.assigned_to.user.full_name|default:"Unassigned" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-action-section bg-light p-4 rounded-4 border-top">
+                    <h5 class="h6 mb-3"><i class="bi bi-list-task me-2"></i>Tasks / Actions</h5>
+                    <div class="d-flex gap-2 flex-wrap mb-4">
+                        
+                        {% if user.is_officer and issue.assigned_to == user.officer %}
+                        <form method="POST" action="{% url 'issues:update_status' issue.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="resolved">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="bi bi-check-circle"></i> Mark as Resolved
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    {% if user.is_officer and issue.assigned_to == user.officer %}
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title h6 mb-3">Quick Status Update</h6>
+                            <form method="POST" action="{% url 'issues:update_status' issue.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <div class="col-md-5">
+                                        <label class="form-label small text-muted">New Status</label>
+                                        <select name="status" class="form-select form-select-sm" required>
+                                            <option value="pending" {% if issue.status == 'pending' %}selected{% endif %}>Pending</option>
+                                            <option value="assigned" {% if issue.status == 'assigned' %}selected{% endif %}>Assigned</option>
+                                            <option value="resolved" {% if issue.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label small text-muted">Resolution Photo (Optional)</label>
+                                        <input type="file" name="resolved_photo" class="form-control form-control-sm">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary btn-sm w-100">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% elif user.is_admin %}
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="bi bi-info-circle me-2"></i> Administrator view. Status updates are restricted to assigned officers.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

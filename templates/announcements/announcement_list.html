@@ -1,0 +1,42 @@
+{% extends 'base_officer.html' %}
+{% load i18n %}
+
+{% block title %}Announcements | CivicPulse{% endblock %}
+
+{% block content %}
+<div class="page-header-custom">
+    <div>
+        <h2 class="m-0 font-lg heading-custom">{% trans "Department Announcements" %}</h2>
+        <p class="mt-xs mb-0 font-sm text-secondary-custom">{% trans "Stay updated with the latest news from your department." %}</p>
+    </div>
+    <a href="{% url 'dashboards:create_announcement' %}" class="btn-custom btn-primary-custom">
+        <i class="bi bi-plus-lg"></i> {% trans "New Announcement" %}
+    </a>
+</div>
+
+<div class="grid-custom gap-lg">
+    {% for a in announcements %}
+        <div class="card-custom mb-0">
+            <div class="flex-between-custom mb-md align-items-start">
+                <h4 class="m-0 font-md heading-custom" style="color: #1e3a8a;">{{ a.title }}</h4>
+                <span class="badge-custom badge-resolved-custom font-xs">{% trans "Approved" %}</span>
+            </div>
+            <p class="m-0 mb-lg text-secondary-custom" style="line-height: 1.6;">{{ a.content }}</p>
+            <div class="flex-between-custom pt-md border-top">
+                <small class="text-secondary-custom fw-bold">
+                    <i class="bi bi-person"></i> {{ a.created_by.full_name|default:a.created_by.username }}
+                </small>
+                <small class="text-secondary-custom fw-bold">
+                    <i class="bi bi-calendar3"></i> {{ a.created_at|date:"M d, Y" }}
+                </small>
+            </div>
+        </div>
+    {% empty %}
+        <div class="card-dashed-custom">
+            <div class="font-xl mb-md">📣</div>
+            <h3 class="heading-custom mb-md">{% trans "No announcements available" %}</h3>
+            <p class="text-secondary-custom">{% trans "When your department posts approved announcements, they will appear here." %}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

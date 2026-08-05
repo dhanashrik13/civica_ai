@@ -1,0 +1,160 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse | Add Officer{% endblock %}
+
+{% block page_title %}Add New Officer{% endblock %}
+{% block page_subtitle %}Create a new administrative account{% endblock %}
+
+{% block content %}
+<div class="content flex-center-custom p-0">
+    <div class="card-custom max-w-550-custom w-full-custom p-xl">
+        <h2 class="mt-0 mb-xl font-lg"><i class="bi bi-person-plus-fill text-primary-custom"></i> Add New Officer</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-section-title-custom">Officer Identity</div>
+            <input type="text" name="full_name" placeholder="Full Name" required class="input-custom mb-md">
+            <input type="tel" name="phone" placeholder="Phone Number" required class="input-custom mb-md">
+            <input type="text" name="employee_id" placeholder="Employee ID" required class="input-custom mb-md">
+            <input type="text" name="designation" placeholder="Designation (e.g. Junior Engineer)" required class="input-custom mb-md">
+
+            <div class="form-section-title-custom">Contact & Zone</div>
+            <textarea name="address" placeholder="Office Address" class="input-custom mb-md" style="height: 80px;"></textarea>
+            <input type="text" name="zone" placeholder="Zone / Area" class="input-custom mb-md">
+
+            <div class="form-section-title-custom">User Account</div>
+            <input type="text" name="username" placeholder="Username" required class="input-custom mb-md">
+            <input type="email" name="email" placeholder="Email Address" required class="input-custom mb-md">
+            <input type="password" name="password" placeholder="Account Password" required class="input-custom mb-md">
+
+            <div class="form-section-title-custom">Administrative Jurisdiction</div>
+
+            <select name="level" id="level-select" required class="select-custom mb-md">
+                <option value="" disabled selected>Select Administrative Level</option>
+                <option value="village">Village Level</option>
+                <option value="taluka">Taluka Level</option>
+                <option value="district">District Level</option>
+            </select>
+
+            <select name="district" id="district-select" class="select-custom hidden mb-md">
+                <option value="" disabled selected>Select District</option>
+                {% for dist in districts %}
+                    <option value="{{ dist.id }}">{{ dist.name }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="taluka" id="taluka-select" class="select-custom hidden mb-md">
+                <option value="" disabled selected>Select Taluka</option>
+            </select>
+
+            <select name="village" id="village-select" class="select-custom hidden mb-md">
+                <option value="" disabled selected>Select Village</option>
+            </select>
+
+            <div class="form-section-title-custom">Department Allocation</div>
+            <select name="department" id="dept-select" required class="select-custom mb-md">
+                <option value="">Select Department</option>
+                {% for dept in departments %}
+                    <option value="{{ dept.id }}" data-level="{{ dept.level }}">{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-custom btn-primary-custom w-full-custom mt-md">Create Officer Account</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const levelSelect = document.getElementById('level-select');
+    const distSelect = document.getElementById('district-select');
+    const talSelect = document.getElementById('taluka-select');
+    const vilSelect = document.getElementById('village-select');
+    const deptSelect = document.getElementById('dept-select');
+
+    levelSelect.addEventListener('change', function() {
+        const level = this.value;
+        distSelect.classList.add('hidden');
+        talSelect.classList.add('hidden');
+        vilSelect.classList.add('hidden');
+        distSelect.required = false;
+        talSelect.required = false;
+        vilSelect.required = false;
+
+        if (level === 'district' || level === 'taluka' || level === 'village') {
+            distSelect.classList.remove('hidden');
+            distSelect.required = true;
+        }
+        if (level === 'taluka' || level === 'village') {
+            talSelect.classList.remove('hidden');
+            talSelect.required = true;
+        }
+        if (level === 'village') {
+            vilSelect.classList.remove('hidden');
+            vilSelect.required = true;
+        }
+
+        const deptOptions = deptSelect.querySelectorAll('option');
+        deptOptions.forEach(opt => {
+            if (opt.getAttribute('data-level') === level || opt.value === "") {
+                opt.style.display = 'block';
+            } else {
+                opt.style.display = 'none';
+            }
+        });
+        deptSelect.value = "";
+    });
+
+    distSelect.addEventListener('change', function() {
+        const districtId = this.value;
+        
+        // Reset and clear child dropdowns
+        talSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+        vilSelect.innerHTML = '<option value="" disabled selected>Select Village</option>';
+        
+        fetch(`/dashboard/get-talukas/${districtId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("API failed with status " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                talSelect.innerHTML = '<option value="" disabled selected>Select Taluka</option>';
+                data.forEach(t => {
+                    talSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                });
+            })
+            .catch(err => {
+                console.error('Error fetching talukas:', err);
+                talSelect.innerHTML = '<option value="" disabled selected>Error loading talukas</option>';
+            });
+    });
+
+    talSelect.addEventListener('change', function() {
+        const talukaId = this.value;
+        
+        // Reset and clear village dropdown
+        vilSelect.innerHTML = '<option value="" disabled selected>Loading...</option>';
+        
+        fetch(`/dashboard/get-villages/${talukaId}/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("API failed with status " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                vilSelect.innerHTML = '<option value="" disabled selected>Select Village</option>';
+                data.forEach(v => {
+                    vilSelect.innerHTML += `<option value="${v.id}">${v.name}</option>`;
+                });
+            })
+            .catch(err => {
+                console.error('Error fetching villages:', err);
+                vilSelect.innerHTML = '<option value="" disabled selected>Error loading villages</option>';
+            });
+    });
+</script>
+{% endblock %}

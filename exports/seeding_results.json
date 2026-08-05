@@ -1,0 +1,347 @@
+{
+  "created": [
+    {
+      "Username": "disaster_management_department_pune_di",
+      "Department": "Disaster Management Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "electricity_department_pune_di",
+      "Department": "Electricity Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "environment_department_pune_di",
+      "Department": "Environment Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "general_administration_pune_di",
+      "Department": "General Administration",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "health_department_pune_di",
+      "Department": "Health Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "municipal_engineering_department_pune_di",
+      "Department": "Municipal Engineering Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "public_works_department_pune_di",
+      "Department": "Public Works Department (PWD)",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "road_and_transport_department_pune_di",
+      "Department": "Road & Transport Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "rural_development_pune_di",
+      "Department": "Rural Development",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "traffic_police_department_pune_di",
+      "Department": "Traffic Police Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "urban_planning_department_pune_di",
+      "Department": "Urban Planning Department",
+      "Location": "Pune",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "disaster_management_department_ahmednagar_di",
+      "Department": "Disaster Management Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "drainage_and_sewerage_department_ahmednagar_di",
+      "Department": "Drainage & Sewerage Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "electrical_ahmednagar_di",
+      "Department": "Electrical",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "electricity_department_ahmednagar_di",
+      "Department": "Electricity Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "environment_department_ahmednagar_di",
+      "Department": "Environment Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "general_ahmednagar_di",
+      "Department": "General",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "general_administration_ahmednagar_di",
+      "Department": "General Administration",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "health_and_sanitation_ahmednagar_di",
+      "Department": "Health & Sanitation",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "health_department_ahmednagar_di",
+      "Department": "Health Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "municipal_engineering_department_ahmednagar_di",
+      "Department": "Municipal Engineering Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "public_works_department_ahmednagar_di",
+      "Department": "Public Works Department (PWD)",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "public_works_department_ahmednagar_di_1",
+      "Department": "Public Works Department (PWD)",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "road_and_transport_department_ahmednagar_di",
+      "Department": "Road & Transport Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "rural_development_ahmednagar_di",
+      "Department": "Rural Development",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "sanitation_department_ahmednagar_di",
+      "Department": "Sanitation Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "traffic_police_department_ahmednagar_di",
+      "Department": "Traffic Police Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "urban_planning_department_ahmednagar_di",
+      "Department": "Urban Planning Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "water_supply_department_ahmednagar_di",
+      "Department": "Water Supply Department",
+      "Location": "Ahmednagar",
+      "Governance Scope": "district"
+    },
+    {
+      "Username": "disaster_management_department_parner_ta",
+      "Department": "Disaster Management Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "drainage_and_sewerage_department_parner_ta",
+      "Department": "Drainage & Sewerage Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "electrical_parner_ta",
+      "Department": "Electrical",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "electricity_department_parner_ta",
+      "Department": "Electricity Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "environment_department_parner_ta",
+      "Department": "Environment Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "general_parner_ta",
+      "Department": "General",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "general_administration_parner_ta",
+      "Department": "General Administration",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "health_and_sanitation_parner_ta",
+      "Department": "Health & Sanitation",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "health_department_parner_ta",
+      "Department": "Health Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "municipal_engineering_department_parner_ta",
+      "Department": "Municipal Engineering Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "public_works_department_parner_ta",
+      "Department": "Public Works Department (PWD)",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "road_and_transport_department_parner_ta",
+      "Department": "Road & Transport Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "traffic_police_department_parner_ta",
+      "Department": "Traffic Police Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "urban_planning_department_parner_ta",
+      "Department": "Urban Planning Department",
+      "Location": "Parner",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "disaster_management_department_shrigonda_ta",
+      "Department": "Disaster Management Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "drainage_and_sewerage_department_shrigonda_ta",
+      "Department": "Drainage & Sewerage Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "electrical_shrigonda_ta",
+      "Department": "Electrical",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "electricity_department_shrigonda_ta",
+      "Department": "Electricity Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "environment_department_shrigonda_ta",
+      "Department": "Environment Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "general_shrigonda_ta",
+      "Department": "General",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "general_administration_shrigonda_ta",
+      "Department": "General Administration",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "health_and_sanitation_shrigonda_ta",
+      "Department": "Health & Sanitation",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "health_department_shrigonda_ta",
+      "Department": "Health Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "municipal_engineering_department_shrigonda_ta",
+      "Department": "Municipal Engineering Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "public_works_department_shrigonda_ta",
+      "Department": "Public Works Department (PWD)",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "road_and_transport_department_shrigonda_ta",
+      "Department": "Road & Transport Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "traffic_police_department_shrigonda_ta",
+      "Department": "Traffic Police Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    },
+    {
+      "Username": "urban_planning_department_shrigonda_ta",
+      "Department": "Urban Planning Department",
+      "Location": "Shrigonda",
+      "Governance Scope": "taluka"
+    }
+  ],
+  "reused": []
+}

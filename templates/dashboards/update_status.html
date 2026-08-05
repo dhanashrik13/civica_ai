@@ -1,0 +1,51 @@
+{% extends "dashboards/officer_base.html" %}
+
+{% block title %}Update Issue Status{% endblock %}
+
+{% block page_title %}Update Issue Status{% endblock %}
+{% block page_subtitle %}Change the status of your assigned issues{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h4>Select an issue to update</h4>
+
+    <div class="table-responsive mt-4">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td class="issue-id">#CN-{{ issue.id }}</td>
+                    <td><strong>{{ issue.title }}</strong></td>
+                    <td>
+                        <span class="status-pill {{ issue.status|slugify }}">
+                            {{ issue.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboards:issue_detail' issue.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-primary btn-sm">
+                            View & Update
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align:center; padding:20px; color:gray;">No assigned issues found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4">
+        <a href="{% url 'dashboards:officer_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

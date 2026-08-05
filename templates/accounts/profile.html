@@ -1,0 +1,102 @@
+{% extends "citizen/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "User Profile" %} | Civic Portal{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alert { border: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-4 shadow-sm mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger rounded-4 shadow-sm mb-4">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="table-card">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="avatar-md-custom bg-primary text-white me-3">
+                    {{ request.user.full_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h2 class="h4 mb-1 fw-bold">{{ request.user.full_name|default:request.user.username }}</h2>
+                    <p class="text-muted mb-0">{{ request.user.get_role_display }}</p>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-4">{% trans "Edit Profile Information" %}</h5>
+            
+            <form method="post" action="{% url 'accounts:profile' %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{% trans "Full Name" %}</label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <div class="text-danger small">{{ form.full_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{% trans "Email" %}</label>
+                        {{ form.email }}
+                        <div class="form-text small">{% trans "Email cannot be changed." %}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{% trans "Phone Number" %}</label>
+                        {{ form.phone_no }}
+                        {% if form.phone_no.errors %}
+                            <div class="text-danger small">{{ form.phone_no.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{% trans "City" %}</label>
+                        {{ form.city }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">{% trans "State" %}</label>
+                        {{ form.state }}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">{% trans "Address" %}</label>
+                        {{ form.address }}
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4 fw-bold" id="profileSubmitBtn">
+                        <i class="bi bi-check-lg me-2"></i>{% trans "Save Changes" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form[action*="profile"]');
+        const btn = document.getElementById('profileSubmitBtn');
+        
+        if (form && btn) {
+            form.addEventListener('submit', function() {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "Saving..." %}';
+            });
+        }
+    });
+</script>
+{% endblock %}

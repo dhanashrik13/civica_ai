@@ -1,0 +1,696 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-23 17:49+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: mr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\templates\accounts\login_refactored.html:115
+msgid "Don’t have an account?"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:116
+msgid "Register"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:124
+msgid "Welcome Back to CivicPulse"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:125
+msgid "Select your role and sign in"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:130
+#, fuzzy
+#| msgid "Report Issue"
+msgid "Report civic issues"
+msgstr "समस्या तक्रार करा"
+
+#: .\templates\accounts\login_refactored.html:131
+msgid "Upload photos and location"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:138
+#, fuzzy
+#| msgid "Total Issues"
+msgid "Track issues"
+msgstr "एकूण समस्या"
+
+#: .\templates\accounts\login_refactored.html:139
+msgid "Real-time status updates"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:146
+#, fuzzy
+#| msgid "AI Policy Assistant"
+msgid "AI policy assistant"
+msgstr "एआय धोरण सहाय्यक"
+
+#: .\templates\accounts\login_refactored.html:147
+msgid "Instant answers"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:158
+msgid "Citizen"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:159
+msgid "Admin"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:160
+#, fuzzy
+#| msgid "Officer Portal"
+msgid "Officer"
+msgstr "अधिकारी पोर्टल"
+
+#: .\templates\accounts\login_refactored.html:163
+#: .\templates\accounts\login_refactored.html:200
+msgid "Sign In"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:164
+msgid "Enter your credentials to continue"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:178
+#: .\templates\accounts\register_refactored.html:234
+#: .\templates\landing\contact.html:214
+msgid "Email Address"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:186
+#: .\templates\accounts\register_refactored.html:256
+msgid "Password"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:197
+msgid "Remember Me"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:204
+#: .\templates\accounts\register_refactored.html:283
+msgid "or"
+msgstr ""
+
+#: .\templates\accounts\login_refactored.html:208
+#: .\templates\accounts\register_refactored.html:287
+msgid "Continue with Google"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:154
+msgid "Already have an account?"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:155 .\templates\base.html:206
+#: .\templates\base.html:264
+msgid "Login"
+msgstr "लॉगिन"
+
+#: .\templates\accounts\register_refactored.html:164
+msgid "Join CivicPulse Today"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:165
+msgid "Create your account and start enhancing your community."
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:170
+#, fuzzy
+#| msgid "Civic Issue Portal"
+msgid "Quick Issue Reporting"
+msgstr "नागरी समस्या पोर्टल"
+
+#: .\templates\accounts\register_refactored.html:171
+msgid "Upload photo & GPS"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:178
+#, fuzzy
+#| msgid "Department Tracking"
+msgid "Real-time Tracking"
+msgstr "विभाग ट्रॅकिंग"
+
+#: .\templates\accounts\register_refactored.html:179
+msgid "Track your issues"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:186
+#: .\templates\citizen\partials\sidebar.html:24
+#: .\templates\partials\officer_topbar.html:40
+msgid "AI Assistant"
+msgstr "एआय सहाय्यक"
+
+#: .\templates\accounts\register_refactored.html:187
+msgid "Learn policies instantly"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:194
+msgid "Secure & Private"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:195
+msgid "Encrypted data"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:206
+msgid "Note:"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:206
+msgid ""
+"Registration is open for Citizens only. Admin and Official accounts are pre-"
+"defined."
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:217
+msgid "Create Your Account"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:218
+msgid "Fill your details to get started"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:230
+#: .\templates\landing\contact.html:210
+msgid "Full Name"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:236
+msgid "Invalid email format"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:239
+msgid "Phone Number"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:241
+msgid "Phone must be 10 digits and start with 6-9"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:244
+msgid "Address"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:251
+msgid "Allow location access for better service routing"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:261
+msgid "Must be at least 8 characters"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:264
+msgid "Confirm Password"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:269
+msgid "Passwords do not match"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:276
+msgid "I agree to"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:276
+msgid "Terms & Conditions"
+msgstr ""
+
+#: .\templates\accounts\register_refactored.html:276 .\templates\base.html:274
+msgid "Privacy Policy"
+msgstr "गोपनीयता धोरण"
+
+#: .\templates\accounts\register_refactored.html:280
+msgid "Create Account"
+msgstr ""
+
+#: .\templates\base.html:140 .\templates\base.html:252
+msgid "Home"
+msgstr "मुख्यपृष्ठ"
+
+#: .\templates\base.html:147
+msgid "About"
+msgstr "आमच्याबद्दल"
+
+#: .\templates\base.html:154 .\templates\base.html:254
+msgid "Features"
+msgstr "वैशिष्ट्ये"
+
+#: .\templates\base.html:161 .\templates\base.html:255
+msgid "Contact"
+msgstr "संपर्क"
+
+#: .\templates\base.html:203 .\templates\citizen\partials\sidebar.html:38
+#: .\templates\partials\officer_topbar.html:57
+msgid "Logout"
+msgstr "लॉगआउट"
+
+#: .\templates\base.html:208 .\templates\base.html:263
+#: .\templates\landing\home_refactored.html:137
+msgid "Get Started"
+msgstr "सुरू करा"
+
+#: .\templates\base.html:238
+msgid ""
+"Empowering communities through smart civic engagement. Report issues, track "
+"progress, and connect with government departments seamlessly."
+msgstr ""
+"स्मार्ट नागरी सहभागाद्वारे समुदायांना सक्षम करणे. समस्यांची तक्रार करा, प्रगतीचा मागोवा "
+"घ्या आणि सरकारी विभागांशी अखंडपणे कनेक्ट व्हा."
+
+#: .\templates\base.html:250
+msgid "Navigation"
+msgstr "नेव्हिगेशन"
+
+#: .\templates\base.html:253
+msgid "About Us"
+msgstr "आमच्याबद्दल"
+
+#: .\templates\base.html:261
+msgid "Platform"
+msgstr "प्लॅटफॉर्म"
+
+#: .\templates\base.html:265
+msgid "Register & Report Issue"
+msgstr "नोंदणी आणि समस्या तक्रार"
+
+#: .\templates\base.html:266
+msgid "Register & Track Issues"
+msgstr "नोंदणी आणि समस्यांचा मागोवा"
+
+#: .\templates\base.html:272
+msgid "Legal & Support"
+msgstr "कायदेशीर आणि समर्थन"
+
+#: .\templates\base.html:275
+msgid "Terms of Service"
+msgstr "सेवा अटी"
+
+#: .\templates\base.html:276 .\templates\citizen\partials\sidebar.html:31
+msgid "Help & Support"
+msgstr "मदत आणि समर्थन"
+
+#: .\templates\base.html:277
+msgid "API Documentation"
+msgstr "API दस्तऐवजीकरण"
+
+#: .\templates\base.html:284
+msgid "All rights reserved."
+msgstr "सर्व हक्क राखीव."
+
+#: .\templates\base.html:288
+msgid "Built for Smarter Communities"
+msgstr "स्मार्ट समुदायांसाठी तयार केलेले"
+
+#: .\templates\citizen\partials\sidebar.html:4
+msgid "Civic Portal"
+msgstr "नागरी पोर्टल"
+
+#: .\templates\citizen\partials\sidebar.html:8
+#: .\templates\partials\officer_sidebar.html:14
+msgid "Dashboard"
+msgstr "डॅशबोर्ड"
+
+#: .\templates\citizen\partials\sidebar.html:12
+msgid "Report Issue"
+msgstr "समस्या तक्रार करा"
+
+#: .\templates\citizen\partials\sidebar.html:16
+msgid "My Reports"
+msgstr "माझे अहवाल"
+
+#: .\templates\citizen\partials\sidebar.html:20
+msgid "Issue Map"
+msgstr "समस्या नकाशा"
+
+#: .\templates\citizen\partials\sidebar.html:28
+msgid "Settings"
+msgstr "सेटिंग्ज"
+
+#: .\templates\citizen\partials\topbar.html:2
+msgid "Civic Issue Portal"
+msgstr "नागरी समस्या पोर्टल"
+
+#: .\templates\landing\about.html:4
+msgid "CivicPulse – About"
+msgstr ""
+
+#: .\templates\landing\contact.html:4
+msgid "CivicPulse – Contact"
+msgstr ""
+
+#: .\templates\landing\contact.html:175
+#, fuzzy
+#| msgid "Contact"
+msgid "Contact Us"
+msgstr "संपर्क"
+
+#: .\templates\landing\contact.html:176
+msgid "How can we help you today?"
+msgstr ""
+
+#: .\templates\landing\contact.html:177
+msgid ""
+"Whether you're a citizen reporting an issue or a government official looking "
+"to partner, we're here to help you build a better community."
+msgstr ""
+
+#: .\templates\landing\contact.html:184
+msgid "General Inquiry"
+msgstr ""
+
+#: .\templates\landing\contact.html:185
+msgid "Questions about how CivicPulse works or how to get started?"
+msgstr ""
+
+#: .\templates\landing\contact.html:190
+msgid "Government Partners"
+msgstr ""
+
+#: .\templates\landing\contact.html:191
+msgid "Interested in implementing CivicPulse in your city or department?"
+msgstr ""
+
+#: .\templates\landing\contact.html:196
+msgid "Support Center"
+msgstr ""
+
+#: .\templates\landing\contact.html:197
+msgid "Need technical assistance or having trouble with your account?"
+msgstr ""
+
+#: .\templates\landing\contact.html:205
+msgid "Send us a message"
+msgstr ""
+
+#: .\templates\landing\contact.html:206
+msgid ""
+"Fill out the form below and our team will get back to you within 24 hours."
+msgstr ""
+
+#: .\templates\landing\contact.html:211
+msgid "Enter your name"
+msgstr ""
+
+#: .\templates\landing\contact.html:215
+msgid "Enter your email"
+msgstr ""
+
+#: .\templates\landing\contact.html:218
+msgid "Subject"
+msgstr ""
+
+#: .\templates\landing\contact.html:219
+msgid "What is this about?"
+msgstr ""
+
+#: .\templates\landing\contact.html:222
+msgid "Message"
+msgstr ""
+
+#: .\templates\landing\contact.html:223
+msgid "How can we help?"
+msgstr ""
+
+#: .\templates\landing\contact.html:226
+msgid "Submit Message"
+msgstr ""
+
+#: .\templates\landing\contact.html:233
+#, fuzzy
+#| msgid "Live Status"
+msgid "Live Chat"
+msgstr "लाईव्ह स्थिती"
+
+#: .\templates\landing\contact.html:234
+msgid "Average response time: 5 mins"
+msgstr ""
+
+#: .\templates\landing\contact.html:235
+msgid "Start Chat"
+msgstr ""
+
+#: .\templates\landing\contact.html:238
+#, fuzzy
+#| msgid "API Documentation"
+msgid "Help Documentation"
+msgstr "API दस्तऐवजीकरण"
+
+#: .\templates\landing\contact.html:239
+msgid "Browse our detailed guides and tutorials."
+msgstr ""
+
+#: .\templates\landing\contact.html:240
+msgid "View Docs"
+msgstr ""
+
+#: .\templates\landing\contact.html:247
+msgid "Quick Answers"
+msgstr ""
+
+#: .\templates\landing\contact.html:249
+msgid "Is my reporting anonymous?"
+msgstr ""
+
+#: .\templates\landing\contact.html:250
+msgid ""
+"Yes, you can choose to remain anonymous when submitting certain types of "
+"reports."
+msgstr ""
+
+#: .\templates\landing\contact.html:253
+msgid "How long until I see results?"
+msgstr ""
+
+#: .\templates\landing\contact.html:254
+msgid ""
+"Most minor issues are addressed within 48–72 hours of being assigned to a "
+"department."
+msgstr ""
+
+#: .\templates\landing\contact.html:260
+#, fuzzy
+#| msgid "Everything you need to make a real difference"
+msgid "Ready to make a difference?"
+msgstr "खरा बदल घडवून आणण्यासाठी तुम्हाला आवश्यक असलेली प्रत्येक गोष्ट"
+
+#: .\templates\landing\contact.html:261
+msgid ""
+"Join thousands of citizens already working with their local governments to "
+"improve their communities."
+msgstr ""
+
+#: .\templates\landing\contact.html:262
+#, fuzzy
+#| msgid "Get Started"
+msgid "Get Started Now"
+msgstr "सुरू करा"
+
+#: .\templates\landing\home_refactored.html:133
+msgid "Smart Civic Assistance for Every Citizen"
+msgstr "प्रत्येक नागरिकासाठी स्मार्ट नागरी सहाय्य"
+
+#: .\templates\landing\home_refactored.html:135
+msgid ""
+"Empower your community with AI-driven civic engagement. Report issues, track "
+"progress, and connect with government departments seamlessly."
+msgstr ""
+"एआय-चालित नागरी सहभागासह आपल्या समुदायाला सक्षम करा. समस्यांची तक्रार करा, प्रगतीचा "
+"मागोवा घ्या आणि सरकारी विभागांशी अखंडपणे कनेक्ट व्हा."
+
+#: .\templates\landing\home_refactored.html:173
+msgid "Powerful Features for Modern Civic Engagement"
+msgstr "आधुनिक नागरी सहभागासाठी शक्तिशाली वैशिष्ट्ये"
+
+#: .\templates\landing\home_refactored.html:174
+msgid "Everything you need to make a real difference"
+msgstr "खरा बदल घडवून आणण्यासाठी तुम्हाला आवश्यक असलेली प्रत्येक गोष्ट"
+
+#: .\templates\landing\home_refactored.html:190
+msgid "Report Issues Easily"
+msgstr "समस्यांची तक्रार सहजपणे करा"
+
+#: .\templates\landing\home_refactored.html:191
+msgid "Upload photos, location, and details within seconds."
+msgstr "काही सेकंदात फोटो, स्थान आणि तपशील अपलोड करा."
+
+#: .\templates\landing\home_refactored.html:198
+msgid "Live Issue Map"
+msgstr "लाईव्ह समस्या नकाशा"
+
+#: .\templates\landing\home_refactored.html:199
+msgid "Visualize reported issues in your locality."
+msgstr "आपल्या परिसरातील नोंदवलेल्या समस्यांचे दृश्यमान करा."
+
+#: .\templates\landing\home_refactored.html:206
+msgid "AI Policy Assistant"
+msgstr "एआय धोरण सहाय्यक"
+
+#: .\templates\landing\home_refactored.html:207
+msgid "Get instant answers on policies & regulations."
+msgstr "धोरणे आणि नियमांवर त्वरित उत्तरे मिळवा."
+
+#: .\templates\landing\home_refactored.html:214
+msgid "Department Tracking"
+msgstr "विभाग ट्रॅकिंग"
+
+#: .\templates\landing\home_refactored.html:215
+msgid "Monitor issue routing through departments."
+msgstr "विभागांद्वारे समस्येच्या मार्गावर लक्ष ठेवा."
+
+#: .\templates\landing\home_refactored.html:227
+msgid "Department-wise Issue Performance"
+msgstr "विभागवार समस्या कामगिरी"
+
+#: .\templates\landing\home_refactored.html:228
+msgid "Real-time overview showing efficiency"
+msgstr "कार्यक्षमता दर्शवणारा रिअल-टाइम आढावा"
+
+#: .\templates\landing\home_refactored.html:235
+msgid "Total Issues"
+msgstr "एकूण समस्या"
+
+#: .\templates\landing\home_refactored.html:236
+msgid "Resolved"
+msgstr "सुटलेले"
+
+#: .\templates\landing\home_refactored.html:237
+msgid "In Progress"
+msgstr "प्रगतीपथावर"
+
+#: .\templates\landing\home_refactored.html:238
+msgid "Pending"
+msgstr "प्रलंबित"
+
+#: .\templates\landing\home_refactored.html:240
+msgid "Completion Rate"
+msgstr "पूर्ण होण्याचा दर"
+
+#: .\templates\landing\home_refactored.html:253
+msgid "What Citizens Are Saying"
+msgstr "नागरिक काय म्हणत आहेत"
+
+#: .\templates\landing\home_refactored.html:254
+msgid "Real stories of impact"
+msgstr "प्रभावाच्या वास्तव गोष्टी"
+
+#: .\templates\landing\home_refactored.html:268
+msgid "Streetlight issue fixed within 3 days! Amazing tracking."
+msgstr "स्ट्रीटलाईटची समस्या ३ दिवसात सुटली! आश्चर्यकारक ट्रॅकिंग."
+
+#: .\templates\landing\home_refactored.html:270
+msgid "Resident"
+msgstr "रहिवासी"
+
+#: .\templates\landing\home_refactored.html:276
+msgid "AI assistant explains local zoning instantly. Game changer!"
+msgstr "एआय सहाय्यक त्वरित स्थानिक झोनिंग स्पष्ट करतो. गेम चेंजर!"
+
+#: .\templates\landing\home_refactored.html:278
+msgid "Community Leader"
+msgstr "समुदाय नेता"
+
+#: .\templates\landing\home_refactored.html:284
+msgid "Quick fixes and transparent updates. Love this platform!"
+msgstr "त्वरित निराकरणे आणि पारदर्शक अद्यतने. हे प्लॅटफॉर्म खूप आवडले!"
+
+#: .\templates\landing\home_refactored.html:286
+msgid "Business Owner"
+msgstr "व्यवसाय मालक"
+
+#: .\templates\landing\home_refactored.html:298
+msgid "How It Works"
+msgstr "हे कसे कार्य करते"
+
+#: .\templates\landing\home_refactored.html:299
+msgid "Fast, simple and transparent"
+msgstr "वेगवान, सोपे आणि पारदर्शक"
+
+#: .\templates\landing\home_refactored.html:329
+msgid "Frequently Asked Questions"
+msgstr "नेहमी विचारले जाणारे प्रश्न"
+
+#: .\templates\landing\home_refactored.html:354
+msgid "Trusted by Cities Nationwide"
+msgstr "देशभरातील शहरांचा विश्वास"
+
+#: .\templates\landing\home_refactored.html:355
+msgid "Partnering with governments to improve civic services"
+msgstr "नागरी सेवा सुधारण्यासाठी सरकारांशी भागीदारी"
+
+#: .\templates\landing\home_refactored.html:367
+msgid "City of Springfield"
+msgstr "स्प्रिंगफील्ड शहर"
+
+#: .\templates\landing\home_refactored.html:372
+msgid "Metro County"
+msgstr "मेट्रो काउंटी"
+
+#: .\templates\landing\home_refactored.html:377
+msgid "Riverside District"
+msgstr "रिवरसाइड जिल्हा"
+
+#: .\templates\landing\home_refactored.html:382
+msgid "Harbor City"
+msgstr "हार्बर सिटी"
+
+#: .\templates\partials\officer_sidebar.html:8
+msgid "Officer Portal"
+msgstr "अधिकारी पोर्टल"
+
+#: .\templates\partials\officer_sidebar.html:13
+msgid "Main Navigation"
+msgstr "मुख्य नेव्हिगेशन"
+
+#: .\templates\partials\officer_sidebar.html:15
+msgid "Assigned Issues"
+msgstr "सोपवलेल्या समस्या"
+
+#: .\templates\partials\officer_sidebar.html:16
+msgid "All Issues"
+msgstr "सर्व समस्या"
+
+#: .\templates\partials\officer_sidebar.html:17
+msgid "Map View"
+msgstr "नकाशा दृश्य"
+
+#: .\templates\partials\officer_sidebar.html:19
+msgid "System"
+msgstr "प्रणाली"
+
+#: .\templates\partials\officer_sidebar.html:20
+msgid "Analytics"
+msgstr "विश्लेषण"
+
+#: .\templates\partials\officer_sidebar.html:21
+msgid "Profile"
+msgstr "प्रोफाइल"
+
+#: .\templates\partials\officer_sidebar.html:26
+msgid "Live Status"
+msgstr "लाईव्ह स्थिती"
+
+#: .\templates\partials\officer_sidebar.html:27
+msgid "Systems optimal"
+msgstr "प्रणाली इष्टतम"
+
+#: .\templates\partials\officer_sidebar.html:28
+#, python-format
+msgid "Uptime 99.9%%"
+msgstr "अपटाइम ९९.९%%"
+
+#: .\templates\partials\officer_topbar.html:4
+msgid "Good Morning!"
+msgstr "शुभ प्रभात!"
+
+#: .\templates\partials\officer_topbar.html:6
+msgid "Here is what is happening with your tasks today"
+msgstr "आज तुमच्या कामांची काय स्थिती आहे"

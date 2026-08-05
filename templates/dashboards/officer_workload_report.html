@@ -1,0 +1,178 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}Officer Workload Report | CivicPulse{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+    .status-active { color: #10b981; font-weight: bold; }
+    .status-inactive { color: #ef4444; font-weight: bold; }
+    .overload-badge {
+        background: #fee2e2;
+        color: #ef4444;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block page_title %}Officer Workload Report{% endblock %}
+{% block page_subtitle %}Comprehensive audit of field officer assignments and performance{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="report-card">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" class="form-control" placeholder="Search name or email..." value="{{ request.GET.search }}">
+                </div>
+                <div class="col-md-2">
+                    <select name="department" class="form-select">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"i" %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="district" class="form-select">
+                        <option value="">All Districts</option>
+                        {% for dist in districts %}
+                        <option value="{{ dist.name }}" {% if request.GET.district == dist.name %}selected{% endif %}>{{ dist.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="overloaded" value="true" id="overloadedCheck" {% if request.GET.overloaded == "true" %}checked{% endif %}>
+                        <label class="form-check-label" for="overloadedCheck">Overloaded Only</label>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    <a href="{% url 'dashboards:officer_workload_report' %}" class="btn btn-outline-secondary w-100">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="report-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Officer Workload Data ({{ total_officers }} Total)</h5>
+                <a href="{% url 'dashboards:export_officer_workload_csv' %}" class="btn btn-success btn-sm">
+                    <i class="bi bi-download me-1"></i> Export CSV
+                </a>
+            </div>
+            
+            <div class="table-container">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Officer</th>
+                            <th>Dept / Scope</th>
+                            <th>District</th>
+                            <th>Taluka</th>
+                            <th>Village/Ward</th>
+                            <th>Status</th>
+                            <th><a href="?{% if request.GET.sort == 'assigned_count' %}-{% endif %}sort=assigned_count" class="text-dark">Assigned</a></th>
+                            <th><a href="?{% if request.GET.sort == 'completed_count' %}-{% endif %}sort=completed_count" class="text-dark">Resolved</a></th>
+                            <th><a href="?{% if request.GET.sort == 'pending_count' %}-{% endif %}sort=pending_count" class="text-dark">Pending</a></th>
+                            <th>Overdue</th>
+                            <th>Escalations</th>
+                            <th>Efficiency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in page_obj %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ s.name }}</div>
+                                <div class="text-muted small">{{ s.email }}</div>
+                            </td>
+                            <td>
+                                <div>{{ s.department }}</div>
+                                <div class="badge bg-secondary" style="font-size: 0.7rem;">{{ s.level|upper }}</div>
+                            </td>
+                            <td>{{ s.district_name }}</td>
+                            <td>{{ s.taluka_name }}</td>
+                            <td>{{ s.village_name }}</td>
+                            <td>
+                                <span class="{% if s.is_active %}status-active{% else %}status-inactive{% endif %}">
+                                    {{ s.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>{{ s.assigned_count }}</td>
+                            <td>{{ s.completed_count }}</td>
+                            <td>
+                                {{ s.pending_count }}
+                                {% if s.pending_count > s.workload_capacity %}
+                                <span class="overload-badge">Overloaded</span>
+                                {% endif %}
+                            </td>
+                            <td class="{% if s.overdue_count > 0 %}text-danger fw-bold{% endif %}">{{ s.overdue_count }}</td>
+                            <td class="{% if s.escalation_count > 0 %}text-danger fw-bold{% endif %}">{{ s.escalation_count }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress w-100" style="height: 6px;">
+                                        <div class="progress-bar {% if s.efficiency < 40 %}bg-danger{% elif s.efficiency < 70 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ s.efficiency }}%"></div>
+                                    </div>
+                                    <span class="small">{{ s.efficiency }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">No officers match the current filters.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

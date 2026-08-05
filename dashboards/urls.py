@@ -1,13 +1,68 @@
 from django.urls import path
+
 from . import views
 
 app_name = "dashboards"
 
 urlpatterns = [
-    path('citizen/', views.citizen_dashboard, name='citizen_dashboard'),
-    path('citizen/edit/', views.citizen_edit_profile, name='citizen_edit_profile'),
+    path("citizen/", views.citizen_dashboard, name="citizen_dashboard"),
+    path("citizen/reports/", views.citizen_reports, name="citizen_reports"),
+    path("map/", views.citizen_map_view, name="common_map"),
+    path("officer/", views.officer_dashboard, name="officer_dashboard"),
+    path("officer/assigned/", views.assigned_issues_view, name="assigned_issues"),
+    path("officer/issue/<int:issue_id>/close/", views.close_issue, name="close_issue"),
+    path("officer/all/", views.all_issues_view, name="all_issues"),
+    path("officer/map/", views.map_view, name="map_view"),
+    path("officer/map/data/", views.map_view_data, name="map_view_data"),
+    path("officer/reports/", views.reports, name="reports"),
+    path("officer/profile/", views.profile, name="profile"),
+    path("officer/edit-profile/", views.officer_edit_profile, name="officer_edit_profile"),
+    path("officer/activity/", views.officer_activity_list, name="officer_activity"),
+    path("officer/ai/", views.officer_ai_assistant, name="officer_ai_assistant"),
+    path("officer/issue/update/", views.update_issue_status, name="update_issue_status"),
+    path("officer/issue/comment/", views.add_comment, name="add_comment"),
+    path("officer/issue/<int:issue_id>/", views.issue_detail, name="issue_detail"),
+    path("citizen/delete/<int:issue_id>/", views.citizen_delete_issue, name="citizen_delete_issue"),
 
-    path('officer/', views.officer_dashboard, name='officer_dashboard'),
-    path('admin/', views.admin_dashboard, name='admin_dashboard'),
+    path("admin/", views.admin_dashboard, name="admin_dashboard"),
+    path("admin/map/", views.citizen_map_view, name="admin_full_map"),
+    path("admin/map/data/", views.admin_issue_map_data, name="admin_issue_map_data"),
+    path("admin/search/", views.search_view, name="admin_search"),
+    path("admin/ai/", views.ai_assistant, name="ai_assistant"),
+    path("admin/notifications/", views.admin_notifications, name="admin_notifications"),
+    path("admin/profile/", views.admin_profile, name="admin_profile"),
+    path("admin/citizen-activity/", views.all_citizen_activity, name="all_citizen_activity"),
+    path("admin/officers/", views.view_all_officers, name="view_all_officers"),
+    path("admin/officers/workload/", views.officer_workload_report, name="officer_workload_report"),
+    path("admin/officers/workload/export/", views.export_officer_workload_csv, name="export_officer_workload_csv"),
+    path("admin/officers/manage/", views.manage_officers, name="manage_officers"),
+    path("admin/officers/add/", views.add_officer, name="add_officer"),
+    path("officer/<int:officer_id>/", views.officer_detail, name="officer_detail"),
+    path("admin/issues/assigned/", views.view_assigned_tasks, name="view_assigned_tasks"),
+    path("admin/issues/assigned/<int:officer_id>/", views.view_assigned_tasks, name="view_assigned_tasks_by_officer"),
+    path("admin/issue/<int:issue_id>/", views.admin_issue_detail, name="admin_issue_detail"),
+    path("admin/issue/<int:issue_id>/assign/", views.assign_issue, name="assign_issue"),
+    path("admin/issue/<int:issue_id>/assign-ajax/", views.assign_issue_ajax, name="assign_issue_ajax"),
+    path("admin/issue/<int:issue_id>/assign-ml/", views.assign_issue_by_ml, name="assign_issue_by_ml"),
+    path("admin/issue/<int:issue_id>/forward/", views.forward_issue, name="forward_issue"),
+    path("admin/issue/<int:issue_id>/complete/", views.mark_issue_complete, name="mark_issue_complete"),
+    path("admin/issue/<int:issue_id>/view/", views.view_issue, name="view_issue"),
+    path("admin/issue/<int:issue_id>/edit/", views.edit_issue, name="edit_issue"),
+    path("admin/issue/<int:pk>/delete/", views.delete_issue, name="delete_issue"),
+    path("admin/department/<int:dept_id>/", views.admin_department_detail, name="admin_department_detail"),
+    path("admin/edit-profile/", views.edit_profile, name="edit_profile"),
+    path("admin/announcements/approve/", views.approve_announcements, name="approve_announcements"),
+    path("admin/issue/update-priority/<int:issue_id>/", views.update_priority, name="update_priority"),
+
+    path("search/", views.search_view, name="global_search"),
+    path("api/dashboard/summary/", views.api_dashboard_summary, name="api_dashboard_summary"),
+    path("api/dashboard/timeseries/", views.api_dashboard_timeseries, name="api_dashboard_timeseries"),
+    path("api/dashboard/map/", views.api_dashboard_map, name="api_dashboard_map"),
+
+    path("officer/announcements/create/", views.create_announcement, name="create_announcement"),
+    path("officer/announcements/", views.announcement_list, name="announcement_list"),
+
+    path("set-language/<str:lang>/", views.set_language, name="set_language"),
+    path("get-talukas/<int:district_id>/", views.get_talukas, name="get_talukas"),
+    path("get-villages/<int:taluka_id>/", views.get_villages, name="get_villages"),
 ]
-

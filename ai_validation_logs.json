@@ -1,0 +1,15 @@
+{
+  "overall_accuracy": 100.0,
+  "citizen": {
+    "accuracy": 100.0,
+    "failed": []
+  },
+  "officer": {
+    "accuracy": 100.0,
+    "failed": []
+  },
+  "admin": {
+    "accuracy": 100.0,
+    "failed": []
+  }
+}

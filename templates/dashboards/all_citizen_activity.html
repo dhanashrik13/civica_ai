@@ -1,0 +1,148 @@
+{% extends "dashboards/base.html" %}
+
+{% block title %}CivicPulse | All Citizen Activity{% endblock %}
+
+{% block page_title %}Citizen Activity{% endblock %}
+{% block page_subtitle %}Real-time feed of all citizen reports and interactions{% endblock %}
+
+{% block extra_css %}
+<style>
+.recent-activity-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.recent-activity-table th,
+.recent-activity-table td {
+    text-align: left;
+    padding: 12px;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+.recent-activity-table th {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.recent-activity-table th:nth-child(1),
+.recent-activity-table td:nth-child(1) {
+    width: 22%;
+}
+
+.recent-activity-table th:nth-child(2),
+.recent-activity-table td:nth-child(2) {
+    width: 38%;
+}
+
+.recent-activity-table th:nth-child(3),
+.recent-activity-table td:nth-child(3),
+.recent-activity-table th:nth-child(4),
+.recent-activity-table td:nth-child(4),
+.recent-activity-table th:nth-child(5),
+.recent-activity-table td:nth-child(5),
+.recent-activity-table th:nth-child(6),
+.recent-activity-table td:nth-child(6) {
+    width: 10%;
+}
+
+.citizen-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #eef2ff;
+    color: #4f46e5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.priority-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card p-0 overflow-hidden">
+    <div class="table-header p-4 border-bottom">
+        <h3 class="m-0">Recent Activities</h3>
+    </div>
+
+    <table class="recent-activity-table">
+        <thead>
+            <tr>
+                <th>Citizen</th>
+                <th>Action</th>
+                <th>Priority</th>
+                <th>Category</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in activities %}
+            <tr onclick="window.location='{% url 'dashboards:admin_issue_detail' issue.id %}'" style="cursor: pointer;">
+                <td>
+                    <div class="citizen-cell">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="user-avatar">
+                                {{ issue.reported_by.full_name|default:issue.reported_by.username|slice:":1"|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-bold">{{ issue.reported_by.full_name|default:issue.reported_by.username }}</div>
+                                <small class="text-muted" style="display: block; font-size: 11px;">{{ issue.reported_by.email }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    Reported: <b>{{ issue.title }}</b> at {{ issue.location }}
+                </td>
+                <td>
+                    <span class="priority-badge {{ issue.priority|slugify }}">
+                        {{ issue.priority|upper }}
+                    </span>
+                </td>
+                <td>
+                    {{ issue.department.name }}
+                </td>
+                <td class="text-muted">
+                    {{ issue.created_at|date:"M d, Y" }}
+                </td>
+                <td>
+                    <span class="status-pill {{ issue.status|slugify }}">
+                        {{ issue.status|title }}
+                    </span>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-gray);">
+                    No activity found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

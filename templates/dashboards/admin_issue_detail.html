@@ -1,0 +1,304 @@
+{% extends user.is_officer|yesno:"dashboards/officer_base.html,dashboards/base.html" %}
+
+{% block title %}Issue Detail | CivicPulse{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+.detail-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.status-badge { padding: 6px 16px; border-radius: 50px; font-weight: 600; font-size: 14px; }
+.status-pending { background: #fef3c7; color: #d97706; }
+.status-assigned { background: #e0ecff; color: #2563eb; }
+.status-resolved { background: #dcfce7; color: #16a34a; }
+.issue-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 16px; margin-top: 20px; }
+.select2-container .select2-selection--single { height: 38px !important; border-radius: 8px; border: 1px solid #dee2e6; }
+.select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 38px; }
+.select2-container--default .select2-selection--single .select2-selection__arrow { height: 36px; }
+</style>
+{% endblock %}
+
+{% block page_title %}Issue Detail #{{ issue.id }}{% endblock %}
+{% block page_subtitle %}Review and manage incident specifics{% endblock %}
+
+{% block content %}
+<div class="detail-card">
+    <div class="row">
+        <div class="col-md-7">
+            <h2 class="mb-1">{{ issue.title }}</h2>
+            <p class="text-muted"><i class="bi bi-geo-alt"></i> {{ issue.location }}</p>
+            <hr>
+            <h5>Description</h5>
+            <p class="lead text-secondary">{{ issue.description }}</p>
+            {% if issue.photo1 %}<img src="{{ issue.photo1.url }}" class="issue-img">{% endif %}
+
+            <div class="mt-5 pt-4 border-top">
+                <h5 class="mb-4"><i class="bi bi-chat-left-text me-2"></i> Official Comments</h5>
+                
+                <div class="comment-list">
+                    {% for comment in comments %}
+                        <div class="card mb-3 border-0 bg-light rounded-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-white d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-person text-primary"></i>
+                                    </div>
+                                    <strong>{{ comment.user.full_name|default:comment.user.username }}</strong>
+                                    {% if comment.user.is_officer %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill" style="font-size: 10px;">OFFICER</span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i> {{ comment.created_at|timesince }} ago</small>
+                            </div>
+                            <p class="mb-0 text-secondary" style="font-size: 14.5px; line-height: 1.6;">{{ comment.text }}</p>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                            <i class="bi bi-chat-dots text-muted fs-2"></i>
+                            <p class="text-muted mt-2 mb-0">No comments have been added to this issue yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            {% if issue.is_overdue %}
+            <div class="alert alert-danger rounded-4 d-flex align-items-center mb-4 border-0">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <strong>Overdue Escalation!</strong><br>
+                    <small>This issue has passed its {{ issue.sla_days }}-day SLA period.</small>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="bg-light p-4 rounded-4 border mb-4">
+                <h5 class="mb-3">Information</h5>
+                <dl class="row mb-0">
+                    <dt class="col-5">Category</dt><dd class="col-7">{{ issue.get_category_display }}</dd>
+                    <dt class="col-5">Priority</dt><dd class="col-7"><span class="text-{{ issue.priority|yesno:'danger,warning,info' }} fw-bold">{{ issue.get_priority_display }}</span></dd>
+                    <dt class="col-5">Reported On</dt><dd class="col-7">{{ issue.created_at|date:"M d, Y" }}</dd>
+                    <dt class="col-5">Assigned To</dt>
+                    <dd class="col-7">
+                        {% if issue.assigned_to %}
+                            {{ issue.assigned_to.user.username }}
+                        {% else %}
+                            <span style="color: red;">Not Assigned</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+
+            <!-- Adaptive Intelligence Panel -->
+            <div class="bg-white p-4 rounded-4 border shadow-sm mb-4" style="border-left: 5px solid #6366f1 !important;">
+                <h5 class="mb-3 text-indigo-600"><i class="bi bi-cpu me-2"></i> Adaptive Intelligence</h5>
+                
+                <div class="risk-container mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-semibold">System Risk Score</span>
+                        <span class="badge {% if issue.risk_score > 70 %}bg-danger{% elif issue.risk_score > 40 %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                            {{ issue.risk_score }}/100
+                        </span>
+                    </div>
+                    <div class="progress" style="height: 12px; border-radius: 6px; background: #f1f5f9;">
+                        <div class="progress-bar {% if issue.risk_score > 70 %}bg-danger{% elif issue.risk_score > 40 %}bg-warning{% else %}bg-success{% endif %}" 
+                             role="progressbar" style="width: {{ issue.risk_score }}%;" 
+                             aria-valuenow="{{ issue.risk_score }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">
+                            Risk factors: Category difficulty & Backlog.
+                        </small>
+                        <small class="text-muted fw-bold">
+                            Confidence: {{ issue.intelligence_data.confidence }}%
+                        </small>
+                    </div>
+                </div>
+
+                <div class="explanation-box p-3 rounded-3 bg-light border-0">
+                    <h6 class="small fw-bold text-uppercase mb-2" style="letter-spacing: 0.5px;">Assignment Intelligence</h6>
+                    <p class="mb-0 small text-secondary">
+                        {{ issue.assignment_explanation|default:"Manual assignment or explanation not yet generated." }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Issue Timeline -->
+            <div class="bg-white p-4 rounded-4 border shadow-sm">
+                <h5 class="mb-4"><i class="bi bi-clock-history me-2"></i> Issue Timeline</h5>
+                <div class="timeline" style="border-left: 2px solid #e2e8f0; margin-left: 10px; padding-left: 25px; position: relative;">
+                    {% for event in issue.timeline_events %}
+                    <div class="timeline-item mb-4" style="position: relative;">
+                        <span class="timeline-dot" style="position: absolute; left: -34px; top: 0; width: 16px; height: 16px; background: {% if event.type == 'resolved' %}#16a34a{% elif event.type == 'assigned' %}#2563eb{% else %}#94a3b8{% endif %}; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #e2e8f0;"></span>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <strong style="font-size: 14px; text-transform: capitalize;">{{ event.type }}</strong>
+                            <small class="text-muted" style="font-size: 11px;">{{ event.time|date:"M d, H:i" }}</small>
+                        </div>
+                        <p class="mb-0 small text-secondary">{{ event.text }}</p>
+                        <small class="text-muted" style="font-size: 11px;">by {{ event.user.full_name|default:event.user.username }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if user.is_officer and issue.assigned_to == user.officer %}
+            <div class="mt-4 p-4 border rounded-4 bg-white shadow-sm">
+                <h6 class="fw-bold mb-3"><i class="bi bi-pencil-square me-2"></i>Update Progress</h6>
+                <form method="POST" action="{% url 'issues:update_status' issue.id %}">
+                    {% csrf_token %}
+                    <select name="status" class="form-select mb-3 rounded-3">
+                        <option value="pending" {% if issue.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="assigned" {% if issue.status == 'assigned' %}selected{% endif %}>Assigned</option>
+                        <option value="resolved" {% if issue.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                    <button class="btn btn-primary w-100 rounded-3">Save Status</button>
+                </form>
+            </div>
+            {% elif user.is_super_admin or user.is_dept_admin %}
+            <div class="mt-4 p-4 border rounded-4 bg-white shadow-sm">
+                <h6 class="fw-bold mb-3"><i class="bi bi-person-plus me-2"></i>Assignment Control</h6>
+                
+                {% if not issue.assigned_to and suggested_dept %}
+                <div class="alert alert-info py-2 px-3 rounded-3 mb-3 border-0" style="font-size: 13px;">
+                    <i class="bi bi-lightbulb-fill me-2"></i>
+                    <strong>Recommended:</strong> {{ suggested_dept.name }} Officer (based on location)
+                </div>
+                {% endif %}
+
+                <form id="assignForm" method="POST" action="{% url 'dashboards:assign_issue_ajax' issue.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="small text-muted mb-1">Select Officer</label>
+                        <select name="officer_id" id="officerSelect" style="width: 100%;">
+                            <option value="">Search Officer...</option>
+                            {% for off in officers %}
+                            <option value="{{ off.id }}" {% if issue.assigned_to_id == off.id %}selected{% endif %}>
+                                {{ off.user.full_name|default:off.user.username }} ({{ off.get_level_display }} - {{ off.department.name }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="button" id="assignBtn" class="btn btn-dark w-100 rounded-3 mb-3">Update Assignment</button>
+                </form>
+
+                {% if recommended_officer %}
+                <div class="mt-2 p-3 rounded-3 bg-primary-subtle border-0 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-person-check-fill text-primary"></i>
+                        <span class="fw-bold small text-primary">Recommended Officer</span>
+                    </div>
+                    <div class="fw-semibold">{{ recommended_officer.user.full_name|default:recommended_officer.user.username }}</div>
+                    <div class="mt-1">
+                        <small class="text-muted" style="font-size: 11px;">
+                            <i class="bi bi-info-circle me-1"></i>Based on same location + lowest workload
+                        </small>
+                    </div>
+                </div>
+                {% else %}
+                <div class="mt-2 p-3 rounded-3 bg-danger-subtle border-0 shadow-sm">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="bi bi-exclamation-circle-fill text-danger"></i>
+                        <span class="fw-bold small text-danger">No Local Officer</span>
+                    </div>
+                    <div class="mt-1">
+                        <small class="text-danger" style="font-size: 11px;">
+                            No officer available in this location. Forward to correct department if needed.
+                        </small>
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr class="my-4">
+                
+                <h6 class="fw-bold mb-3"><i class="bi bi-forward me-2"></i>Forward Department</h6>
+                <form method="POST" action="{% url 'dashboards:forward_issue' issue.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="small text-muted mb-1">New Department</label>
+                        <select name="department_id" class="form-select rounded-3">
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if issue.department_id == dept.id %}selected{% endif %}>
+                                {{ dept.name }} ({{ dept.get_level_display }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-outline-danger w-100 rounded-3">Forward to Department</button>
+                    <div class="form-text mt-2 small text-center">
+                        Resets assignment & sets status to PENDING
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+$(document).ready(function() {
+    $('#officerSelect').select2({
+        placeholder: "Search Officer...",
+        allowClear: true,
+        width: '100%'
+    });
+
+    $('#assignBtn').on('click', function() {
+        const officerId = $('#officerSelect').val();
+        const issueId = "{{ issue.id }}";
+        const url = $('#assignForm').attr('action');
+        
+        console.log("DEBUG: JS initiating assignment - Issue ID:", issueId, "Officer ID:", officerId);
+
+        if (!officerId) {
+            alert("Please select an officer first.");
+            return;
+        }
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ officer_id: officerId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("DEBUG: Received server response:", data);
+            if (data.success) {
+                alert("Assignment updated successfully!");
+                // Update the 'Assigned To' display in the UI
+                const selectedText = $('#officerSelect').find('option:selected').text();
+                // Find the Assigned To definition description and update it
+                $('dt:contains("Assigned To")').next('dd').text(selectedText.split('(')[0].trim());
+            } else {
+                alert("Error: " + (data.error || "Unknown error"));
+            }
+        })
+        .catch(error => {
+            console.error("DEBUG: Fetch error:", error);
+            alert("An error occurred. Check console for details.");
+        });
+    });
+});
+</script>
+{% endblock %}

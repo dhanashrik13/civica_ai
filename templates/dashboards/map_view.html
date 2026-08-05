@@ -1,0 +1,15 @@
+{% extends 'base_officer.html' %}
+
+{% block title %}Live Map | Officer Portal{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="card p-4" style="background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    {% include "partials/map_component.html" %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
